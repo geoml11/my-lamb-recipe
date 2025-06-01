@@ -29,8 +29,14 @@
 </head>
 <body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl border border-green-200">
-        <h1 class="text-3xl font-bold text-center text-green-800 mb-6">أداة مقارنة المكونات التجميلية الذكية</h1>
-        <p class="text-center text-gray-600 mb-8">الصق قائمة مكونات منتجك التجميلي أدناه لتحليلها وفهمها بشكل أفضل.</p>
+        <div class="text-center mb-8 pb-6 border-b border-green-200">
+            <h1 class="text-4xl font-extrabold text-green-800 mb-3 leading-tight">
+                اكتشف سر بشرتك مع <br><span class="text-green-600">محلل المكونات الذكي</span>
+            </h1>
+            <p class="text-lg text-gray-700 max-w-md mx-auto">
+                أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
+            </p>
+        </div>
 
         <div class="mb-6">
             <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-2">
@@ -57,32 +63,38 @@
 
     <script>
         // Define the hardcoded ingredients database for MVP
-        // Each ingredient has:
-        // - name: The exact name as it appears in ingredient lists.
-        // - classification: A simplified category (good, warning, organic).
+        // Each ingredient now has a 'name' property which is an array of names (English and Arabic)
+        // - name: An array of exact names (English and Arabic) as they might appear in ingredient lists.
+        // - classification: A simplified category (good, warning, organic, very harmful).
         // - description: A brief explanation of the ingredient.
         const ingredientsDatabase = [
-            { name: 'Aqua', classification: 'جيد للبشرة', description: 'الماء هو المذيب الأساسي في معظم المنتجات.' },
-            { name: 'Glycerin', classification: 'جيد للبشرة', description: 'مرطب ممتاز يجذب الرطوبة إلى البشرة.' },
-            { name: 'Niacinamide', classification: 'جيد للبشرة', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب.' },
-            { name: 'Sodium Hyaluronate', classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.' },
-            { name: 'Tocopherol', classification: 'جيد للبشرة', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة.' },
-            { name: 'Aloe Barbadensis Leaf Juice', classification: 'عضوي', description: 'عصير أوراق الألوفيرا، مهدئ ومرطب للبشرة.' },
-            { name: 'Simmondsia Chinensis Seed Oil', classification: 'عضوي', description: 'زيت الجوجوبا، يرطب البشرة دون انسداد المسام.' },
-            { name: 'Butyrospermum Parkii Butter', classification: 'جيد للبشرة', description: 'زبدة الشيا، مرطب غني ومغذي للبشرة.' },
-            { name: 'Lactic Acid', classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) مقشر، قد يسبب تهيجًا بتركيزات عالية.' },
-            { name: 'Parfum', classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
-            { name: 'Fragrance', classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
-            { name: 'Sodium Lauryl Sulfate', classification: 'تحذير: مهيج محتمل', description: 'منظف قوي، قد يسبب جفافًا وتهيجًا للبشرة.' },
-            { name: 'Phenoxyethanol', classification: 'جيد للبشرة', description: 'مادة حافظة آمنة بشكل عام بتركيزات منخفضة.' },
-            { name: 'Titanium Dioxide', classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
-            { name: 'Zinc Oxide', classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
-            { name: 'Argania Spinosa Kernel Oil', classification: 'عضوي', description: 'زيت الأرغان، غني بمضادات الأكسدة وفيتامين E، مرطب ومغذي للبشرة.' },
-            // New ingredients added as per user request
-            { name: 'Phthalates', classification: 'تحذير: مكون مثير للجدل', description: 'مركبات كيميائية قد تسبب اضطرابات هرمونية وتوجد في بعض المنتجات.' },
-            { name: 'Toluene', classification: 'تحذير: مهيج محتمل', description: 'مذيب كيميائي قد يسبب تهيجًا للجلد والجهاز التنفسي، ويستخدم في بعض مستحضرات التجميل.' },
-            { name: 'Polyethylene', classification: 'تحذير: قد يسبب انسداد المسام', description: 'بوليمر بلاستيكي يستخدم كعامل تشكيل للفيلم أو كمقشر دقيق، قد يسبب انسداد المسام.' },
-            { name: 'Carbon black', classification: 'تحذير: مكون مثير للجدل', description: 'صبغة سوداء تستخدم في مستحضرات التجميل، قد تحتوي على شوائب مثيرة للجدل.' }
+            { name: ['Aqua', 'ماء'], classification: 'جيد للبشرة', description: 'الماء هو المذيب الأساسي في معظم المنتجات.' },
+            { name: ['Glycerin', 'جليسرين', 'الجليسرين'], classification: 'جيد للبشرة', description: 'مرطب ممتاز يجذب الرطوبة إلى البشرة.' },
+            { name: ['Niacinamide', 'نياسيناميد'], classification: 'جيد للبشرة', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب.' },
+            { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.' },
+            { name: ['Tocopherol', 'فيتامين E', 'توكوفيرول'], classification: 'جيد للبشرة', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة.' },
+            { name: ['Aloe Barbadensis Leaf Juice', 'عصير أوراق الألوفيرا', 'صبار'], classification: 'عضوي', description: 'عصير أوراق الألوفيرا، مهدئ ومرطب للبشرة.' },
+            { name: ['Simmondsia Chinensis Seed Oil', 'زيت الجوجوبا'], classification: 'عضوي', description: 'زيت الجوجوبا، يرطب البشرة دون انسداد المسام.' },
+            { name: ['Butyrospermum Parkii Butter', 'زبدة الشيا', 'شيا'], classification: 'جيد للبشرة', description: 'زبدة الشيا، مرطب غني ومغذي للبشرة.' },
+            { name: ['Lactic Acid', 'حمض اللاكتيك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) مقشر، قد يسبب تهيجًا بتركيزات عالية.' },
+            { name: ['Parfum', 'عطر', 'عطور'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
+            { name: ['Fragrance', 'عطر', 'عطور'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
+            { name: ['Sodium Lauryl Sulfate', 'كبريتات لوريل الصوديوم', 'SLS'], classification: 'تحذير: مهيج محتمل', description: 'منظف قوي، قد يسبب جفافًا وتهيجًا للبشرة.' },
+            { name: ['Phenoxyethanol', 'فنوكسييثانول'], classification: 'جيد للبشرة', description: 'مادة حافظة آمنة بشكل عام بتركيزات منخفضة.' },
+            { name: ['Titanium Dioxide', 'ثاني أكسيد التيتانيوم'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
+            { name: ['Zinc Oxide', 'أكسيد الزنك'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
+            { name: ['Argania Spinosa Kernel Oil', 'زيت الأرغان', 'أرغان'], classification: 'عضوي', description: 'زيت الأرغان، غني بمضادات الأكسدة وفيتامين E، مرطب ومغذي للبشرة.' },
+            { name: ['Phthalates', 'فثالات'], classification: 'تحذير: مكون مثير للجدل', description: 'مركبات كيميائية قد تسبب اضطرابات هرمونية وتوجد في بعض المنتجات.' },
+            { name: ['Toluene', 'تولوين'], classification: 'تحذير: مهيج محتمل', description: 'مذيب كيميائي قد يسبب تهيجًا للجلد والجهاز التنفسي، ويستخدم في بعض مستحضرات التجميل.' },
+            { name: ['Polyethylene', 'بولي إيثيلين'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'بوليمر بلاستيكي يستخدم كعامل تشكيل للفيلم أو كمقشر دقيق، قد يسبب انسداد المسام.' },
+            { name: ['Carbon black', 'أسود الكربون'], classification: 'تحذير: مكون مثير للجدل', description: 'صبغة سوداء تستخدم في مستحضرات التجميل، قد تحتوي على شوائب مثيرة للجدل.' },
+            // New highly harmful ingredients added
+            { name: ['Parabens', 'بارابين'], classification: 'تحذير: مكون ضار جداً', description: 'مواد حافظة شائعة، قد تسبب اضطرابات هرمونية وتثير القلق بشأن السرطان.' },
+            { name: ['Formaldehyde', 'فورمالديهايد'], classification: 'تحذير: مكون ضار جداً', description: 'مادة حافظة ومطهرة، مصنفة كمسرطن معروف للإنسان ومسببة للحساسية.' },
+            { name: ['Mineral Oil', 'زيت معدني'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'منتج بترولي، قد يسد المسام ويمنع البشرة من التنفس، مما يؤدي إلى حب الشباب.' },
+            { name: ['Sulfates', 'كبريتات'], classification: 'تحذير: مهيج محتمل', description: 'منظفات قوية (مثل SLS, SLES) قد تجرد البشرة من زيوتها الطبيعية وتسبب الجفاف والتهيج.' },
+            { name: ['Oxybenzone', 'أوكسي بنزون'], classification: 'تحذير: مكون ضار جداً', description: 'مرشح كيميائي للأشعة فوق البنفسجية، قد يسبب اضطرابات هرمونية وحساسية.' },
+            { name: ['Triclosan', 'ترايكلوسان'], classification: 'تحذير: مكون ضار جداً', description: 'مادة مضادة للبكتيريا، قد تساهم في مقاومة المضادات الحيوية وتؤثر على الهرمونات.' }
         ];
 
         // Get DOM elements
@@ -130,12 +142,14 @@
             let goodCount = 0;
             let warningCount = 0;
             let organicCount = 0;
+            let veryHarmfulCount = 0; // New counter for very harmful ingredients
             let analyzedCount = 0;
 
             inputIngredients.forEach(inputIng => {
                 // Find a match in the database (case-insensitive)
+                // Now checks if ANY of the names in the dbIng.name array match the input ingredient
                 const foundIngredient = ingredientsDatabase.find(dbIng => 
-                    dbIng.name.toLowerCase() === inputIng.toLowerCase()
+                    dbIng.name.some(n => n.toLowerCase() === inputIng.toLowerCase())
                 );
 
                 const ingredientItem = document.createElement('div');
@@ -155,6 +169,11 @@
                         iconClass = 'text-green-500';
                         textColorClass = 'text-green-700';
                         goodCount++;
+                    } else if (foundIngredient.classification.includes('تحذير: مكون ضار جداً')) { // New classification check
+                        iconClass = 'text-red-700'; // Darker red for very harmful
+                        textColorClass = 'text-red-900'; // Even darker text
+                        veryHarmfulCount++;
+                        warningCount++; // Also count as general warning
                     } else if (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام')) {
                         iconClass = 'text-red-500';
                         textColorClass = 'text-red-700';
@@ -174,6 +193,7 @@
                     <div class="flex-shrink-0">
                         ${foundIngredient ? 
                             (foundIngredient.classification.includes('جيد للبشرة') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>` :
+                             foundIngredient.classification.includes('تحذير: مكون ضار جداً') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>` : // X icon for very harmful
                              (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام')) ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>` :
                              foundIngredient.classification.includes('عضوي') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>` :
                              `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`)
@@ -195,6 +215,7 @@
                     <p class="text-lg">المكونات الجيدة: <strong class="text-green-700">${goodCount}</strong></p>
                     <p class="text-lg">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p>
                     <p class="text-lg">المكونات التي تحتاج إلى انتباه: <strong class="text-red-700">${warningCount}</strong></p>
+                    <p class="text-lg ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p>
                 `;
                 resultsContainer.classList.remove('hidden'); // Show results container
             } else {
