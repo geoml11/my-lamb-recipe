@@ -1,227 +1,495 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أداة مقارنة المكونات التجميلية الذكية</title>
+    <title>كفتة إزمير: وصفة تفاعلية متقدمة</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for Inter font */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Tajawal', 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #334155; /* slate-700 */
         }
-        /* Custom scrollbar for textarea */
-        textarea::-webkit-scrollbar {
-            width: 8px;
+        .container {
+            @apply max-w-5xl mx-auto px-4 py-8; /* Increased max-width for longer tables */
         }
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
+        .section-title {
+            @apply text-3xl font-bold text-indigo-700 mb-6 text-center; /* Changed color for distinction */
         }
-        textarea::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
+        .card {
+            @apply bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out;
         }
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #555;
+        table {
+            @apply w-full text-sm text-right text-slate-700 rounded-lg overflow-hidden;
+        }
+        th, td {
+            @apply px-4 py-3 border border-slate-200;
+        }
+        thead th {
+            @apply bg-slate-100 text-slate-800 font-semibold;
+        }
+        tbody tr:nth-child(even) {
+            @apply bg-slate-50;
+        }
+        tbody tr:hover {
+            @apply bg-indigo-50;
+        }
+        input[type="number"] {
+            @apply w-24 p-1 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500;
+        }
+        select {
+            @apply p-1 border border-slate-300 rounded-md bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500;
+        }
+        .rtl-text {
+            direction: rtl;
+            text-align: right;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl border border-green-200">
-        <div class="text-center mb-8 pb-6 border-b border-green-200">
-            <h1 class="text-4xl font-extrabold text-green-800 mb-3 leading-tight">
-                اكتشف سر بشرتك مع <br><span class="text-green-600">محلل المكونات الذكي</span>
-            </h1>
-            <p class="text-lg text-gray-700 max-w-md mx-auto">
-                أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
+<body class="rtl-text">
+
+    <div class="container">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-indigo-700 mb-2">كفتة إزمير: وصفة تفاعلية متقدمة</h1>
+            <h2 class="text-2xl font-semibold text-slate-600">Izmir Kofta: An Advanced Interactive Recipe</h2>
+            <p class="text-lg text-slate-500 mt-4">
+                نقدم لكم وصفة كفتة إزمير الشهية بتصميم متطور وديناميكي. يمكنكم الآن تعديل الكميات، استكشاف بدائل المكونات، وحساب التكاليف وهوامش الربح بشكل فوري لتخطيط وجباتكم ومشاريعكم الغذائية بكفاءة عالية.
+                <br>
+                Introducing the delicious Izmir Kofta recipe with an advanced and dynamic design. You can now adjust quantities, explore ingredient alternatives, and instantly calculate costs and profit margins to plan your meals and food projects with high efficiency.
             </p>
-        </div>
+        </header>
 
-        <div class="mb-6">
-            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-2">
-                الصق قائمة المكونات هنا (افصل بينها بفاصلة، نقطة، أو سطر جديد):
-            </label>
-            <textarea id="ingredientsInput" rows="10" class="w-full p-3 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 resize-y" placeholder="مثال: Aqua, Glycerin, Niacinamide, Sodium Hyaluronate, Tocopherol, Parfum"></textarea>
-        </div>
-
-        <button id="analyzeButton" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg">
-            تحليل المكونات
-        </button>
-
-        <div id="resultsContainer" class="mt-8 p-6 bg-green-50 rounded-xl border border-green-200 hidden">
-            <h2 class="text-2xl font-bold text-green-700 mb-4 text-center">نتائج التحليل</h2>
-            <div id="ingredientList" class="space-y-4">
+        <section id="recipe-overview" class="mb-10">
+            <h2 class="section-title">نظرة عامة على الوصفة | Recipe Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card text-center">
+                    <h3 class="text-lg font-medium text-slate-500 mb-2">وقت التحضير</h3>
+                    <p class="text-2xl font-bold text-indigo-600">60 دقيقة</p>
+                    <p class="text-sm text-slate-500">Preparation Time</p>
                 </div>
-            <div id="summary" class="mt-6 pt-4 border-t border-green-300 text-center text-gray-700 font-medium">
+                <div class="card text-center">
+                    <h3 class="text-lg font-medium text-slate-500 mb-2">وقت الطهي</h3>
+                    <p class="text-2xl font-bold text-indigo-600">1 ساعة و 30 دقيقة</p>
+                    <p class="text-sm text-slate-500">Cooking Time</p>
                 </div>
-        </div>
-
-        <div id="messageBox" class="mt-8 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
+                <div class="card text-center">
+                    <h3 class="text-lg font-medium text-slate-500 mb-2">الكمية الأصلية</h3>
+                    <p class="text-2xl font-bold text-indigo-600">سخان واحد (12 شخص)</p>
+                    <p class="text-sm text-slate-500">1 Hot Pot (Serves 12 people)</p>
+                </div>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="card text-center">
+                    <h3 class="text-lg font-medium text-slate-500 mb-2">التكلفة لكل حصة (تقديري)</h3>
+                    <p class="text-2xl font-bold text-indigo-600" id="costPerServingDisplay">0.00 ريال</p>
+                    <p class="text-sm text-slate-500">Estimated Cost per Serving</p>
+                </div>
+                <div class="card text-center">
+                    <h3 class="text-lg font-medium text-slate-500 mb-2">سعر البيع المقترح للحصة</h3>
+                    <p class="text-2xl font-bold text-indigo-600" id="suggestedSellingPriceDisplay">0.00 ريال</p>
+                    <p class="text-sm text-slate-500">Suggested Selling Price per Serving</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="ingredients" class="mb-10">
+            <h2 class="section-title">المكونات | Ingredients</h2>
+            <div class="overflow-x-auto card">
+                <h3 class="text-xl font-semibold text-indigo-600 mb-3">1. مكونات الكفتة:</h3>
+                <table id="ingredientsTableKofta" class="mb-6">
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>المكون<br>Ingredient</th>
+                            <th>الوحدة<br>Unit</th>
+                            <th>الكمية<br>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>لحم غنم مع الليه<br>Lamb Meat with Fat</td><td>كجم (kg)</td><td>2</td></tr>
+                        <tr><td>2</td><td>فلفل أخضر<br>Green Pepper</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>3</td><td>فلفل أحمر<br>Red Pepper</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>4</td><td>بصل مقشر<br>Peeled Onion</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>5</td><td>ثوم حب<br>Garlic Cloves</td><td>غرام (g)</td><td>30</td></tr>
+                        <tr><td>6</td><td>نعناع أخضر<br>Fresh Mint</td><td>غرام (g)</td><td>30</td></tr>
+                        <tr><td>7</td><td>فلفل أبيض<br>White Pepper</td><td>غرام (g)</td><td>10</td></tr>
+                        <tr><td>8</td><td>فلفل أسود<br>Black Pepper</td><td>غرام (g)</td><td>10</td></tr>
+                        <tr><td>9</td><td>كعك مطحون<br>Ground Rusk/Breadcrumbs</td><td>غرام (g)</td><td>100</td></tr>
+                        <tr><td>10</td><td>ملح طعام<br>Salt</td><td>غرام (g)</td><td>40</td></tr>
+                        <tr><td>11</td><td>بابريكا<br>Paprika</td><td>غرام (g)</td><td>20</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="text-xl font-semibold text-indigo-600 mb-3 mt-6">2. مكونات الصلصة:</h3>
+                <table id="ingredientsTableSauce" class="mb-6">
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>المكون<br>Ingredient</th>
+                            <th>الوحدة<br>Unit</th>
+                            <th>الكمية<br>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>بصل ناعم<br>Minced Onion</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>2</td><td>ثوم ناعم<br>Minced Garlic</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>3</td><td>فلفل أخضر وأحمر ناعم<br>Minced Green & Red Pepper</td><td>غرام (g)</td><td>50</td></tr>
+                        <tr><td>4</td><td>طماطم ناعم<br>Minced Tomatoes</td><td>غرام (g)</td><td>150</td></tr>
+                        <tr><td>5</td><td>كزبرة ناعم<br>Minced Coriander</td><td>غرام (g)</td><td>30</td></tr>
+                        <tr><td>6</td><td>كمون ناعم<br>Ground Cumin</td><td>غرام (g)</td><td>20</td></tr>
+                        <tr><td>7</td><td>فلفل أبيض ناعم<br>Fine White Pepper</td><td>غرام (g)</td><td>20</td></tr>
+                        <tr><td>8</td><td>نعناع ناشف<br>Dried Mint</td><td>غرام (g)</td><td>20</td></tr>
+                        <tr><td>9</td><td>صلصة طماطم<br>Tomato Paste</td><td>غرام (g)</td><td>100</td></tr>
+                        <tr><td>10</td><td>مكعبات ماجي<br>Maggi Cubes</td><td>مكعب (cube)</td><td>4</td></tr>
+                        <tr><td>11</td><td>بابريكا حار<br>Hot Paprika</td><td>غرام (g)</td><td>20</td></tr>
+                        <tr><td>12</td><td>سمنة<br>Ghee</td><td>غرام (g)</td><td>30</td></tr>
+                        <tr><td>13</td><td>ملح<br>Salt</td><td>غرام (g)</td><td>حسب الرغبة (تقديري 15غ)<br>To taste (est. 15g)</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 class="text-xl font-semibold text-indigo-600 mb-3 mt-6">3. مكونات إضافية (للطبقات والتزيين):</h3>
+                <table id="ingredientsTableOther">
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>المكون<br>Ingredient</th>
+                            <th>الوحدة<br>Unit</th>
+                            <th>الكمية<br>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>بطاط مقشرة<br>Peeled Potatoes</td><td>كجم (kg)</td><td>2</td></tr>
+                        <tr><td>2</td><td>طماطم مقشر<br>Peeled Tomatoes</td><td>كجم (kg)</td><td>1</td></tr>
+                        <tr><td>3</td><td>فلفل أخضر وسط<br>Medium Green Pepper</td><td>غرام (g)</td><td>250</td></tr>
+                        <tr><td>4</td><td>أوراق نعناع أخضر<br>Fresh Mint Leaves</td><td>غرام (g)</td><td>30</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="preparation-steps" class="mb-10">
+            <h2 class="section-title">طريقة التحضير | Preparation Steps</h2>
+            <div class="card space-y-4">
+                <p class="text-lg font-semibold text-indigo-600">1. تحضير الكفتة | Preparing the Kofta:</p>
+                <p>نخلط اللحم مع جميع مكونات الكفتة الخاصة بها (فلفل أخضر وأحمر، بصل، ثوم، نعناع أخضر، البهارات، الكعك، الملح، البابريكا). نفرم الخليط بشكل ناعم ثم ندعكه جيداً. نشكل الكفتة على شكل أقراص متساوية ونرصها في صينية خاصة. ندخلها إلى فرن مسخن مسبقاً على حرارة 200 درجة مئوية لمدة 15 دقيقة حتى تتماسك وتأخذ لوناً خفيفاً.</p>
+                
+                <p class="text-lg font-semibold text-indigo-600 mt-4">2. تحضير الصلصة | Preparing the Sauce:</p>
+                <p>في وعاء طهي على النار، نضع السمنة حتى تسخن. نضيف البصل الناعم والثوم الناعم ونحرك لمدة 5 دقائق حتى يذبلا. نضيف الطماطم المفرومة ناعماً ونقلب. ثم نضيف البهارات الخاصة بالصلصة (كمون، فلفل أبيض، نعناع ناشف، بابريكا حار) وصلصة الطماطم. نحرك المكونات معاً لمدة 5 دقائق. نضيف كمية مناسبة من الماء، مكعبات الماجي، والملح حسب الرغبة. ندع الصلصة تغلي جيداً وتتكثف قليلاً.</p>
+
+                <p class="text-lg font-semibold text-indigo-600 mt-4">3. تحضير الخضروات الإضافية | Preparing Additional Vegetables:</p>
+                <p>نقطع البطاطس المقشرة إلى شرائح بسماكة نصف سنتيمتر تقريباً. نقلي شرائح البطاطس في زيت غزير حار لمدة 5 دقائق حتى تصبح ذهبية قليلاً (نصف قلية). نرفعها من الزيت وندعها في مصفاة للتخلص من الزيت الزائد. نقطع الطماطم المقشرة إلى شرائح. نغسل حبات الفلفل الأخضر الوسط وننزع الجزء السفلي (العنقود) منها، مع الحفاظ عليها كاملة.</p>
+
+                <p class="text-lg font-semibold text-indigo-600 mt-4">4. تجميع السخان والطهي النهائي | Assembling the Hot Pot & Final Cooking:</p>
+                <p>في سخان التقديم (أو صينية فرن عميقة)، نرتب نصف كمية شرائح البطاطس المقلية كطبقة أولى. فوقها، نرص أقراص الكفتة المخبوزة مسبقاً. نوزع أوراق النعناع الأخضر الطازج فوق الكفتة. ثم نضع النصف الثاني من شرائح البطاطس كطبقة علوية. نسكب الصلصة المحضرة فوق طبقات البطاطس والكفتة حتى تُغمر جيداً. نغطي سطح السخان بشرائح الطماطم وحبات الفلفل الأخضر الكاملة. يمكن إضافة كمية أخرى من الصلصة إذا لزم الأمر لتغطية المكونات. نغطي السخان وندخله إلى فرن مسخن مسبقاً على حرارة 250 درجة مئوية لمدة ساعة واحدة، أو حتى تنضج جميع المكونات وتتسبك الصلصة.</p>
+
+                <p class="text-lg font-semibold text-indigo-600 mt-4">5. التقديم | Serving:</p>
+                <p>نخرج السخان من الفرن ونتأكد من استواء الكفتة والخضروات. يُقدم طبق كفتة إزمير ساخناً، ويُفضل تقديمه مع الأرز الأبيض بالشعيرية أو الخبز العربي.</p>
+            </div>
+        </section>
+
+        <section id="chef-tips" class="mb-10">
+            <h2 class="section-title">نصائح الشيف الخاصة | Special Chef Tips</h2>
+            <div class="card space-y-3 p-6 bg-indigo-50 border-r-4 border-indigo-600">
+                <p class="text-slate-700">**للحصول على كفتة طرية:** لا تبالغ في دعك اللحم بعد الفرم، فقط لضمان تماسك المكونات. الفرم المزدوج يساعد على نعومة الكفتة.</p>
+                <p class="text-slate-700">**نكهة مدخنة (اختياري):** بعد خبز الكفتة، يمكن وضع قطعة فحم مشتعلة في طبق صغير مقاوم للحرارة مع قليل من الزيت داخل صينية الكفتة وتغطيتها لبضع دقائق لإضفاء نكهة مدخنة خفيفة.</p>
+                <p class="text-slate-700">**قوام الصلصة:** يمكن التحكم في كثافة الصلصة عن طريق تعديل كمية الماء أو مدة الغليان. يجب أن تكون الصلصة غنية وكافية لتغطية المكونات.</p>
+                <p class="text-slate-700">**جودة اللحم:** استخدام لحم غنم طازج مع نسبة دهون مناسبة (حوالي 20%) يعطي أفضل نتيجة من حيث الطعم والقوام.</p>
+                <p class="text-slate-700">**البطاطس:** قلي البطاطس نصف قلية قبل إضافتها للسخان يضمن عدم تفتتها أثناء الطهي الطويل ويمنحها قواماً أفضل.</p>
+            </div>
+        </section>
+
+        <section id="nutritional-analysis" class="mb-10">
+            <h2 class="section-title">التحليل الغذائي | Nutritional Analysis</h2>
+            <p class="text-center text-slate-600 mb-4">
+                (تقريبي لكل حصة - بافتراض 12 حصة لكل سخان) | (Approximate per Serving - assuming 12 servings per hot pot)
+            </p>
+            <div class="overflow-x-auto card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المغذّي<br>Nutrient</th>
+                            <th>القيمة لكل حصة<br>Value per Serving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>السعرات الحرارية<br>Calories</td><td>450 - 600 سعرة حرارية / kcal</td></tr>
+                        <tr><td>البروتين<br>Protein</td><td>30 - 40 غرام / g</td></tr>
+                        <tr><td>الدهون الكلية<br>Total Fat</td><td>25 - 35 غرام / g</td></tr>
+                        <tr><td>الدهون المشبعة<br>Saturated Fat</td><td>10 - 15 غرام / g</td></tr>
+                        <tr><td>الكربوهيدرات<br>Carbohydrates</td><td>20 - 30 غرام / g</td></tr>
+                        <tr><td>الألياف الغذائية<br>Dietary Fiber</td><td>4 - 7 غرام / g</td></tr>
+                        <tr><td>السكريات<br>Sugars</td><td>5 - 8 غرام / g</td></tr>
+                        <tr><td>الصوديوم<br>Sodium</td><td>700 - 1000 ملغ / mg (يعتمد على كمية الملح المضافة)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-center text-sm text-slate-500 mt-4">
+                **ملاحظة هامة:** هذه القيم تقديرية وتعتمد على دقة المكونات ونسبة الدهون في اللحم وطريقة التحضير. للحصول على تحليل دقيق، يفضل استخدام برامج تحليل غذائي متخصصة.
+            </p>
+        </section>
+
+        <section id="cost-analysis" class="mb-10">
+            <h2 class="section-title">تحليل التكلفة الحية | Live Cost Analysis</h2>
+            <p class="text-center text-slate-600 mb-4">
+                (لكل صنف ولكل سخان - نموذج عملي) | (Per Item & Per Hot Pot - Practical Model)
+            </p>
+            <p class="text-center text-sm text-slate-500 mb-6">
+                الأسعار المذكورة أدناه هي تقديرية بناءً على متوسط أسعار السوق في الرياض.
+                **يمكنك تغيير هذه الأسعار في حقول الإدخال** لتعكس تكاليف الشراء الحالية لديك والحصول على حسابات دقيقة.
+            </p>
+            <div class="card p-6 mb-4">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+                    <label for="numServings" class="text-lg font-medium text-slate-700 whitespace-nowrap">
+                        عدد الأشخاص:
+                        <br>
+                        Number of Servings:
+                    </label>
+                    <input type="number" id="numServings" value="12" min="1" step="1" class="w-32 p-2 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500 text-xl font-bold">
+                </div>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
+                    <label for="profitMargin" class="text-lg font-medium text-slate-700 whitespace-nowrap">
+                        هامش الربح المطلوب (%):
+                        <br>
+                        Desired Profit Margin (%):
+                    </label>
+                    <input type="number" id="profitMargin" value="30" min="0" step="1" class="w-32 p-2 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500 text-xl font-bold">
+                </div>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <label for="meatSubstitution" class="text-lg font-medium text-slate-700 whitespace-nowrap">
+                        استبدال لحم الكفتة:
+                        <br>
+                        Kofta Meat Substitution:
+                    </label>
+                    <select id="meatSubstitution" class="p-2 border border-slate-300 rounded-md bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="lamb_kofta">كفتة لحم غنم (الأصلي)</option>
+                        <option value="beef_kofta">كفتة لحم بقر (تقديري: -15% تكلفة)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto card">
+                <table id="costAnalysisTable">
+                    <thead>
+                        <tr>
+                            <th>م</th>
+                            <th>المكون<br>Ingredient</th>
+                            <th>الكمية الأصلية<br>Original Quantity</th>
+                            <th>الكمية المعدلة<br>Adjusted Quantity</th>
+                            <th>سعر الوحدة التقريبي (ريال سعودي)<br>Approx. Unit Price (SAR)</th>
+                            <th>التكلفة لكل صنف (ريال سعودي)<br>Cost per Item (SAR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-bold bg-slate-200">
+                            <td colspan="5" class="text-left">التكلفة الإجمالية للمكونات لكل سخان:<br>Total Ingredient Cost per Hot Pot:</td>
+                            <td id="totalCost" class="text-center">0.00 ريال</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <section id="scientific-cost-solutions" class="mb-10">
+            <h2 class="section-title">حلول علمية لتقليل التكلفة | Scientific Solutions for Cost Reduction</h2>
+            <div class="card space-y-4 p-6 bg-blue-50 border-r-4 border-blue-600">
+                <p class="text-slate-700 text-lg font-semibold">
+                    لتحقيق أقصى قدر من الكفاءة والربحية، يتطلب تقليل التكلفة نهجاً منهجياً يعتمد على البيانات. إليك حلول علمية قابلة للتطبيق:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-slate-700">
+                    <li><span class="font-semibold">تحسين عملية الشراء:</span> الشراء بكميات كبيرة، تفاوض الموردين، الشراء الموسمي.</li>
+                    <li><span class="font-semibold">إدارة الهدر والفاقد:</span> التحكم في الحصص، تتبع الهدر، إعادة تدوير المكونات.</li>
+                    <li><span class="font-semibold">توحيد الوصفات والإنتاج:</span> بطاقات وصفات قياسية، تحسين سير العمل.</li>
+                    <li><span class="font-semibold">كفاءة الطاقة والعمالة:</span> مراقبة استهلاك الطاقة، جدولة العمالة الفعالة.</li>
+                    <li><span class="font-semibold">هندسة القائمة:</span> تحليل ربحية الطبق والترويج للأطباق ذات الهامش العالي.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="serving-suggestions" class="mb-10">
+            <h2 class="section-title">اقتراحات التقديم | Serving Suggestions</h2>
+            <div class="card text-center text-lg text-slate-700">
+                <p>يُقدم طبق كفتة إزمير ساخناً، ويُعتبر مثالياً مع:</p>
+                <ul class="list-disc list-inside mx-auto w-fit mt-2">
+                    <li>الأرز الأبيض بالشعيرية أو الأرز البسمتي السادة.</li>
+                    <li>الخبز العربي الطازج أو خبز البيتا.</li>
+                    <li>طبق جانبي من سلطة الزبادي بالخيار أو سلطة خضراء.</li>
+                </ul>
+                <p class="mt-4">Serve Izmir Kofta hot. It pairs perfectly with:</p>
+                <ul class="list-disc list-inside mx-auto w-fit mt-2">
+                    <li>Vermicelli white rice or plain Basmati rice.</li>
+                    <li>Fresh Arabic bread or pita bread.</li>
+                    <li>A side dish of cucumber yogurt salad or a fresh green salad.</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer class="mt-12 text-center text-sm text-slate-500">
+            <p>&copy; <span id="currentYear"></span> جميع الحقوق محفوظة. تم التصميم بواسطة خبير شيمي شامي.</p>
+            <p>&copy; <span id="currentYearEnglish"></span> All rights reserved. Designed by Shami Shami Expert.</p>
+        </footer>
     </div>
 
     <script>
-        // Define the hardcoded ingredients database for MVP
-        // Each ingredient now has a 'name' property which is an array of names (English and Arabic)
-        // - name: An array of exact names (English and Arabic) as they might appear in ingredient lists.
-        // - classification: A simplified category (good, warning, organic, very harmful).
-        // - description: A brief explanation of the ingredient.
-        const ingredientsDatabase = [
-            { name: ['Aqua', 'ماء'], classification: 'جيد للبشرة', description: 'الماء هو المذيب الأساسي في معظم المنتجات.' },
-            { name: ['Glycerin', 'جليسرين', 'الجليسرين'], classification: 'جيد للبشرة', description: 'مرطب ممتاز يجذب الرطوبة إلى البشرة.' },
-            { name: ['Niacinamide', 'نياسيناميد'], classification: 'جيد للبشرة', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب.' },
-            { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.' },
-            { name: ['Tocopherol', 'فيتامين E', 'توكوفيرول'], classification: 'جيد للبشرة', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة.' },
-            { name: ['Aloe Barbadensis Leaf Juice', 'عصير أوراق الألوفيرا', 'صبار'], classification: 'عضوي', description: 'عصير أوراق الألوفيرا، مهدئ ومرطب للبشرة.' },
-            { name: ['Simmondsia Chinensis Seed Oil', 'زيت الجوجوبا'], classification: 'عضوي', description: 'زيت الجوجوبا، يرطب البشرة دون انسداد المسام.' },
-            { name: ['Butyrospermum Parkii Butter', 'زبدة الشيا', 'شيا'], classification: 'جيد للبشرة', description: 'زبدة الشيا، مرطب غني ومغذي للبشرة.' },
-            { name: ['Lactic Acid', 'حمض اللاكتيك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) مقشر، قد يسبب تهيجًا بتركيزات عالية.' },
-            { name: ['Parfum', 'عطر', 'عطور'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
-            { name: ['Fragrance', 'عطر', 'عطور'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة.' },
-            { name: ['Sodium Lauryl Sulfate', 'كبريتات لوريل الصوديوم', 'SLS'], classification: 'تحذير: مهيج محتمل', description: 'منظف قوي، قد يسبب جفافًا وتهيجًا للبشرة.' },
-            { name: ['Phenoxyethanol', 'فنوكسييثانول'], classification: 'جيد للبشرة', description: 'مادة حافظة آمنة بشكل عام بتركيزات منخفضة.' },
-            { name: ['Titanium Dioxide', 'ثاني أكسيد التيتانيوم'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
-            { name: ['Zinc Oxide', 'أكسيد الزنك'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.' },
-            { name: ['Argania Spinosa Kernel Oil', 'زيت الأرغان', 'أرغان'], classification: 'عضوي', description: 'زيت الأرغان، غني بمضادات الأكسدة وفيتامين E، مرطب ومغذي للبشرة.' },
-            { name: ['Phthalates', 'فثالات'], classification: 'تحذير: مكون مثير للجدل', description: 'مركبات كيميائية قد تسبب اضطرابات هرمونية وتوجد في بعض المنتجات.' },
-            { name: ['Toluene', 'تولوين'], classification: 'تحذير: مهيج محتمل', description: 'مذيب كيميائي قد يسبب تهيجًا للجلد والجهاز التنفسي، ويستخدم في بعض مستحضرات التجميل.' },
-            { name: ['Polyethylene', 'بولي إيثيلين'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'بوليمر بلاستيكي يستخدم كعامل تشكيل للفيلم أو كمقشر دقيق، قد يسبب انسداد المسام.' },
-            { name: ['Carbon black', 'أسود الكربون'], classification: 'تحذير: مكون مثير للجدل', description: 'صبغة سوداء تستخدم في مستحضرات التجميل، قد تحتوي على شوائب مثيرة للجدل.' },
-            // New highly harmful ingredients added
-            { name: ['Parabens', 'بارابين'], classification: 'تحذير: مكون ضار جداً', description: 'مواد حافظة شائعة، قد تسبب اضطرابات هرمونية وتثير القلق بشأن السرطان.' },
-            { name: ['Formaldehyde', 'فورمالديهايد'], classification: 'تحذير: مكون ضار جداً', description: 'مادة حافظة ومطهرة، مصنفة كمسرطن معروف للإنسان ومسببة للحساسية.' },
-            { name: ['Mineral Oil', 'زيت معدني'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'منتج بترولي، قد يسد المسام ويمنع البشرة من التنفس، مما يؤدي إلى حب الشباب.' },
-            { name: ['Sulfates', 'كبريتات'], classification: 'تحذير: مهيج محتمل', description: 'منظفات قوية (مثل SLS, SLES) قد تجرد البشرة من زيوتها الطبيعية وتسبب الجفاف والتهيج.' },
-            { name: ['Oxybenzone', 'أوكسي بنزون'], classification: 'تحذير: مكون ضار جداً', description: 'مرشح كيميائي للأشعة فوق البنفسجية، قد يسبب اضطرابات هرمونية وحساسية.' },
-            { name: ['Triclosan', 'ترايكلوسان'], classification: 'تحذير: مكون ضار جداً', description: 'مادة مضادة للبكتيريا، قد تساهم في مقاومة المضادات الحيوية وتؤثر على الهرمونات.' }
+        const originalServings = 12; // The original recipe yield for 1 hot pot
+        let currentServings = originalServings; // Initial serving count
+
+        const ingredientsData = [
+            // Kofta Ingredients
+            { id: 'lambForKofta', name: { ar: "لحم غنم مع الليه (للكفتة)", en: "Lamb Meat with Fat (for Kofta)" }, originalQuantity: 2, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 70.00 },
+            { id: 'greenPepperKofta', name: { ar: "فلفل أخضر (للكفتة)", en: "Green Pepper (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.008 },
+            { id: 'redPepperKofta', name: { ar: "فلفل أحمر (للكفتة)", en: "Red Pepper (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.010 },
+            { id: 'onionKofta', name: { ar: "بصل مقشر (للكفتة)", en: "Peeled Onion (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.003 },
+            { id: 'garlicKofta', name: { ar: "ثوم حب (للكفتة)", en: "Garlic Cloves (for Kofta)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.015 },
+            { id: 'mintKofta', name: { ar: "نعناع أخضر (للكفتة)", en: "Fresh Mint (for Kofta)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 },
+            { id: 'whitePepperKofta', name: { ar: "فلفل أبيض (للكفتة)", en: "White Pepper (for Kofta)" }, originalQuantity: 10, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.20 },
+            { id: 'blackPepperKofta', name: { ar: "فلفل أسود (للكفتة)", en: "Black Pepper (for Kofta)" }, originalQuantity: 10, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.15 },
+            { id: 'breadcrumbsKofta', name: { ar: "كعك مطحون (للكفتة)", en: "Ground Rusk/Breadcrumbs (for Kofta)" }, originalQuantity: 100, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.02 },
+            { id: 'saltKofta', name: { ar: "ملح طعام (للكفتة)", en: "Salt (for Kofta)" }, originalQuantity: 40, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.002 },
+            { id: 'paprikaKofta', name: { ar: "بابريكا (للكفتة)", en: "Paprika (for Kofta)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.10 },
+
+            // Sauce Ingredients
+            { id: 'onionSauce', name: { ar: "بصل ناعم (للصلصة)", en: "Minced Onion (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.003 },
+            { id: 'garlicSauce', name: { ar: "ثوم ناعم (للصلصة)", en: "Minced Garlic (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.015 },
+            { id: 'mixedPepperSauce', name: { ar: "فلفل أخضر وأحمر ناعم (للصلصة)", en: "Minced Green & Red Pepper (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.009 },
+            { id: 'tomatoesSauce', name: { ar: "طماطم ناعم (للصلصة)", en: "Minced Tomatoes (for Sauce)" }, originalQuantity: 150, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.006 },
+            { id: 'corianderSauce', name: { ar: "كزبرة ناعم (للصلصة)", en: "Minced Coriander (for Sauce)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 },
+            { id: 'cuminSauce', name: { ar: "كمون ناعم (للصلصة)", en: "Ground Cumin (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.18 },
+            { id: 'whitePepperSauce', name: { ar: "فلفل أبيض ناعم (للصلصة)", en: "Fine White Pepper (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.20 },
+            { id: 'driedMintSauce', name: { ar: "نعناع ناشف (للصلصة)", en: "Dried Mint (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.10 },
+            { id: 'tomatoPasteSauce', name: { ar: "صلصة طماطم (للصلصة)", en: "Tomato Paste (for Sauce)" }, originalQuantity: 100, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.03 },
+            { id: 'maggiCubesSauce', name: { ar: "مكعبات ماجي (للصلصة)", en: "Maggi Cubes (for Sauce)" }, originalQuantity: 4, unit: { ar: "مكعب", en: "cube" }, estimatedPrice: 0.75 }, // Price per cube
+            { id: 'hotPaprikaSauce', name: { ar: "بابريكا حار (للصلصة)", en: "Hot Paprika (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.12 },
+            { id: 'gheeSauce', name: { ar: "سمنة (للصلصة)", en: "Ghee (for Sauce)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.06 },
+            { id: 'saltSauce', name: { ar: "ملح (للصلصة)", en: "Salt (for Sauce)" }, originalQuantity: 15, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.002 },
+
+            // Other Ingredients (Layering/Garnish)
+            { id: 'potatoesLayer', name: { ar: "بطاط مقشرة (للطبقات)", en: "Peeled Potatoes (for layering)" }, originalQuantity: 2, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 3.50 },
+            { id: 'tomatoesLayer', name: { ar: "طماطم مقشر (للطبقات)", en: "Peeled Tomatoes (for layering)" }, originalQuantity: 1, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 6.00 },
+            { id: 'greenPepperLayer', name: { ar: "فلفل أخضر وسط (للطبقات)", en: "Medium Green Pepper (for layering)" }, originalQuantity: 250, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.008 },
+            { id: 'freshMintLeavesLayer', name: { ar: "أوراق نعناع أخضر (للطبقات)", en: "Fresh Mint Leaves (for layering)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 }
         ];
 
-        // Get DOM elements
-        const ingredientsInput = document.getElementById('ingredientsInput');
-        const analyzeButton = document.getElementById('analyzeButton');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const ingredientList = document.getElementById('ingredientList');
-        const summary = document.getElementById('summary');
-        const messageBox = document.getElementById('messageBox');
+        const costAnalysisTableBody = document.getElementById('costAnalysisTable').getElementsByTagName('tbody')[0];
+        const totalCostElement = document.getElementById('totalCost');
+        const numServingsInput = document.getElementById('numServings');
+        const profitMarginInput = document.getElementById('profitMargin');
+        const meatSubstitutionSelect = document.getElementById('meatSubstitution');
+        const costPerServingDisplay = document.getElementById('costPerServingDisplay');
+        const suggestedSellingPriceDisplay = document.getElementById('suggestedSellingPriceDisplay');
 
-        // Function to display messages
-        function showMessage(message, type = 'info') {
-            messageBox.textContent = message;
-            messageBox.className = `mt-8 p-4 rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
-            resultsContainer.classList.add('hidden'); // Hide results if a message is shown
-        }
+        function calculateTotalCost() {
+            let total = 0;
+            const rows = costAnalysisTableBody.rows;
+            const multiplier = currentServings / originalServings;
 
-        // Function to hide messages
-        function hideMessage() {
-            messageBox.classList.add('hidden');
-        }
+            ingredientsData.forEach((item, index) => {
+                const row = rows[index];
+                const adjustedQuantity = item.originalQuantity * multiplier;
+                // Update adjusted quantity display in the table
+                row.cells[3].innerHTML = `${adjustedQuantity.toFixed(2)} ${item.unit.ar}<br>${adjustedQuantity.toFixed(2)} ${item.unit.en}`;
 
-        // Function to analyze ingredients
-        analyzeButton.addEventListener('click', () => {
-            hideMessage(); // Hide any previous messages
-            ingredientList.innerHTML = ''; // Clear previous results
-            summary.innerHTML = ''; // Clear previous summary
-            resultsContainer.classList.add('hidden'); // Hide results container initially
+                const unitPriceInput = row.cells[4].querySelector('input');
+                let currentEstimatedPrice = item.estimatedPrice; // Original estimated price per unit
 
-            const rawInput = ingredientsInput.value.trim();
-            if (!rawInput) {
-                showMessage('الرجاء إدخال قائمة المكونات لتحليلها.');
-                return;
-            }
-
-            // Split ingredients by common delimiters (comma, semicolon, newline, period)
-            // Filter out empty strings after splitting
-            const inputIngredients = rawInput.split(/[,;\n.]/).map(item => item.trim()).filter(item => item.length > 0);
-
-            if (inputIngredients.length === 0) {
-                showMessage('لم يتم العثور على مكونات صالحة في الإدخال.');
-                return;
-            }
-
-            let goodCount = 0;
-            let warningCount = 0;
-            let organicCount = 0;
-            let veryHarmfulCount = 0; // New counter for very harmful ingredients
-            let analyzedCount = 0;
-
-            inputIngredients.forEach(inputIng => {
-                // Find a match in the database (case-insensitive)
-                // Now checks if ANY of the names in the dbIng.name array match the input ingredient
-                const foundIngredient = ingredientsDatabase.find(dbIng => 
-                    dbIng.name.some(n => n.toLowerCase() === inputIng.toLowerCase())
-                );
-
-                const ingredientItem = document.createElement('div');
-                ingredientItem.className = 'flex items-start space-x-3 rtl:space-x-reverse'; // Added rtl:space-x-reverse for Arabic layout
-
-                let iconClass = '';
-                let textColorClass = 'text-gray-800';
-                let classificationText = 'غير معروف';
-                let descriptionText = 'لا تتوفر معلومات لهذا المكون في قاعدة بياناتنا الحالية.';
-
-                if (foundIngredient) {
-                    analyzedCount++;
-                    classificationText = foundIngredient.classification;
-                    descriptionText = foundIngredient.description;
-
-                    if (foundIngredient.classification.includes('جيد للبشرة')) {
-                        iconClass = 'text-green-500';
-                        textColorClass = 'text-green-700';
-                        goodCount++;
-                    } else if (foundIngredient.classification.includes('تحذير: مكون ضار جداً')) { // New classification check
-                        iconClass = 'text-red-700'; // Darker red for very harmful
-                        textColorClass = 'text-red-900'; // Even darker text
-                        veryHarmfulCount++;
-                        warningCount++; // Also count as general warning
-                    } else if (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام')) {
-                        iconClass = 'text-red-500';
-                        textColorClass = 'text-red-700';
-                        warningCount++;
-                    } else if (foundIngredient.classification.includes('عضوي')) {
-                        iconClass = 'text-lime-600'; // A distinct green for organic
-                        textColorClass = 'text-lime-800';
-                        organicCount++;
-                        goodCount++; // Organic is also generally good
+                // Apply substitution price for kofta meat
+                if (item.id === 'lambForKofta') {
+                    if (meatSubstitutionSelect.value === 'beef_kofta') {
+                        currentEstimatedPrice = item.estimatedPrice * 0.85; // Beef is 15% cheaper
+                    } else { // lamb_kofta
+                        currentEstimatedPrice = item.estimatedPrice; // Original lamb price
                     }
-                } else {
-                    iconClass = 'text-gray-400';
-                    textColorClass = 'text-gray-600';
+                    // Update the input field to reflect the potentially changed price per unit
+                    // The toFixed precision depends on the unit (kg, g, cube)
+                    let precision = 4; // Default for grams
+                    if (item.unit.en === 'kg' || item.unit.en === 'cube') {
+                        precision = 2;
+                    }
+                    unitPriceInput.value = currentEstimatedPrice.toFixed(precision);
                 }
+                
+                let unitPrice = parseFloat(unitPriceInput.value);
+                if (isNaN(unitPrice)) unitPrice = 0;
 
-                ingredientItem.innerHTML = `
-                    <div class="flex-shrink-0">
-                        ${foundIngredient ? 
-                            (foundIngredient.classification.includes('جيد للبشرة') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>` :
-                             foundIngredient.classification.includes('تحذير: مكون ضار جداً') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>` : // X icon for very harmful
-                             (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام')) ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>` :
-                             foundIngredient.classification.includes('عضوي') ? `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>` :
-                             `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`)
-                            : `<svg class="w-6 h-6 ${iconClass}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`
-                        }
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-lg ${textColorClass}">${inputIng} <span class="text-sm font-normal text-gray-500">(${classificationText})</span></p>
-                        <p class="text-sm text-gray-600">${descriptionText}</p>
-                    </div>
-                `;
-                ingredientList.appendChild(ingredientItem);
+
+                const costPerItem = adjustedQuantity * unitPrice;
+                // item.costPerItem = costPerItem; // Not strictly needed to store on item if only used here
+                row.cells[5].textContent = costPerItem.toFixed(2) + ' ريال';
+                total += costPerItem;
             });
 
-            // Display summary
-            if (analyzedCount > 0) {
-                summary.innerHTML = `
-                    <p class="text-lg">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p>
-                    <p class="text-lg">المكونات الجيدة: <strong class="text-green-700">${goodCount}</strong></p>
-                    <p class="text-lg">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p>
-                    <p class="text-lg">المكونات التي تحتاج إلى انتباه: <strong class="text-red-700">${warningCount}</strong></p>
-                    <p class="text-lg ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p>
-                `;
-                resultsContainer.classList.remove('hidden'); // Show results container
-            } else {
-                showMessage('لم يتم العثور على أي مكونات معروفة في قاعدة البيانات الحالية.');
+            totalCostElement.textContent = total.toFixed(2) + ' ريال';
+
+            const costPerServing = (currentServings > 0) ? (total / currentServings) : 0;
+            costPerServingDisplay.textContent = `${costPerServing.toFixed(2)} ريال`;
+
+            const profitMargin = parseFloat(profitMarginInput.value) / 100;
+            let suggestedSellingPrice = 0;
+            if (profitMargin >= 0 && profitMargin < 1 && costPerServing > 0) { // Ensure profit margin is valid
+                suggestedSellingPrice = costPerServing / (1 - profitMargin);
+            } else if (costPerServing > 0) {
+                suggestedSellingPrice = costPerServing; // If profit margin is invalid or 0, selling price is cost price
             }
+            suggestedSellingPriceDisplay.textContent = `${suggestedSellingPrice.toFixed(2)} ريال`;
+        }
+
+        // Populate the cost analysis table
+        ingredientsData.forEach((item, index) => {
+            let row = costAnalysisTableBody.insertRow();
+            row.insertCell().textContent = index + 1; // Serial number
+            row.insertCell().innerHTML = `${item.name.ar}<br>${item.name.en}`; // Ingredient name
+            row.insertCell().innerHTML = `${item.originalQuantity} ${item.unit.ar}<br>${item.originalQuantity} ${item.unit.en}`; // Original quantity
+            
+            // Adjusted quantity cell (will be updated by calculateTotalCost)
+            let adjustedQuantityCell = row.insertCell();
+            adjustedQuantityCell.innerHTML = `${item.originalQuantity.toFixed(2)} ${item.unit.ar}<br>${item.originalQuantity.toFixed(2)} ${item.unit.en}`;
+            
+            // Unit price input cell
+            let priceCell = row.insertCell();
+            let priceInput = document.createElement('input');
+            priceInput.type = 'number';
+            
+            let precision = 4; // Default for grams
+            if (item.unit.en === 'kg' || item.unit.en === 'cube') {
+                precision = 2;
+            }
+            priceInput.value = item.estimatedPrice.toFixed(precision);
+            priceInput.step = '0.0001'; // Allow fine adjustments
+            priceInput.classList.add('text-center');
+            priceInput.oninput = calculateTotalCost;
+            priceCell.appendChild(priceInput);
+
+            // Cost per item cell (will be updated by calculateTotalCost)
+            let costPerItemCell = row.insertCell();
+            costPerItemCell.textContent = '0.00 ريال'; 
         });
+
+        // Event listeners
+        numServingsInput.addEventListener('input', (event) => {
+            currentServings = parseFloat(event.target.value);
+            if (isNaN(currentServings) || currentServings < 1) {
+                currentServings = 1; // Default to 1 if input is invalid
+                numServingsInput.value = 1;
+            }
+            calculateTotalCost();
+        });
+
+        profitMarginInput.addEventListener('input', calculateTotalCost);
+        meatSubstitutionSelect.addEventListener('change', calculateTotalCost);
+
+        // Initial calculation on page load
+        calculateTotalCost();
+
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.getElementById('currentYearEnglish').textContent = new Date().getFullYear();
     </script>
+
 </body>
 </html>
