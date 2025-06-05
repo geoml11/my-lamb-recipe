@@ -3,493 +3,1322 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كفتة إزمير: وصفة تفاعلية متقدمة</title>
+    <title>أداة مقارنة المكونات الذكي</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Custom styles for Inter font */
         body {
-            font-family: 'Tajawal', 'Inter', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
-            color: #334155; /* slate-700 */
+            font-family: 'Inter', sans-serif;
+            direction: rtl; /* Ensure right-to-left for Arabic */
+            text-align: right; /* Align text to the right for Arabic */
         }
-        .container {
-            @apply max-w-5xl mx-auto px-4 py-8; /* Increased max-width for longer tables */
+        /* Adjust alignment for specific elements if needed */
+        .text-center {
+            text-align: center;
         }
-        .section-title {
-            @apply text-3xl font-bold text-indigo-700 mb-6 text-center; /* Changed color for distinction */
+
+        /* Custom scrollbar for textarea */
+        textarea::-webkit-scrollbar {
+            width: 8px;
         }
-        .card {
-            @apply bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out;
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
         }
-        table {
-            @apply w-full text-sm text-right text-slate-700 rounded-lg overflow-hidden;
+        textarea::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
         }
-        th, td {
-            @apply px-4 py-3 border border-slate-200;
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
-        thead th {
-            @apply bg-slate-100 text-slate-800 font-semibold;
+        /* Style for selected tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #d1fae5; /* Green-100 */
+            color: #065f46; /* Green-800 */
+            border-radius: 9999px; /* Full rounded */
+            padding: 0.25rem 0.75rem; /* py-1 px-3 */
+            margin: 0.25rem;
+            font-size: 0.875rem; /* text-sm */
+            white-space: nowrap; /* Prevent tags from wrapping */
         }
-        tbody tr:nth-child(even) {
-            @apply bg-slate-50;
+        .tag-remove {
+            margin-right: 0.5rem; /* Adjusted for RTL */
+            cursor: pointer;
+            color: #065f46;
+            font-weight: bold;
         }
-        tbody tr:hover {
-            @apply bg-indigo-50;
+        .tag-excluded {
+            background-color: #fee2e2; /* Red-100 */
+            color: #991b1b; /* Red-800 */
         }
-        input[type="number"] {
-            @apply w-24 p-1 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500;
+        .tag-excluded .tag-remove {
+            color: #991b1b;
         }
-        select {
-            @apply p-1 border border-slate-300 rounded-md bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500;
+
+        /* Autocomplete suggestions styling */
+        .autocomplete-suggestions {
+            position: absolute;
+            z-index: 100;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0; /* gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            width: 100%; /* Ensure it spans the width of the input */
+            text-align: right; /* RTL alignment */
         }
-        .rtl-text {
-            direction: rtl;
-            text-align: right;
+        .autocomplete-suggestion-item {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem; /* text-sm */
+            color: #4a5568; /* gray-700 */
+        }
+        .autocomplete-suggestion-item:hover {
+            background-color: #f0f4f8; /* gray-100 */
+        }
+        .autocomplete-suggestion-item.active { /* For keyboard navigation */
+            background-color: #e2e8f0; /* gray-200 */
+        }
+        /* Loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #34d399; /* emerald-500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
+    <!-- PWA: Link to manifest.json -->
+    <link rel="manifest" href="/manifest.json">
+    <!-- PWA: Add Apple touch icon for iOS -->
+    <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+    <!-- PWA: Set theme color for browser UI -->
+    <meta name="theme-color" content="#4ADE80"/>
 </head>
-<body class="rtl-text">
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200">
+        <!-- Hero Section -->
+        <div class="text-center mb-8 pb-6 border-b border-green-200">
+            <h1 class="text-4xl font-extrabold text-emerald-800 mb-3 leading-tight">
+                اكتشف سر بشرتك مع <br><span class="text-emerald-600">محلل المكونات الذكي</span>
+            </h1>
+            <p class="text-lg text-gray-700 max-w-md mx-auto">
+                أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
+            </p>
+        </div>
 
-    <div class="container">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-indigo-700 mb-2">كفتة إزمير: وصفة تفاعلية متقدمة</h1>
-            <h2 class="text-2xl font-semibold text-slate-600">Izmir Kofta: An Advanced Interactive Recipe</h2>
-            <p class="text-lg text-slate-500 mt-4">
-                نقدم لكم وصفة كفتة إزمير الشهية بتصميم متطور وديناميكي. يمكنكم الآن تعديل الكميات، استكشاف بدائل المكونات، وحساب التكاليف وهوامش الربح بشكل فوري لتخطيط وجباتكم ومشاريعكم الغذائية بكفاءة عالية.
+        <!-- Section: Save/Load Profile -->
+        <div class="mb-8 p-6 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
+            <h2 class="text-2xl font-bold text-purple-700 mb-4 text-center">إدارة ملفاتك الشخصية</h2>
+            <p class="text-sm text-gray-700 mb-3 text-center">
+                <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جارٍ التحميل...</span>
                 <br>
-                Introducing the delicious Izmir Kofta recipe with an advanced and dynamic design. You can now adjust quantities, explore ingredient alternatives, and instantly calculate costs and profit margins to plan your meals and food projects with high efficiency.
+                <span class="font-semibold">حالة Firebase:</span> <span id="firebaseStatusDisplay" class="font-mono text-purple-800 break-all">جاري التحقق...</span>
             </p>
-        </header>
 
-        <section id="recipe-overview" class="mb-10">
-            <h2 class="section-title">نظرة عامة على الوصفة | Recipe Overview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="card text-center">
-                    <h3 class="text-lg font-medium text-slate-500 mb-2">وقت التحضير</h3>
-                    <p class="text-2xl font-bold text-indigo-600">60 دقيقة</p>
-                    <p class="text-sm text-slate-500">Preparation Time</p>
-                </div>
-                <div class="card text-center">
-                    <h3 class="text-lg font-medium text-slate-500 mb-2">وقت الطهي</h3>
-                    <p class="text-2xl font-bold text-indigo-600">1 ساعة و 30 دقيقة</p>
-                    <p class="text-sm text-slate-500">Cooking Time</p>
-                </div>
-                <div class="card text-center">
-                    <h3 class="text-lg font-medium text-slate-500 mb-2">الكمية الأصلية</h3>
-                    <p class="text-2xl font-bold text-indigo-600">سخان واحد (12 شخص)</p>
-                    <p class="text-sm text-slate-500">1 Hot Pot (Serves 12 people)</p>
-                </div>
+            <div class="mb-4">
+                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-2">اسم ملف البشرة (للحفظ/التحميل):</label>
+                <input type="text" id="profileNameInput" class="w-full p-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي الشتوية">
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div class="card text-center">
-                    <h3 class="text-lg font-medium text-slate-500 mb-2">التكلفة لكل حصة (تقديري)</h3>
-                    <p class="text-2xl font-bold text-indigo-600" id="costPerServingDisplay">0.00 ريال</p>
-                    <p class="text-sm text-slate-500">Estimated Cost per Serving</p>
-                </div>
-                <div class="card text-center">
-                    <h3 class="text-lg font-medium text-slate-500 mb-2">سعر البيع المقترح للحصة</h3>
-                    <p class="text-2xl font-bold text-indigo-600" id="suggestedSellingPriceDisplay">0.00 ريال</p>
-                    <p class="text-sm text-slate-500">Suggested Selling Price per Serving</p>
-                </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+                <button id="saveProfileBtn" class="bg-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md">
+                    حفظ الملف الحالي
+                </button>
+                <button id="loadNamedProfileBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md">
+                    تحميل الملف المحدد
+                </button>
             </div>
-        </section>
 
-        <section id="ingredients" class="mb-10">
-            <h2 class="section-title">المكونات | Ingredients</h2>
-            <div class="overflow-x-auto card">
-                <h3 class="text-xl font-semibold text-indigo-600 mb-3">1. مكونات الكفتة:</h3>
-                <table id="ingredientsTableKofta" class="mb-6">
-                    <thead>
-                        <tr>
-                            <th>م</th>
-                            <th>المكون<br>Ingredient</th>
-                            <th>الوحدة<br>Unit</th>
-                            <th>الكمية<br>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>لحم غنم مع الليه<br>Lamb Meat with Fat</td><td>كجم (kg)</td><td>2</td></tr>
-                        <tr><td>2</td><td>فلفل أخضر<br>Green Pepper</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>3</td><td>فلفل أحمر<br>Red Pepper</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>4</td><td>بصل مقشر<br>Peeled Onion</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>5</td><td>ثوم حب<br>Garlic Cloves</td><td>غرام (g)</td><td>30</td></tr>
-                        <tr><td>6</td><td>نعناع أخضر<br>Fresh Mint</td><td>غرام (g)</td><td>30</td></tr>
-                        <tr><td>7</td><td>فلفل أبيض<br>White Pepper</td><td>غرام (g)</td><td>10</td></tr>
-                        <tr><td>8</td><td>فلفل أسود<br>Black Pepper</td><td>غرام (g)</td><td>10</td></tr>
-                        <tr><td>9</td><td>كعك مطحون<br>Ground Rusk/Breadcrumbs</td><td>غرام (g)</td><td>100</td></tr>
-                        <tr><td>10</td><td>ملح طعام<br>Salt</td><td>غرام (g)</td><td>40</td></tr>
-                        <tr><td>11</td><td>بابريكا<br>Paprika</td><td>غرام (g)</td><td>20</td></tr>
-                    </tbody>
-                </table>
-
-                <h3 class="text-xl font-semibold text-indigo-600 mb-3 mt-6">2. مكونات الصلصة:</h3>
-                <table id="ingredientsTableSauce" class="mb-6">
-                    <thead>
-                        <tr>
-                            <th>م</th>
-                            <th>المكون<br>Ingredient</th>
-                            <th>الوحدة<br>Unit</th>
-                            <th>الكمية<br>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>بصل ناعم<br>Minced Onion</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>2</td><td>ثوم ناعم<br>Minced Garlic</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>3</td><td>فلفل أخضر وأحمر ناعم<br>Minced Green & Red Pepper</td><td>غرام (g)</td><td>50</td></tr>
-                        <tr><td>4</td><td>طماطم ناعم<br>Minced Tomatoes</td><td>غرام (g)</td><td>150</td></tr>
-                        <tr><td>5</td><td>كزبرة ناعم<br>Minced Coriander</td><td>غرام (g)</td><td>30</td></tr>
-                        <tr><td>6</td><td>كمون ناعم<br>Ground Cumin</td><td>غرام (g)</td><td>20</td></tr>
-                        <tr><td>7</td><td>فلفل أبيض ناعم<br>Fine White Pepper</td><td>غرام (g)</td><td>20</td></tr>
-                        <tr><td>8</td><td>نعناع ناشف<br>Dried Mint</td><td>غرام (g)</td><td>20</td></tr>
-                        <tr><td>9</td><td>صلصة طماطم<br>Tomato Paste</td><td>غرام (g)</td><td>100</td></tr>
-                        <tr><td>10</td><td>مكعبات ماجي<br>Maggi Cubes</td><td>مكعب (cube)</td><td>4</td></tr>
-                        <tr><td>11</td><td>بابريكا حار<br>Hot Paprika</td><td>غرام (g)</td><td>20</td></tr>
-                        <tr><td>12</td><td>سمنة<br>Ghee</td><td>غرام (g)</td><td>30</td></tr>
-                        <tr><td>13</td><td>ملح<br>Salt</td><td>غرام (g)</td><td>حسب الرغبة (تقديري 15غ)<br>To taste (est. 15g)</td></tr>
-                    </tbody>
-                </table>
-
-                <h3 class="text-xl font-semibold text-indigo-600 mb-3 mt-6">3. مكونات إضافية (للطبقات والتزيين):</h3>
-                <table id="ingredientsTableOther">
-                    <thead>
-                        <tr>
-                            <th>م</th>
-                            <th>المكون<br>Ingredient</th>
-                            <th>الوحدة<br>Unit</th>
-                            <th>الكمية<br>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>1</td><td>بطاط مقشرة<br>Peeled Potatoes</td><td>كجم (kg)</td><td>2</td></tr>
-                        <tr><td>2</td><td>طماطم مقشر<br>Peeled Tomatoes</td><td>كجم (kg)</td><td>1</td></tr>
-                        <tr><td>3</td><td>فلفل أخضر وسط<br>Medium Green Pepper</td><td>غرام (g)</td><td>250</td></tr>
-                        <tr><td>4</td><td>أوراق نعناع أخضر<br>Fresh Mint Leaves</td><td>غرام (g)</td><td>30</td></tr>
-                    </tbody>
-                </table>
+            <div>
+                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-2">الملفات المحفوظة:</label>
+                <select id="existingProfilesSelect" class="w-full p-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out">
+                    <option value="">لا يوجد ملفات محفوظة</option>
+                </select>
             </div>
-        </section>
+        </div>
+        <!-- End Section: Save/Load Profile -->
 
-        <section id="preparation-steps" class="mb-10">
-            <h2 class="section-title">طريقة التحضير | Preparation Steps</h2>
-            <div class="card space-y-4">
-                <p class="text-lg font-semibold text-indigo-600">1. تحضير الكفتة | Preparing the Kofta:</p>
-                <p>نخلط اللحم مع جميع مكونات الكفتة الخاصة بها (فلفل أخضر وأحمر، بصل، ثوم، نعناع أخضر، البهارات، الكعك، الملح، البابريكا). نفرم الخليط بشكل ناعم ثم ندعكه جيداً. نشكل الكفتة على شكل أقراص متساوية ونرصها في صينية خاصة. ندخلها إلى فرن مسخن مسبقاً على حرارة 200 درجة مئوية لمدة 15 دقيقة حتى تتماسك وتأخذ لوناً خفيفاً.</p>
-                
-                <p class="text-lg font-semibold text-indigo-600 mt-4">2. تحضير الصلصة | Preparing the Sauce:</p>
-                <p>في وعاء طهي على النار، نضع السمنة حتى تسخن. نضيف البصل الناعم والثوم الناعم ونحرك لمدة 5 دقائق حتى يذبلا. نضيف الطماطم المفرومة ناعماً ونقلب. ثم نضيف البهارات الخاصة بالصلصة (كمون، فلفل أبيض، نعناع ناشف، بابريكا حار) وصلصة الطماطم. نحرك المكونات معاً لمدة 5 دقائق. نضيف كمية مناسبة من الماء، مكعبات الماجي، والملح حسب الرغبة. ندع الصلصة تغلي جيداً وتتكثف قليلاً.</p>
-
-                <p class="text-lg font-semibold text-indigo-600 mt-4">3. تحضير الخضروات الإضافية | Preparing Additional Vegetables:</p>
-                <p>نقطع البطاطس المقشرة إلى شرائح بسماكة نصف سنتيمتر تقريباً. نقلي شرائح البطاطس في زيت غزير حار لمدة 5 دقائق حتى تصبح ذهبية قليلاً (نصف قلية). نرفعها من الزيت وندعها في مصفاة للتخلص من الزيت الزائد. نقطع الطماطم المقشرة إلى شرائح. نغسل حبات الفلفل الأخضر الوسط وننزع الجزء السفلي (العنقود) منها، مع الحفاظ عليها كاملة.</p>
-
-                <p class="text-lg font-semibold text-indigo-600 mt-4">4. تجميع السخان والطهي النهائي | Assembling the Hot Pot & Final Cooking:</p>
-                <p>في سخان التقديم (أو صينية فرن عميقة)، نرتب نصف كمية شرائح البطاطس المقلية كطبقة أولى. فوقها، نرص أقراص الكفتة المخبوزة مسبقاً. نوزع أوراق النعناع الأخضر الطازج فوق الكفتة. ثم نضع النصف الثاني من شرائح البطاطس كطبقة علوية. نسكب الصلصة المحضرة فوق طبقات البطاطس والكفتة حتى تُغمر جيداً. نغطي سطح السخان بشرائح الطماطم وحبات الفلفل الأخضر الكاملة. يمكن إضافة كمية أخرى من الصلصة إذا لزم الأمر لتغطية المكونات. نغطي السخان وندخله إلى فرن مسخن مسبقاً على حرارة 250 درجة مئوية لمدة ساعة واحدة، أو حتى تنضج جميع المكونات وتتسبك الصلصة.</p>
-
-                <p class="text-lg font-semibold text-indigo-600 mt-4">5. التقديم | Serving:</p>
-                <p>نخرج السخان من الفرن ونتأكد من استواء الكفتة والخضروات. يُقدم طبق كفتة إزمير ساخناً، ويُفضل تقديمه مع الأرز الأبيض بالشعيرية أو الخبز العربي.</p>
-            </div>
-        </section>
-
-        <section id="chef-tips" class="mb-10">
-            <h2 class="section-title">نصائح الشيف الخاصة | Special Chef Tips</h2>
-            <div class="card space-y-3 p-6 bg-indigo-50 border-r-4 border-indigo-600">
-                <p class="text-slate-700">**للحصول على كفتة طرية:** لا تبالغ في دعك اللحم بعد الفرم، فقط لضمان تماسك المكونات. الفرم المزدوج يساعد على نعومة الكفتة.</p>
-                <p class="text-slate-700">**نكهة مدخنة (اختياري):** بعد خبز الكفتة، يمكن وضع قطعة فحم مشتعلة في طبق صغير مقاوم للحرارة مع قليل من الزيت داخل صينية الكفتة وتغطيتها لبضع دقائق لإضفاء نكهة مدخنة خفيفة.</p>
-                <p class="text-slate-700">**قوام الصلصة:** يمكن التحكم في كثافة الصلصة عن طريق تعديل كمية الماء أو مدة الغليان. يجب أن تكون الصلصة غنية وكافية لتغطية المكونات.</p>
-                <p class="text-slate-700">**جودة اللحم:** استخدام لحم غنم طازج مع نسبة دهون مناسبة (حوالي 20%) يعطي أفضل نتيجة من حيث الطعم والقوام.</p>
-                <p class="text-slate-700">**البطاطس:** قلي البطاطس نصف قلية قبل إضافتها للسخان يضمن عدم تفتتها أثناء الطهي الطويل ويمنحها قواماً أفضل.</p>
-            </div>
-        </section>
-
-        <section id="nutritional-analysis" class="mb-10">
-            <h2 class="section-title">التحليل الغذائي | Nutritional Analysis</h2>
-            <p class="text-center text-slate-600 mb-4">
-                (تقريبي لكل حصة - بافتراض 12 حصة لكل سخان) | (Approximate per Serving - assuming 12 servings per hot pot)
+        <!-- Section: Scan Ingredients from Image -->
+        <div class="mb-8 p-6 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200">
+            <h2 class="text-2xl font-bold text-yellow-700 mb-4 text-center">مسح المكونات من صورة عبوة المنتج</h2>
+            <p class="text-sm text-gray-700 mb-4 text-center">
+                يمكنك تحميل صورة لعبوة المنتج (تأكد أن قائمة المكونات واضحة) وسنقوم بتحليلها لك تلقائياً.
             </p>
-            <div class="overflow-x-auto card">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>المغذّي<br>Nutrient</th>
-                            <th>القيمة لكل حصة<br>Value per Serving</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>السعرات الحرارية<br>Calories</td><td>450 - 600 سعرة حرارية / kcal</td></tr>
-                        <tr><td>البروتين<br>Protein</td><td>30 - 40 غرام / g</td></tr>
-                        <tr><td>الدهون الكلية<br>Total Fat</td><td>25 - 35 غرام / g</td></tr>
-                        <tr><td>الدهون المشبعة<br>Saturated Fat</td><td>10 - 15 غرام / g</td></tr>
-                        <tr><td>الكربوهيدرات<br>Carbohydrates</td><td>20 - 30 غرام / g</td></tr>
-                        <tr><td>الألياف الغذائية<br>Dietary Fiber</td><td>4 - 7 غرام / g</td></tr>
-                        <tr><td>السكريات<br>Sugars</td><td>5 - 8 غرام / g</td></tr>
-                        <tr><td>الصوديوم<br>Sodium</td><td>700 - 1000 ملغ / mg (يعتمد على كمية الملح المضافة)</td></tr>
-                    </tbody>
-                </table>
+            <div class="mb-4">
+                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-2">
+                    تحميل صورة عبوة المنتج:
+                </label>
+                <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out">
             </div>
-            <p class="text-center text-sm text-slate-500 mt-4">
-                **ملاحظة هامة:** هذه القيم تقديرية وتعتمد على دقة المكونات ونسبة الدهون في اللحم وطريقة التحضير. للحصول على تحليل دقيق، يفضل استخدام برامج تحليل غذائي متخصصة.
-            </p>
-        </section>
+            <div id="imagePreviewContainer" class="mb-4 text-center hidden">
+                <img id="imagePreview" src="#" alt="معاينة الصورة" class="max-w-full h-auto rounded-lg shadow-md mx-auto">
+            </div>
+            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
+                <span id="scanButtonText">مسح وتحليل المكونات من الصورة</span>
+                <span id="scanLoadingSpinner" class="loader hidden"></span>
+            </button>
+        </div>
+        <!-- End Section: Scan Ingredients from Image -->
 
-        <section id="cost-analysis" class="mb-10">
-            <h2 class="section-title">تحليل التكلفة الحية | Live Cost Analysis</h2>
-            <p class="text-center text-slate-600 mb-4">
-                (لكل صنف ولكل سخان - نموذج عملي) | (Per Item & Per Hot Pot - Practical Model)
-            </p>
-            <p class="text-center text-sm text-slate-500 mb-6">
-                الأسعار المذكورة أدناه هي تقديرية بناءً على متوسط أسعار السوق في الرياض.
-                **يمكنك تغيير هذه الأسعار في حقول الإدخال** لتعكس تكاليف الشراء الحالية لديك والحصول على حسابات دقيقة.
-            </p>
-            <div class="card p-6 mb-4">
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-                    <label for="numServings" class="text-lg font-medium text-slate-700 whitespace-nowrap">
-                        عدد الأشخاص:
-                        <br>
-                        Number of Servings:
-                    </label>
-                    <input type="number" id="numServings" value="12" min="1" step="1" class="w-32 p-2 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500 text-xl font-bold">
-                </div>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
-                    <label for="profitMargin" class="text-lg font-medium text-slate-700 whitespace-nowrap">
-                        هامش الربح المطلوب (%):
-                        <br>
-                        Desired Profit Margin (%):
-                    </label>
-                    <input type="number" id="profitMargin" value="30" min="0" step="1" class="w-32 p-2 border border-slate-300 rounded-md text-center bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500 text-xl font-bold">
-                </div>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <label for="meatSubstitution" class="text-lg font-medium text-slate-700 whitespace-nowrap">
-                        استبدال لحم الكفتة:
-                        <br>
-                        Kofta Meat Substitution:
-                    </label>
-                    <select id="meatSubstitution" class="p-2 border border-slate-300 rounded-md bg-slate-50 focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="lamb_kofta">كفتة لحم غنم (الأصلي)</option>
-                        <option value="beef_kofta">كفتة لحم بقر (تقديري: -15% تكلفة)</option>
+        <!-- Section: Skin Profile -->
+        <div class="mb-8 p-6 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200">
+            <h2 class="text-2xl font-bold text-fuchsia-700 mb-4 text-center">ملفك الشخصي للبشرة</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-2">نوع بشرتك:</label>
+                    <select id="skinType" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
+                        <option value="normal">عادية</option>
+                        <option value="oily">دهنية</option>
+                        <option value="dry">جافة</option>
+                        <option value="combination">مختلطة</option>
+                        <option value="sensitive">حساسة</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">اهتمامات بشرتك:</label>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                            <span>حب الشباب</span>
+                        </label>
+                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                            <span>الشيخوخة/التجاعيد</span>
+                        </label>
+                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                            <span>التصبغات</span>
+                        </label>
+                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                            <span>الاحمرار</span>
+                        </label>
+                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                            <span>الجفاف</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Section: Skin Profile -->
+
+        <!-- Section: Preferred & Excluded Ingredients -->
+        <div class="mb-8 p-6 bg-sky-50 rounded-xl shadow-sm border border-sky-200">
+            <h2 class="text-2xl font-bold text-sky-700 mb-4 text-center">تفضيلاتك الشخصية للمكونات</h2>
+
+            <div class="mb-4">
+                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-2">
+                    أضف مكوناتك المفضلة (مكون واحد لكل إضافة):
+                </label>
+                <div class="flex relative"> 
+                    <input type="text" id="preferredIngredientInput" class="flex-1 p-2 border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
+                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-2 px-4 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out">
+                        أضف
+                    </button>
+                    <div id="preferredSuggestions" class="autocomplete-suggestions hidden"></div>
+                </div>
+                <div id="preferredIngredientsList" class="mt-3 flex flex-wrap gap-2 justify-end">
+                    </div>
             </div>
 
-            <div class="overflow-x-auto card">
-                <table id="costAnalysisTable">
-                    <thead>
-                        <tr>
-                            <th>م</th>
-                            <th>المكون<br>Ingredient</th>
-                            <th>الكمية الأصلية<br>Original Quantity</th>
-                            <th>الكمية المعدلة<br>Adjusted Quantity</th>
-                            <th>سعر الوحدة التقريبي (ريال سعودي)<br>Approx. Unit Price (SAR)</th>
-                            <th>التكلفة لكل صنف (ريال سعودي)<br>Cost per Item (SAR)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Rows will be populated by JavaScript -->
-                    </tbody>
-                    <tfoot>
-                        <tr class="font-bold bg-slate-200">
-                            <td colspan="5" class="text-left">التكلفة الإجمالية للمكونات لكل سخان:<br>Total Ingredient Cost per Hot Pot:</td>
-                            <td id="totalCost" class="text-center">0.00 ريال</td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div>
+                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-2">
+                    أضف مكوناتك المستبعدة/المتحسس منها:
+                </label>
+                <div class="flex relative"> 
+                    <input type="text" id="excludedIngredientInput" class="flex-1 p-2 border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور">
+                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-2 px-4 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out">
+                        أضف
+                    </button>
+                    <div id="excludedSuggestions" class="autocomplete-suggestions hidden"></div>
+                </div>
+                <div id="excludedIngredientsList" class="mt-3 flex flex-wrap gap-2 justify-end">
+                    </div>
             </div>
-        </section>
+        </div>
+        <!-- End Section: Preferred & Excluded Ingredients -->
 
-        <section id="scientific-cost-solutions" class="mb-10">
-            <h2 class="section-title">حلول علمية لتقليل التكلفة | Scientific Solutions for Cost Reduction</h2>
-            <div class="card space-y-4 p-6 bg-blue-50 border-r-4 border-blue-600">
-                <p class="text-slate-700 text-lg font-semibold">
-                    لتحقيق أقصى قدر من الكفاءة والربحية، يتطلب تقليل التكلفة نهجاً منهجياً يعتمد على البيانات. إليك حلول علمية قابلة للتطبيق:
-                </p>
-                <ul class="list-disc list-inside space-y-2 text-slate-700">
-                    <li><span class="font-semibold">تحسين عملية الشراء:</span> الشراء بكميات كبيرة، تفاوض الموردين، الشراء الموسمي.</li>
-                    <li><span class="font-semibold">إدارة الهدر والفاقد:</span> التحكم في الحصص، تتبع الهدر، إعادة تدوير المكونات.</li>
-                    <li><span class="font-semibold">توحيد الوصفات والإنتاج:</span> بطاقات وصفات قياسية، تحسين سير العمل.</li>
-                    <li><span class="font-semibold">كفاءة الطاقة والعمالة:</span> مراقبة استهلاك الطاقة، جدولة العمالة الفعالة.</li>
-                    <li><span class="font-semibold">هندسة القائمة:</span> تحليل ربحية الطبق والترويج للأطباق ذات الهامش العالي.</li>
-                </ul>
+        <div class="mb-6">
+            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-2">
+                الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
+            </label>
+            <div class="relative"> 
+                <textarea id="ingredientsInput" rows="10" class="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
+Aqua, Glycerin, Niacinamide
+ماء, جليسرين, نياسيناميد
+Parfum, Phthalates, Toluene"></textarea>
+                <div id="mainSuggestions" class="autocomplete-suggestions hidden"></div>
             </div>
-        </section>
+        </div>
 
-        <section id="serving-suggestions" class="mb-10">
-            <h2 class="section-title">اقتراحات التقديم | Serving Suggestions</h2>
-            <div class="card text-center text-lg text-slate-700">
-                <p>يُقدم طبق كفتة إزمير ساخناً، ويُعتبر مثالياً مع:</p>
-                <ul class="list-disc list-inside mx-auto w-fit mt-2">
-                    <li>الأرز الأبيض بالشعيرية أو الأرز البسمتي السادة.</li>
-                    <li>الخبز العربي الطازج أو خبز البيتا.</li>
-                    <li>طبق جانبي من سلطة الزبادي بالخيار أو سلطة خضراء.</li>
-                </ul>
-                <p class="mt-4">Serve Izmir Kofta hot. It pairs perfectly with:</p>
-                <ul class="list-disc list-inside mx-auto w-fit mt-2">
-                    <li>Vermicelli white rice or plain Basmati rice.</li>
-                    <li>Fresh Arabic bread or pita bread.</li>
-                    <li>A side dish of cucumber yogurt salad or a fresh green salad.</li>
-                </ul>
+        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg">
+            تحليل المكونات
+        </button>
+
+        ---
+
+        <div class="mb-8 p-6 bg-blue-50 rounded-xl shadow-sm border border-blue-200">
+            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">
+                كيفية استخدام الأداة
+            </h2>
+            <ol class="list-decimal list-inside text-gray-700 space-y-3">
+                <li>
+                    <strong class="text-blue-600">تحديد ملفك الشخصي للبشرة:</strong>
+                    اختر نوع بشرتك (عادية، دهنية، جافة، مختلطة، حساسة) وحدد اهتمامات بشرتك (مثل حب الشباب، الشيخوخة، التصبغات) من خلال مربعات الاختيار.
+                </li>
+                <li>
+                    <strong class="text-blue-600">إضافة تفضيلات المكونات:</strong>
+                    في قسم "تفضيلاتك الشخصية للمكونات"، يمكنك:
+                    <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <li>أضف **مكوناتك المفضلة** التي تحب رؤيتها في المنتجات.</li>
+                        <li>أضف **مكوناتك المستبعدة/المتحسس منها** التي ترغب في تجنبها.</li>
+                        <li>ستظهر لك **اقتراحات تلقائية** أثناء الكتابة، يمكنك النقر عليها لإضافتها.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-blue-600">مسح المكونات من صورة:</strong>
+                    في قسم "مسح المكونات من صورة عبوة المنتج"، حمّل صورة لعبوة المنتج. بعد تحميلها، انقر على زر "مسح وتحليل المكونات من الصورة" لاستخراج المكونات تلقائياً وتحليلها.
+                </li>
+                <li>
+                    <strong class="text-blue-600">لصق قائمة المكونات للتحليل (بديل للمسح):</strong>
+                    إذا لم ترغب في استخدام ميزة المسح، يمكنك في حقل النص الكبير، الصق قائمة المكونات من منتج العناية بالبشرة الذي ترغب في تحليله. يمكنك فصل المكونات بفاصلة (`,`) أو نقطة (`.`) أو كل مكون في سطر جديد.
+                </li>
+                <li>
+                    <strong class="text-blue-600">بدء التحليل:</strong>
+                    انقر على زر "<strong class="text-emerald-600">تحليل المكونات</strong>" لتبدأ الأداة في مقارنة المكونات المدخلة مع قاعدة بياناتها وتفضيلاتك الشخصية.
+                </li>
+                <li>
+                    <strong class="text-blue-600">مراجعة النتائج:</strong>
+                    سيظهر قسم "نتائج التحليل" مع:
+                    <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <li><strong>تصنيف كل مكون:</strong> سواء كان جيدًا، يتطلب تحذيرًا، ضارًا جداً، أو غير معروف.</li>
+                        <li><strong>ملاحظات مخصصة:</strong> بناءً على نوع بشرتك واهتماماتك، بالإضافة إلى المكونات المفضلة أو المستبعدة.</li>
+                        <li><strong>ملخص عام:</strong> يقدم تقييماً شاملاً لمدى ملاءمة المنتج لبشرتك.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong class="text-blue-600">حفظ وتحميل ملفاتك الشخصية:</strong>
+                    في قسم "إدارة ملفاتك الشخصية"، يمكنك حفظ إعدادات بشرتك وتفضيلات المكونات لتحميلها لاحقاً. فقط أدخل اسماً للملف وانقر على "حفظ"، أو اختر من القائمة وانقر "تحميل".
+                </li>
+            </ol>
+        </div>
+
+        ---
+        <div id="resultsContainer" class="mt-8 p-6 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden">
+            <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
+            <div id="ingredientList" class="space-y-4">
+                </div>
+            <div id="summary" class="mt-6 pt-4 border-t border-emerald-300 text-center text-gray-700 font-medium">
+                </div>
+        </div>
+
+        <div id="messageBox" class="mt-8 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
             </div>
-        </section>
-
-        <footer class="mt-12 text-center text-sm text-slate-500">
-            <p>&copy; <span id="currentYear"></span> جميع الحقوق محفوظة. تم التصميم بواسطة خبير شيمي شامي.</p>
-            <p>&copy; <span id="currentYearEnglish"></span> All rights reserved. Designed by Shami Shami Expert.</p>
-        </footer>
     </div>
 
-    <script>
-        const originalServings = 12; // The original recipe yield for 1 hot pot
-        let currentServings = originalServings; // Initial serving count
+    <!-- Firebase SDK Script -->
+    <!-- Place this script at the end of the body to ensure DOM elements are loaded -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
 
-        const ingredientsData = [
-            // Kofta Ingredients
-            { id: 'lambForKofta', name: { ar: "لحم غنم مع الليه (للكفتة)", en: "Lamb Meat with Fat (for Kofta)" }, originalQuantity: 2, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 70.00 },
-            { id: 'greenPepperKofta', name: { ar: "فلفل أخضر (للكفتة)", en: "Green Pepper (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.008 },
-            { id: 'redPepperKofta', name: { ar: "فلفل أحمر (للكفتة)", en: "Red Pepper (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.010 },
-            { id: 'onionKofta', name: { ar: "بصل مقشر (للكفتة)", en: "Peeled Onion (for Kofta)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.003 },
-            { id: 'garlicKofta', name: { ar: "ثوم حب (للكفتة)", en: "Garlic Cloves (for Kofta)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.015 },
-            { id: 'mintKofta', name: { ar: "نعناع أخضر (للكفتة)", en: "Fresh Mint (for Kofta)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 },
-            { id: 'whitePepperKofta', name: { ar: "فلفل أبيض (للكفتة)", en: "White Pepper (for Kofta)" }, originalQuantity: 10, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.20 },
-            { id: 'blackPepperKofta', name: { ar: "فلفل أسود (للكفتة)", en: "Black Pepper (for Kofta)" }, originalQuantity: 10, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.15 },
-            { id: 'breadcrumbsKofta', name: { ar: "كعك مطحون (للكفتة)", en: "Ground Rusk/Breadcrumbs (for Kofta)" }, originalQuantity: 100, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.02 },
-            { id: 'saltKofta', name: { ar: "ملح طعام (للكفتة)", en: "Salt (for Kofta)" }, originalQuantity: 40, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.002 },
-            { id: 'paprikaKofta', name: { ar: "بابريكا (للكفتة)", en: "Paprika (for Kofta)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.10 },
+        // Global variables for Firebase (MUST be defined even if empty string)
+        // هذه المتغيرات يتم توفيرها تلقائيًا من بيئة Canvas (إذا كانت متوفرة)
+        // It is mandatory to use these variables for Firebase initialization.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-            // Sauce Ingredients
-            { id: 'onionSauce', name: { ar: "بصل ناعم (للصلصة)", en: "Minced Onion (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.003 },
-            { id: 'garlicSauce', name: { ar: "ثوم ناعم (للصلصة)", en: "Minced Garlic (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.015 },
-            { id: 'mixedPepperSauce', name: { ar: "فلفل أخضر وأحمر ناعم (للصلصة)", en: "Minced Green & Red Pepper (for Sauce)" }, originalQuantity: 50, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.009 },
-            { id: 'tomatoesSauce', name: { ar: "طماطم ناعم (للصلصة)", en: "Minced Tomatoes (for Sauce)" }, originalQuantity: 150, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.006 },
-            { id: 'corianderSauce', name: { ar: "كزبرة ناعم (للصلصة)", en: "Minced Coriander (for Sauce)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 },
-            { id: 'cuminSauce', name: { ar: "كمون ناعم (للصلصة)", en: "Ground Cumin (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.18 },
-            { id: 'whitePepperSauce', name: { ar: "فلفل أبيض ناعم (للصلصة)", en: "Fine White Pepper (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.20 },
-            { id: 'driedMintSauce', name: { ar: "نعناع ناشف (للصلصة)", en: "Dried Mint (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.10 },
-            { id: 'tomatoPasteSauce', name: { ar: "صلصة طماطم (للصلصة)", en: "Tomato Paste (for Sauce)" }, originalQuantity: 100, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.03 },
-            { id: 'maggiCubesSauce', name: { ar: "مكعبات ماجي (للصلصة)", en: "Maggi Cubes (for Sauce)" }, originalQuantity: 4, unit: { ar: "مكعب", en: "cube" }, estimatedPrice: 0.75 }, // Price per cube
-            { id: 'hotPaprikaSauce', name: { ar: "بابريكا حار (للصلصة)", en: "Hot Paprika (for Sauce)" }, originalQuantity: 20, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.12 },
-            { id: 'gheeSauce', name: { ar: "سمنة (للصلصة)", en: "Ghee (for Sauce)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.06 },
-            { id: 'saltSauce', name: { ar: "ملح (للصلصة)", en: "Salt (for Sauce)" }, originalQuantity: 15, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.002 },
+        let app;
+        let db;
+        let auth;
+        let currentUserId = null; 
+        let isAuthReady = false; 
 
-            // Other Ingredients (Layering/Garnish)
-            { id: 'potatoesLayer', name: { ar: "بطاط مقشرة (للطبقات)", en: "Peeled Potatoes (for layering)" }, originalQuantity: 2, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 3.50 },
-            { id: 'tomatoesLayer', name: { ar: "طماطم مقشر (للطبقات)", en: "Peeled Tomatoes (for layering)" }, originalQuantity: 1, unit: { ar: "كجم", en: "kg" }, estimatedPrice: 6.00 },
-            { id: 'greenPepperLayer', name: { ar: "فلفل أخضر وسط (للطبقات)", en: "Medium Green Pepper (for layering)" }, originalQuantity: 250, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.008 },
-            { id: 'freshMintLeavesLayer', name: { ar: "أوراق نعناع أخضر (للطبقات)", en: "Fresh Mint Leaves (for layering)" }, originalQuantity: 30, unit: { ar: "غرام", en: "g" }, estimatedPrice: 0.05 }
-        ];
-
-        const costAnalysisTableBody = document.getElementById('costAnalysisTable').getElementsByTagName('tbody')[0];
-        const totalCostElement = document.getElementById('totalCost');
-        const numServingsInput = document.getElementById('numServings');
-        const profitMarginInput = document.getElementById('profitMargin');
-        const meatSubstitutionSelect = document.getElementById('meatSubstitution');
-        const costPerServingDisplay = document.getElementById('costPerServingDisplay');
-        const suggestedSellingPriceDisplay = document.getElementById('suggestedSellingPriceDisplay');
-
-        function calculateTotalCost() {
-            let total = 0;
-            const rows = costAnalysisTableBody.rows;
-            const multiplier = currentServings / originalServings;
-
-            ingredientsData.forEach((item, index) => {
-                const row = rows[index];
-                const adjustedQuantity = item.originalQuantity * multiplier;
-                // Update adjusted quantity display in the table
-                row.cells[3].innerHTML = `${adjustedQuantity.toFixed(2)} ${item.unit.ar}<br>${adjustedQuantity.toFixed(2)} ${item.unit.en}`;
-
-                const unitPriceInput = row.cells[4].querySelector('input');
-                let currentEstimatedPrice = item.estimatedPrice; // Original estimated price per unit
-
-                // Apply substitution price for kofta meat
-                if (item.id === 'lambForKofta') {
-                    if (meatSubstitutionSelect.value === 'beef_kofta') {
-                        currentEstimatedPrice = item.estimatedPrice * 0.85; // Beef is 15% cheaper
-                    } else { // lamb_kofta
-                        currentEstimatedPrice = item.estimatedPrice; // Original lamb price
-                    }
-                    // Update the input field to reflect the potentially changed price per unit
-                    // The toFixed precision depends on the unit (kg, g, cube)
-                    let precision = 4; // Default for grams
-                    if (item.unit.en === 'kg' || item.unit.en === 'cube') {
-                        precision = 2;
-                    }
-                    unitPriceInput.value = currentEstimatedPrice.toFixed(precision);
+        // Initialize Firebase
+        if (Object.keys(firebaseConfig).length > 0) {
+            console.log("Firebase: __app_id:", appId);
+            console.log("Firebase: __firebase_config received:", firebaseConfig);
+            console.log("Firebase: __initial_auth_token received:", initialAuthToken ? "exists" : "null/undefined");
+            
+            // Set initial status message for Firebase, assuming elements exist by now
+            if (window.firebaseStatusDisplay) {
+                window.firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
+            }
+            if (window.userIdDisplay) {
+                window.userIdDisplay.textContent = 'جارٍ التحميل...';
+            }
+            
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                console.log("Firebase: App and services initialized successfully.");
+                if (window.firebaseStatusDisplay) {
+                    window.firebaseStatusDisplay.textContent = 'تم تهيئة Firebase بنجاح.';
                 }
-                
-                let unitPrice = parseFloat(unitPriceInput.value);
-                if (isNaN(unitPrice)) unitPrice = 0;
+            } catch (initError) {
+                console.error("Firebase initialization failed:", initError);
+                if (window.firebaseStatusDisplay) {
+                    window.firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
+                }
+                window.showMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
+                return; 
+            }
 
+            // Authentication Listener
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    isAuthReady = true;
+                    console.log("Firebase Authenticated! User ID:", currentUserId);
+                    if (window.userIdDisplay) {
+                        window.userIdDisplay.textContent = currentUserId;
+                    }
+                    if (window.firebaseStatusDisplay) {
+                        window.firebaseStatusDisplay.textContent = 'Firebase جاهز (تم تسجيل الدخول).';
+                    }
+                    
+                    // Fetch and populate profiles after authentication
+                    await populateProfileDropdown();
+                    // Attempt to load a default profile automatically
+                    await window.loadProfile('default-profile', true); // Silent load for default
 
-                const costPerItem = adjustedQuantity * unitPrice;
-                // item.costPerItem = costPerItem; // Not strictly needed to store on item if only used here
-                row.cells[5].textContent = costPerItem.toFixed(2) + ' ريال';
-                total += costPerItem;
+                } else {
+                    currentUserId = null;
+                    isAuthReady = false;
+                    if (window.userIdDisplay) {
+                        window.userIdDisplay.textContent = 'غير متوفر (يرجى تسجيل الدخول)';
+                    }
+                    if (window.firebaseStatusDisplay) {
+                        window.firebaseStatusDisplay.textContent = 'Firebase متصل (لم يتم تسجيل الدخول).';
+                    }
+                    console.log("Firebase: No user is signed in.");
+                    // Attempt anonymous sign-in if no token provided
+                    if (!initialAuthToken) {
+                        try {
+                            console.log("Firebase: Attempting anonymous sign-in...");
+                            await signInAnonymously(auth);
+                            console.log("Firebase: Signed in anonymously.");
+                        } catch (error) {
+                            console.error("Firebase Anonymous sign-in failed:", error);
+                            window.showMessage("فشل تسجيل الدخول المجهول إلى Firebase. لن يتم حفظ/تحميل ملفك الشخصي.", 'error');
+                            if (window.firebaseStatusDisplay) {
+                                window.firebaseStatusDisplay.textContent = 'فشل تسجيل الدخول المجهول.';
+                            }
+                        }
+                    }
+                }
             });
 
-            totalCostElement.textContent = total.toFixed(2) + ' ريال';
-
-            const costPerServing = (currentServings > 0) ? (total / currentServings) : 0;
-            costPerServingDisplay.textContent = `${costPerServing.toFixed(2)} ريال`;
-
-            const profitMargin = parseFloat(profitMarginInput.value) / 100;
-            let suggestedSellingPrice = 0;
-            if (profitMargin >= 0 && profitMargin < 1 && costPerServing > 0) { // Ensure profit margin is valid
-                suggestedSellingPrice = costPerServing / (1 - profitMargin);
-            } else if (costPerServing > 0) {
-                suggestedSellingPrice = costPerServing; // If profit margin is invalid or 0, selling price is cost price
+            // Sign in with custom token if provided
+            if (initialAuthToken) {
+                console.log("Firebase: Attempting custom token sign-in...");
+                signInWithCustomToken(auth, initialAuthToken)
+                    .then((userCredential) => {
+                        console.log("Firebase: Signed in with custom token:", userCredential.user.uid);
+                    })
+                    .catch((error) => {
+                        console.error("Firebase Custom token sign-in failed:", error);
+                        window.showMessage("فشل تسجيل الدخول باستخدام التوكن. قد لا تعمل ميزة الحفظ/التحميل بشكل صحيح.", 'error');
+                        if (window.firebaseStatusDisplay) {
+                            window.firebaseStatusDisplay.textContent = 'فشل تسجيل الدخول بالتوكن.';
+                        }
+                        // Fallback to anonymous if custom token fails
+                        signInAnonymously(auth)
+                            .then(() => console.log("Firebase: Fell back to anonymous sign-in."))
+                            .catch(anonError => console.error("Firebase Anonymous fallback failed:", anonError));
+                    });
+            } else {
+                console.log("Firebase: No initial auth token provided. Relying on onAuthStateChanged for anonymous sign-in.");
             }
-            suggestedSellingPriceDisplay.textContent = `${suggestedSellingPrice.toFixed(2)} ريال`;
+
+        } else {
+            console.warn("Firebase config not found. Save/Load profile functionality will not be available.");
+            if (window.userIdDisplay) {
+                window.userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
+            }
+            if (window.firebaseStatusDisplay) {
+                window.firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود.';
+            }
+            window.showMessage("لم يتم توفير تكوين Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
         }
 
-        // Populate the cost analysis table
-        ingredientsData.forEach((item, index) => {
-            let row = costAnalysisTableBody.insertRow();
-            row.insertCell().textContent = index + 1; // Serial number
-            row.insertCell().innerHTML = `${item.name.ar}<br>${item.name.en}`; // Ingredient name
-            row.insertCell().innerHTML = `${item.originalQuantity} ${item.unit.ar}<br>${item.originalQuantity} ${item.unit.en}`; // Original quantity
-            
-            // Adjusted quantity cell (will be updated by calculateTotalCost)
-            let adjustedQuantityCell = row.insertCell();
-            adjustedQuantityCell.innerHTML = `${item.originalQuantity.toFixed(2)} ${item.unit.ar}<br>${item.originalQuantity.toFixed(2)} ${item.unit.en}`;
-            
-            // Unit price input cell
-            let priceCell = row.insertCell();
-            let priceInput = document.createElement('input');
-            priceInput.type = 'number';
-            
-            let precision = 4; // Default for grams
-            if (item.unit.en === 'kg' || item.unit.en === 'cube') {
-                precision = 2;
+        // Functions to save and load profile from Firestore
+        // هذه الوظائف تم تعريفها على الكائن 'window' لتكون متاحة للسكربت الرئيسي.
+        window.saveProfile = async function(profileName) {
+            if (!isAuthReady || !currentUserId) {
+                window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل الحفظ.", 'error');
+                console.error("Save profile failed: Firebase not ready or user not authenticated.");
+                return;
             }
-            priceInput.value = item.estimatedPrice.toFixed(precision);
-            priceInput.step = '0.0001'; // Allow fine adjustments
-            priceInput.classList.add('text-center');
-            priceInput.oninput = calculateTotalCost;
-            priceCell.appendChild(priceInput);
-
-            // Cost per item cell (will be updated by calculateTotalCost)
-            let costPerItemCell = row.insertCell();
-            costPerItemCell.textContent = '0.00 ريال'; 
-        });
-
-        // Event listeners
-        numServingsInput.addEventListener('input', (event) => {
-            currentServings = parseFloat(event.target.value);
-            if (isNaN(currentServings) || currentServings < 1) {
-                currentServings = 1; // Default to 1 if input is invalid
-                numServingsInput.value = 1;
+            if (!profileName || profileName.trim() === '') {
+                window.showMessage("الرجاء إدخال اسم لملفك الشخصي لحفظه.", 'error');
+                return;
             }
-            calculateTotalCost();
-        });
+            profileName = profileName.trim();
 
-        profitMarginInput.addEventListener('input', calculateTotalCost);
-        meatSubstitutionSelect.addEventListener('change', calculateTotalCost);
+            try {
+                const skinType = window.skinTypeSelect.value;
+                const skinConcerns = Array.from(window.skinConcernCheckboxes)
+                                           .filter(cb => cb.checked)
+                                           .map(cb => cb.value);
+                
+                const profileData = {
+                    skinType: skinType,
+                    skinConcerns: skinConcerns,
+                    preferredIngredients: window.userPreferredIngredients,
+                    excludedIngredients: window.userExcludedIngredients,
+                    lastSaved: new Date().toISOString() // ISO string for better compatibility
+                };
 
-        // Initial calculation on page load
-        calculateTotalCost();
+                // المسار لحفظ بيانات المستخدم في Firestore ضمن مجموعة 'profiles'
+                const profileDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
+                console.log(`Attempting to save profile "${profileName}" to path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
+                await setDoc(profileDocRef, profileData);
+                window.showMessage(`تم حفظ ملفك الشخصي "${profileName}" بنجاح!`, 'info');
+                console.log("Profile saved successfully:", profileData);
+                await populateProfileDropdown(); // Refresh dropdown after saving
 
-        // Set current year in footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-        document.getElementById('currentYearEnglish').textContent = new Date().getFullYear();
+            } catch (error) {
+                console.error("Error saving profile:", error);
+                if (error.code === 'permission-denied') {
+                    window.showMessage("حدث خطأ في الأذونات أثناء حفظ ملفك الشخصي. يرجى التحقق من قواعد أمان Firebase.", 'error');
+                } else {
+                    window.showMessage("حدث خطأ أثناء حفظ ملفك الشخصي. الرجاء المحاولة مرة أخرى.", 'error');
+                }
+            }
+        };
+
+        window.loadProfile = async function(profileName, silent = false) {
+            if (!isAuthReady || !currentUserId) {
+                if (!silent) window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل التحميل.", 'error');
+                console.error("Load profile failed: Firebase not ready or user not authenticated.");
+                return;
+            }
+            if (!profileName || profileName.trim() === '') {
+                if (!silent) window.showMessage("الرجاء تحديد اسم ملف شخصي لتحميله.", 'error');
+                return;
+            }
+            profileName = profileName.trim();
+
+            try {
+                // المسار لتحميل بيانات المستخدم من Firestore ضمن مجموعة 'profiles'
+                const profileDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
+                console.log(`Attempting to load profile "${profileName}" from path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
+                const docSnap = await getDoc(profileDocRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    window.skinTypeSelect.value = data.skinType || 'normal';
+                    
+                    // Reset all checkboxes first
+                    window.skinConcernCheckboxes.forEach(cb => cb.checked = false);
+                    // Set checked for loaded concerns
+                    (data.skinConcerns || []).forEach(concern => {
+                        const checkbox = document.querySelector(`.skin-concern-checkbox[value="${concern}"]`);
+                        if (checkbox) checkbox.checked = true;
+                    });
+
+                    // Clear existing tags and repopulate
+                    window.preferredIngredientsList.innerHTML = '';
+                    window.excludedIngredientsList.innerHTML = '';
+                    window.userPreferredIngredients = [];
+                    window.userExcludedIngredients = [];
+
+                    // Use `silent = true` to prevent repetitive messages during loading
+                    (data.preferredIngredients || []).forEach(ing => window.addTag(ing, 'preferred', true)); 
+                    (data.excludedIngredients || []).forEach(ing => window.addTag(ing, 'excluded', true)); 
+
+                    if (!silent) window.showMessage(`تم تحميل ملفك الشخصي "${profileName}" بنجاح!`, 'info');
+                    // Set the profile name input to the loaded profile name
+                    window.profileNameInput.value = profileName;
+                    // Select the loaded profile in the dropdown
+                    window.existingProfilesSelect.value = profileName;
+                    console.log("Profile loaded successfully:", data);
+                } else {
+                    if (!silent) window.showMessage(`لا يوجد ملف شخصي محفوظ بالاسم "${profileName}".`, 'info');
+                    console.log(`No saved profile found with name: ${profileName} at path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
+                }
+            } catch (error) {
+                console.error("Error loading profile:", error);
+                if (error.code === 'permission-denied') {
+                    if (!silent) window.showMessage("حدث خطأ في الأذونات أثناء تحميل ملفك الشخصي. يرجى التحقق من قواعد أمان Firebase.", 'error');
+                } else {
+                    if (!silent) window.showMessage("حدث خطأ أثناء تحميل ملفك الشخصي. الرجاء المحاولة مرة أخرى.", 'error');
+                }
+            }
+        };
+
+        async function populateProfileDropdown() {
+            if (!isAuthReady || !currentUserId) {
+                console.warn("populateProfileDropdown: Skipping population because Firebase authentication is not ready or user ID is null.");
+                if (window.existingProfilesSelect) {
+                    window.existingProfilesSelect.innerHTML = '<option value="">الرجاء انتظار تحميل ملفك الشخصي</option>';
+                }
+                return; // Cannot populate if not authenticated
+            }
+
+            if (window.existingProfilesSelect) {
+                 window.existingProfilesSelect.innerHTML = '<option value="">اختر ملفاً شخصياً</option>'; // Clear existing options
+            }
+           
+            try {
+                const profilesCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/profiles`);
+                console.log(`Attempting to populate dropdown from path: artifacts/${appId}/users/${currentUserId}/profiles`);
+                const querySnapshot = await getDocs(profilesCollectionRef);
+                
+                console.log(`Found ${querySnapshot.size} profiles for user ${currentUserId}.`);
+
+                if (querySnapshot.empty) {
+                    const noProfilesOption = document.createElement('option');
+                    noProfilesOption.value = '';
+                    noProfilesOption.textContent = 'لا يوجد ملفات محفوظة';
+                    if (window.existingProfilesSelect) {
+                        window.existingProfilesSelect.appendChild(noProfilesOption);
+                    }
+                    console.log("No profiles found to populate dropdown.");
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.id; // Document ID is the profile name
+                    option.textContent = doc.id;
+                    if (window.existingProfilesSelect) {
+                        window.existingProfilesSelect.appendChild(option);
+                        console.log(`Added profile option: ${doc.id}`);
+                    }
+                });
+                console.log(`Profile dropdown populated with ${querySnapshot.size} profiles.`);
+
+            } catch (error) {
+                console.error("Error populating profile dropdown:", error);
+                if (error.code === 'permission-denied') {
+                    window.showMessage("حدث خطأ في الأذونات أثناء تحميل قائمة الملفات الشخصية. يرجى التحقق من قواعد أمان Firebase.", 'error'); 
+                } else {
+                    window.showMessage("حدث خطأ أثناء تحميل قائمة الملفات الشخصية.", 'error');
+                }
+            }
+        }
     </script>
 
+    <!-- Main application logic Script -->
+    <!-- Place this script at the end of the body to ensure DOM elements are loaded -->
+    <script>
+        // Global variables for DOM elements and data
+        let skinTypeSelect;
+        let skinConcernCheckboxes;
+        let preferredIngredientInput;
+        let addPreferredIngredient;
+        let preferredIngredientsList;
+        let excludedIngredientInput;
+        let addExcludedIngredient;
+        let excludedIngredientsList;
+        let ingredientsInput;
+        let analyzeButton;
+        let resultsContainer;
+        let ingredientList;
+        let summary;
+        let messageBox;
+        let profileNameInput;
+        let existingProfilesSelect;
+        let firebaseStatusDisplay;
+        let imageUpload;
+        let imagePreview;
+        let imagePreviewContainer;
+        let scanImageBtn;
+        let scanButtonText;
+        let scanLoadingSpinner;
+
+        // Autocomplete suggestion divs
+        let preferredSuggestions;
+        let excludedSuggestions;
+        let mainSuggestions;
+
+        // User preference arrays (Accessible globally by other scripts via window.userPreferredIngredients)
+        window.userPreferredIngredients = [];
+        window.userExcludedIngredients = [];
+
+        // Define the hardcoded ingredients database (Accessible globally by other scripts)
+        window.ingredientsDatabase = [
+            // Basic Ingredients
+            { name: ['Aqua', 'ماء'], classification: 'جيد للبشرة', description: 'الماء هو المذيب الأساسي في العديد من مستحضرات التجميل.' },
+            { name: ['Glycerin', 'جليسرين', 'الجليسرين'], classification: 'جيد للبشرة', description: 'مرطب ممتاز يجذب الرطوبة إلى البشرة ويمنع فقدان الماء.', skin_notes: { dry: 'ممتاز للبشرة الجافة والمجففة.', dehydration: 'يساعد بشكل كبير في ترطيب البشرة المجففة.' } },
+            { name: ['Niacinamide', 'نياسيناميد'], classification: 'جيد للبشرة', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب.', skin_notes: { acne: 'يساعد في تقليل حب الشباب والتحكم في الإفرازات الدهنية.', redness: 'يقلل الاحمرار والالتهاب.', aging: 'يحسن مظهر الخطوط الدقيقة والتصبغات.' } },
+            { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.', skin_notes: { dry: 'مرطب فعال للغاية للبشرة الجافة.', dehydration: 'يعزز ترطيب البشرة ويجعلها أكثر امتلاءً.' } },
+            { name: ['Tocopherol', 'فيتامين E', 'توكوفيرول'], classification: 'جيد للبشرة', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة.', skin_notes: { aging: 'يساعد في حماية البشرة من أضرار الجذور الحرة التي تساهم في الشيخوخة.' } },
+            { name: ['Aloe Barbadensis Leaf Juice', 'عصير أوراق الألوفيرا', 'صبار'], classification: 'عضوي', description: 'عصير أوراق الألوفيرا، مهدئ ومرطب للبشرة.', skin_notes: { sensitive: 'مهدئ ممتاز للبشرة الحساسة والمتهيجة.', redness: 'يساعد في تخفيف الاحمرار.' } },
+            { name: ['Simmondsia Chinensis Seed Oil', 'زيت الجوجوبا'], classification: 'عضوي', description: 'زيت الجوجوبا، يرطب البشرة دون انسداد المسام.', skin_notes: { oily: 'يشبه الزيوت الطبيعية للبشرة، مما يساعد على توازن إفراز الدهون.', acne: 'غير كوميدوغينيك، لا يسد المسام.' } },
+            { name: ['Butyrospermum Parkii Butter', 'زبدة الشيا', 'شيا'], classification: 'جيد للبشرة', description: 'زبدة الشيا، مرطب غني ومغذي للبشرة.', skin_notes: { dry: 'مرطب مكثف للبشرة الجافة جدًا والمتشققة.' } },
+            { name: ['Lactic Acid', 'حمض اللاكتيك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) مقشر، قد يسبب تهيجًا بتركيزات عالية.', skin_notes: { sensitive: 'قد يسبب تهيجًا للبشرة الحساسة، ابدأ بتركيزات منخفضة.', dry: 'مقشر لطيف، مفيد للبشرة الجافة في تركيزات منخفضة.' } },
+            { name: ['Phenoxyethanol', 'فنوكسييثانول'], classification: 'جيد للبشرة', description: 'مادة حافظة آمنة بشكل عام بتركيزات منخفضة.' },
+            { name: ['Titanium Dioxide', 'ثاني أكسيد التيتانيوم'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي، وصبغة تضفي اللون.' },
+            { name: ['Zinc Oxide', 'أكسيد الزنك'], classification: 'جيد للبشرة', description: 'مكون واقي شمسي فيزيائي.', skin_notes: { acne: 'يساعد في تهدئة الالتهاب وتقليل حب الشباب.' } },
+            { name: ['Argania Spinosa Kernel Oil', 'زيت الأرغان', 'أرغان'], classification: 'عضوي', description: 'زيت الأرغان، غني بمضادات الأكسدة وفيتامين E، مرطب ومغذي للبشرة.', skin_notes: { dry: 'مرطب ممتاز للبشرة الجافة.', aging: 'يساعد في تحسين مرونة البشرة.' } },
+            { name: ['Mica', 'ميكا'], classification: 'جيد للبشرة', description: 'مادة طبيعية توفر لمعانًا وتألقًا للمنتجات.' },
+            { name: ['Silica', 'سيليكا'], classification: 'جيد للبشرة', description: 'مادة توفر تركيبة ناعمة وامتصاص الزيوت الزائدة.', skin_notes: { oily: 'يساعد في امتصاص الزيوت الزائدة وتقليل اللمعان.' } },
+            { name: ['Talc', 'تلك'], classification: 'جيد للبشرة', description: 'مادة توفر نعومة وسهولة في التطبيق، وتساعد على امتصاص الزيوت.' },
+            { name: ['Iron Oxides', 'أكاسيد الحديد'], classification: 'جيد للبشرة', description: 'أصباغ معدنية تستخدم لإضفاء اللون على المنتجات.' },
+            { name: ['Liposomes', 'جسيمات شحمية'], classification: 'جيد للبشرة', description: 'كبسولات صغيرة تساعد على توصيل وامتصاص المكونات النشطة في البشرة.' },
+            { name: ['Dimethicone', 'Silicon', 'سيليكون', 'دايميثيكون'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'مادة شائعة في مستحضرات التجميل تمنح ملمسًا ناعمًا وتعمل كحاجز، ولكن بعض أنواعها قد تسد المسام وتمنع البشرة من التنفس.', skin_notes: { oily: 'قد يسد المسام ويزيد من ظهور حب الشباب للبشرة الدهنية.', acne: 'يمكن أن يفاقم حب الشباب عن طريق حبس الزيوت والبكتيريا.', sensitive: 'آمن بشكل عام للبشرة الحساسة ما لم يسبب تهيجًا من انسداد المسام.' } },
+            // New Ingredients Added previously
+            { name: ['Cyclopentasiloxane', 'سيكلوبنتاسيلوكسان'], classification: 'جيد للبشرة', description: 'سيليكون خفيف ومتطاير يمنح ملمسًا ناعمًا وغير دهني، ويساعد على انتشار المنتجات بسهولة.', skin_notes: { oily: 'لا يسد المسام عادةً، ويمنح شعورًا غير دهني للبشرة الدهنية.', acne: 'غير كوميدوغينيك بشكل عام، لا يساهم في حب الشباب.', sensitive: 'يستخدم لتقليل الملمس الدهني وتهدئة البشرة دون تهيج.' } },
+            { name: ['Squalane', 'سكوالان'], classification: 'جيد للبشرة', description: 'مكون مرطب ومطري ممتاز يشبه الزيوت الطبيعية للبشرة، ويساعد على ترميم حاجز البشرة.', skin_notes: { dry: 'مرطب فعال للغاية للبشرة الجافة والمجففة.', oily: 'خفيف ولا يسد المسام، مناسب للبشرة الدهنية.', sensitive: 'لطيف جداً ومهدئ للبشرة الحساسة.', aging: 'يساعد في تحسين مرونة البشرة وتقليل ظهور الخطوط الدقيقة.' } },
+            { name: ['Caprylic/Capric Triglyceride', 'كابريليك/كابريك ثلاثي الجليسريد'], classification: 'جيد للبشرة', description: 'مادة مطرية مشتقة من زيت جوز الهند والجلسرين، توفر ترطيبًا خفيفًا وملمسًا ناعمًا.', skin_notes: { normal: 'مناسب لمعظم أنواع البشرة.', oily: 'خفيف ولا يسد المسام للبشرة الدهنية.', dry: 'يوفر ترطيبًا خفيفًا دون إثقال البشرة.', sensitive: 'لطيف جداً ونادراً ما يسبب تهيجاً.' } },
+            { name: ['Urea', 'يوريا'], classification: 'جيد للبشرة', description: 'مرطب قوي ومقشر لطيف بتركيزات منخفضة، يساعد على إزالة خلايا الجلد الميتة وتحسين امتصاص المكونات.', skin_notes: { dry: 'ممتاز للبشرة الجافة جداً والخشنة، يساعد على تليينها.', dehydration: 'يعزز قدرة البشرة على الاحتفاظ بالماء.', sensitive: 'قد يسبب تهيجاً بتركيزات عالية، ابدأ بتركيزات منخفضة.' } },
+            { name: ['Sodium Benzoate', 'بنزوات الصوديوم'], classification: 'جيد للبشرة', description: 'مادة حافظة شائعة تستخدم لمنع نمو البكتيريا والفطريات في المنتجات.' },
+            { name: ['Octinoxate', 'أوكتينوكسات'], classification: 'تحذير: مكون مثير للجدل', description: 'مرشح كيميائي للأشعة فوق البنفسجية (UVB)، قد يثير مخاوف بيئية وصحية.', skin_notes: { sensitive: 'قد يسبب تهيجًا أو ردود فعل تحسسية للبشرة الحساسة.' } },
+            { name: ['Avobenzone', 'أفوبنزون'], classification: 'تحذير: مكون مثير للجدل', description: 'مرشح كيميائي للأشعة فوق البنفسجية (UVA)، قد يكون غير مستقر ويتطلب مثبتات.', skin_notes: { sensitive: 'قد يسبب تهيجًا أو ردود فعل تحسسية للبشرة الحساسة.' } },
+            { name: ['Ethanol', 'إيثانول'], classification: 'تحذير: مهيج محتمل', description: 'كحول يستخدم كمذيب وعامل مطهر في العديد من المنتجات، قد يسبب جفافًا وتهيجًا.', skin_notes: { dry: 'يجرد البشرة من زيوتها الطبيعية ويزيد من الجفاف.', oily: 'قد يؤدي إلى زيادة إفراز الزيوت على المدى الطويل.', sensitive: 'مهيج قوي جداً للبشرة الحساسة.' } },
+            { name: ['Synthetic Musk', 'مسك صناعي'], classification: 'تحذير: مكون مثير للجدل', description: 'مركبات عطرية صناعية تحاكي رائحة المسك الطبيعي، تثير مخاوف بيئية وصحية محتملة.', skin_notes: { sensitive: 'قد تسبب تهيجًا أو حساسية للبشرة الحساسة.' } },
+            { name: ['Benzyl Alcohol', 'كحول بنزيلي'], classification: 'تحذير: مهيج محتمل', description: 'كحول عطري يستخدم كمادة حافظة ومذيب ومكون عطري، قد يسبب تهيجًا.', skin_notes: { sensitive: 'يعد من مسببات الحساسية الشائعة للبشرة الحساسة.' } },
+            { name: ['Linalool', 'لينالول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، ولكنه قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
+            { name: ['Geraniol', 'جيرانيول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
+            // New Ingredients Added in "اليوم الأول"
+            { name: ['Salicylic Acid', 'حمض الساليسيليك'], classification: 'جيد للبشرة', description: 'حمض بيتا هيدروكسي (BHA) يعمل كمقشر داخل المسام، فعال في علاج حب الشباب والرؤوس السوداء.', skin_notes: { acne: 'ممتاز لتقليل البثور والرؤوس السوداء والبيضاء.', oily: 'يساعد على التحكم في إفراز الزيوت وتنقيع المسام.', sensitive: 'قد يسبب جفافاً أو تهيجاً في البداية، ابدأ بتركيزات منخفضة.' } },
+            { name: ['Squalene', 'سكوالين'], classification: 'جيد للبشرة', description: 'دهن طبيعي موجود في زيوت البشرة، يُستخدم كمرطب ومطري ممتاز، مشتق عادةً من الزيتون أو قصب السكر. (يختلف عن السكوالان Squalane الذي هو شكل مستقر منه).', skin_notes: { dry: 'يرطب البشرة بعمق ويعزز حاجزها الطبيعي.', sensitive: 'لطيف للغاية ونادراً ما يسبب تهيجاً.', normal: 'يشبه الزيوت الطبيعية للبشرة، مما يجعله متوافقاً مع معظم الأنواع.' } },
+            { name: ['Amber', 'عنبر'], classification: 'مكون عطري', description: 'في العطور، "العنبر" عادة ما يشير إلى اتفاق عطري دافئ وغني وحلو يذكرنا بالراتنجات، وغالباً ما يكون صناعياً. (لا يجب الخلط بينه وبين "العنبرية" أو "قيء الحوت" Ambergris وهو مكون حيواني مختلف).', skin_notes: { sensitive: 'قد تسبب المكونات العطرية بشكل عام تهيجاً للبشرة الحساسة.' } },
+            // New Ingredients Added in "اليوم الثاني"
+            { name: ['Ascorbic Acid', 'حمض الأسكوربيك'], classification: 'جيد للبشرة', description: 'هو الشكل النقي لفيتامين C، وهو مضاد أكسدة قوي يساعد على تفتيح البشرة، تقليل التصبغات، وتعزيز إنتاج الكولاجين. قد يكون غير مستقر ويتأكسد بسهولة.', skin_notes: { pigmentation: 'فعال جداً في تفتيح البقع الداكنة وتوحيد لون البشرة.', aging: 'يحفز إنتاج الكولاجين لتحسين مرونة البشرة وتقليل الخطوط الدقيقة.', sensitive: 'قد يسبب وخزاً خفيفاً أو تهيجاً في البداية لبعض أنواع البشرة الحساسة، خصوصاً في التركيزات العالية.' } },
+            { name: ['Polysorbate 20', 'بولي سوربات 20'], classification: 'جيد للبشرة', description: 'مستحلب ومذيب غير أيوني يُستخدم للمساعدة في خلط الزيوت والعطور مع الماء في المستحضرات، كما يعمل كعامل ترطيب خفيف.', skin_notes: { normal: 'يعتبر آمناً بشكل عام وغير مهيج لمعظم أنواع البشرة في التركيزات المستخدمة في مستحضرات التجميل.' } },
+            { name: ['BHT', 'Butylated Hydroxytoluene', 'بي إتش تي'], classification: 'تحذير: مكون مثير للجدل', description: 'مضاد أكسدة صناعي يُستخدم لمنع تزنخ الزيوت والمكونات الأخرى، ويُضاف كمادة حافظة في العديد من المنتجات. أثيرت حوله بعض المخاوف الصحية والبيئية.', skin_notes: { sensitive: 'قد يسبب تفاعلات تحسسية لدى بعض الأشخاص، ولكن هذا نادر الحدوث.' } },
+
+            // Harmful/Controversial Ingredients
+            { name: ['Parfum', 'عطر', 'عطور', 'Fragrance'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة أو ردود فعل تحسسية.', skin_notes: { sensitive: 'سبب شائع للحساسية والتهيج.', redness: 'قد يزيد من الاحمرار والالتهاب.' } },
+            { name: ['Sodium Lauryl Sulfate', 'كبريتات لوريل الصوديوم', 'SLS'], classification: 'تحذير: مهيج محتمل', description: 'منظف قوي، قد يسبب جفافًا وتهيجًا للبشرة.', skin_notes: { dry: 'يجرد البشرة من زيوتها الطبيعية مما يزيد الجفاف.', sensitive: 'مهيج قوي للبشرة الحساسة.' } },
+            { name: ['Phthalates', 'فثالات', 'فثالات ديبوتيل', 'Dibutyl Phthalate', 'DBP'], classification: 'تحذير: مكون ضار جداً', description: 'مركبات كيميائية قد تسبب اضطرابات هرمونية وتثير القلق بشأن الصحة الإنجابية.' },
+            { name: ['Toluene', 'تولوين'], classification: 'تحذير: مهيج محتمل', description: 'مذيب كيميائي قد يسبب تهيجًا للجلد والجهاز التنفسي، ويستخدم في بعض مستحضرات التجميل.' },
+            { name: ['Polyethylene', 'بولي إيثيلين'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'بوليمر بلاستيكي يستخدم كعامل تشكيل للفيلم أو كمقشر دقيق، قد يسبب انسداد المسام.', skin_notes: { oily: 'قد يسد المسام ويزيد من حب الشباب.', acne: 'يزيد من خطر انسداد المسام وتفاقم حب الشباب.' } },
+            { name: ['Carbon black', 'أسود الكربون'], classification: 'تحذير: مكون مثير للجدل', description: 'صبغة سوداء تستخدم في مستحضرات التجميل، قد تحتوي على شوائب مثيرة للجدل ومسرطنة.' },
+            { name: ['Parabens', 'بارابين'], classification: 'تحذير: مكون ضار جداً', description: 'مواد حافظة شائعة، قد تسبب اضطرابات هرمونية وتثير القلق بشأن السرطان.' },
+            { name: ['Formaldehyde', 'فورمالديهايد'], classification: 'تحذير: مكون ضار جداً', description: 'مادة حافظة ومطهرة، مصنفة كمسرطن معروف للإنسان ومسببة للحساسية.' },
+            { name: ['Mineral Oil', 'زيت معدني'], classification: 'تحذير: قد يسبب انسداد المسام', description: 'منتج بترولي، قد يسد المسام ويمنع البشرة من التنفس، مما يؤدي إلى حب الشباب.', skin_notes: { oily: 'يسد المسام ويسبب البثور.', acne: 'يزيد بشكل كبير من خطر انسداد المسام وحب الشباب.' } },
+            { name: ['Sulfates', 'كبريتات'], classification: 'تحذير: مهيج محتمل', description: 'منظفات قوية (مثل SLS, SLES) قد تجرد البشرة من زيوتها الطبيعية وتسبب الجفاف والتهيج.', skin_notes: { dry: 'يزيد الجفاف والتقشير.', sensitive: 'مهيج للغاية للبشرة الحساسة.' } },
+            { name: ['Oxybenzone', 'أوكسي بنزون'], classification: 'تحذير: مكون ضار جداً', description: 'مرشح كيميائي للأشعة فوق البنفسجية، قد يسبب اضطرابات هرمونية وحساسية.' },
+            { name: ['Triclosan', 'ترايكلوسان'], classification: 'تحذير: مكون ضار جداً', description: 'مادة مضادة للبكتيريا، قد تساهم في مقاومة المضادات الحيوية وتؤثر على الهرمونات.' },
+            { name: ['Sodium Xylene Sulfonate', 'زيلين سلفونات الصوديوم'], classification: 'تحذير: مهيج محتمل', description: 'عامل رغوي ومذيب، قد يسبب تهيجًا للجلد والعينين لدى بعض الأفراد.', skin_notes: { sensitive: 'قد يسبب تهيجًا للبشرة الحساسة.' } },
+            { name: ['Polyethylene Glycol', 'بولي إيثيلين جلايكول', 'PEG'], classification: 'تحذير: قد يحتوي على شوائب', description: 'مركب يستخدم كمذيب ومكثف ومرطب، قد يحتوي على شوائب ضارة إذا لم يتم تنقيته بشكل صحيح.' },
+            { name: ['Ambergris', 'قيء الحوت'], classification: 'تحذير: مكون مثير للجدل', description: 'مادة نادرة تستخدم في صناعة العطور، مصدرها حيواني وتثير جدلاً أخلاقياً وبيئياً.' },
+
+            // Product Types / Ingredient Categories (Informational)
+            { name: ['Primer', 'برايمر', 'البرايمر'], classification: 'نوع منتج', description: 'منتج تجميلي يمهد البشرة ويساعد على إطالة عمر المكياج.' },
+            { name: ['Foundation', 'كريم أساس', 'كريم الأساس'], classification: 'نوع منتج', description: 'منتج تجميلي يوحد لون البشرة ويوفر تغطية.' },
+            { name: ['Concealer', 'كونسيلر', 'الكونسيلر'], classification: 'نوع منتج', description: 'منتج تجميلي يصحح عيوب البشرة مثل الهالات السوداء والبقع.' },
+            { name: ['Contour', 'كونتور', 'الكونتور'], classification: 'نوع منتج', description: 'منتج تجميلي يمنح الوجه مظهرًا ثلاثي الأبعاد ويبرز الملامح.' },
+            { name: ['Emulsifiers', 'مستحلبات'], classification: 'نوع مكون', description: 'فئة من المكونات تساعد على مزج الزيوت والماء معًا في المستحضرات.' },
+            { name: ['Preservatives', 'مواد حافظة'], classification: 'نوع مكون', description: 'فئة من المكونات تمنع نمو البكتيريا والفطريات في المنتجات.' },
+            { name: ['Thickeners', 'مواد مكثفة'], classification: 'نوع مكون', description: 'فئة من المكونات تجعل المستحضر أكثر كثافة وتوفر القوام المطلوب.' },
+            { name: ['Moisturizers', 'مرطبات'], classification: 'نوع مكون', description: 'فئة من المكونات ترطب البشرة وتساعد على الاحتفاظ بالرطوبة.' },
+            { name: ['Colorants', 'ألوان', 'أصباغ'], classification: 'نوع مكون', description: 'فئة من المكونات تضفي اللون على المنتجات التجميلية.' }
+        ];
+
+        // Functions (made global by being attached to window object)
+        let activeInput = null;
+        let currentSuggestionsDiv = null;
+
+        window.showSuggestions = function(inputElement, suggestionsDiv) {
+            const inputValue = inputElement.tagName === 'TEXTAREA' ? 
+                               getLastWord(inputElement.value, inputElement.selectionStart).toLowerCase() : 
+                               inputElement.value.toLowerCase();
+            suggestionsDiv.innerHTML = ''; 
+            suggestionsDiv.classList.add('hidden'); 
+
+            if (inputValue.length < 1) { 
+                return;
+            }
+
+            activeInput = inputElement;
+            currentSuggestionsDiv = suggestionsDiv;
+
+            const uniqueMatchedNames = new Set();
+            window.ingredientsDatabase.forEach(ingredient => { // Use window.ingredientsDatabase
+                ingredient.name.forEach(name => {
+                    if (name.toLowerCase().includes(inputValue)) {
+                        uniqueMatchedNames.add(name);
+                    }
+                });
+            });
+
+            if (uniqueMatchedNames.size === 0) {
+                return;
+            }
+
+            const sortedSuggestions = Array.from(uniqueMatchedNames).sort((a, b) => a.localeCompare(b, 'ar', { sensitivity: 'base' }));
+
+            sortedSuggestions.forEach(suggestion => {
+                const suggestionItem = document.createElement('div');
+                suggestionItem.classList.add('autocomplete-suggestion-item');
+                suggestionItem.textContent = suggestion;
+                suggestionItem.addEventListener('click', () => {
+                    if (inputElement.tagName === 'TEXTAREA') {
+                        const cursorPosition = inputElement.selectionStart;
+                        const textBeforeCursor = inputElement.value.substring(0, cursorPosition);
+                        const lastDelimiterIndex = Math.max(
+                            textBeforeCursor.lastIndexOf(' '), 
+                            textBeforeCursor.lastIndexOf(','), 
+                            textBeforeCursor.lastIndexOf('\n'), 
+                            textBeforeCursor.lastIndexOf('.')
+                        );
+                        const wordStart = lastDelimiterIndex === -1 ? 0 : lastDelimiterIndex + 1;
+                        
+                        const textAfterCursor = inputElement.value.substring(cursorPosition);
+                        const nextDelimiterIndex = Math.min(
+                            textAfterCursor.indexOf(' ') === -1 ? Infinity : textAfterCursor.indexOf(' '),
+                            textAfterCursor.indexOf(',') === -1 ? Infinity : textAfterCursor.indexOf(','),
+                            textAfterCursor.indexOf('\n') === -1 ? Infinity : textAfterCursor.indexOf('\n'),
+                            textAfterCursor.indexOf('.') === -1 ? Infinity : textAfterCursor.indexOf('.')
+                        );
+                        const wordEnd = nextDelimiterIndex === Infinity ? inputElement.value.length : cursorPosition + nextDelimiterIndex;
+
+                        inputElement.value = inputElement.value.substring(0, wordStart) + suggestion + inputElement.value.substring(wordEnd);
+                        inputElement.selectionStart = inputElement.selectionEnd = wordStart + suggestion.length; 
+                    } else {
+                        inputElement.value = suggestion;
+                    }
+                    suggestionsDiv.classList.add('hidden');
+                    inputElement.focus();
+                });
+                suggestionsDiv.appendChild(suggestionItem);
+            });
+
+            suggestionsDiv.classList.remove('hidden');
+            const inputRect = inputElement.getBoundingClientRect();
+            const parentRect = inputElement.parentElement.getBoundingClientRect();
+            
+            suggestionsDiv.style.top = `${inputRect.bottom - parentRect.top + 5}px`;
+            suggestionsDiv.style.left = `${inputRect.left - parentRect.left}px`;
+            suggestionsDiv.style.width = `${inputRect.width}px`;
+        }
+
+        window.getLastWord = function(text, cursorPosition) {
+            const textBeforeCursor = text.substring(0, cursorPosition);
+            const lastSpaceIndex = Math.max(textBeforeCursor.lastIndexOf(' '), textBeforeCursor.lastIndexOf(','), textBeforeCursor.lastIndexOf('\n'), textBeforeCursor.lastIndexOf('.'));
+            return textBeforeCursor.substring(lastSpaceIndex + 1);
+        }
+
+        document.addEventListener('click', (event) => {
+            if (currentSuggestionsDiv && !currentSuggestionsDiv.contains(event.target) && activeInput && !activeInput.contains(event.target)) {
+                currentSuggestionsDiv.classList.add('hidden');
+            }
+        });
+        
+        window.showMessage = function(message, type = 'info') {
+            if (messageBox) { 
+                messageBox.textContent = message;
+                messageBox.className = `mt-8 p-4 rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                if (resultsContainer) resultsContainer.classList.add('hidden'); 
+            } else {
+                console.warn("Message box element not found, showing message in console:", message);
+            }
+        }
+
+        window.hideMessage = function() {
+            if (messageBox) { 
+                messageBox.classList.add('hidden');
+            }
+        }
+
+        window.addTag = function(ingredient, type, silent = false) {
+            const listElement = type === 'preferred' ? preferredIngredientsList : excludedIngredientsList;
+            const tagClass = type === 'preferred' ? 'tag' : 'tag tag-excluded';
+
+            const normalizedIngredient = ingredient.toLowerCase();
+
+            if ((type === 'preferred' && window.userPreferredIngredients.includes(normalizedIngredient)) ||
+                (type === 'excluded' && window.userExcludedIngredients.includes(normalizedIngredient))) {
+                if (!silent) window.showMessage(`المكون "${ingredient}" موجود بالفعل في هذه القائمة.`, 'info');
+                return;
+            }
+
+            const foundInDb = window.ingredientsDatabase.some(dbIng => // Use window.ingredientsDatabase
+                dbIng.name.some(n => n.toLowerCase() === normalizedIngredient)
+            );
+
+            if (!foundInDb) {
+                if (!silent) window.showMessage(`المكون "${ingredient}" غير معروف في قاعدة بياناتنا. يرجى إدخال مكون تجميلي محدد من الاقتراحات.`, 'error');
+                return;
+            }
+
+            const tagDiv = document.createElement('div');
+            tagDiv.className = tagClass;
+            tagDiv.innerHTML = `
+                <span>${ingredient}</span>
+                <span class="tag-remove" data-ingredient="${ingredient}" data-type="${type}">&times;</span>
+            `;
+            listElement.appendChild(tagDiv);
+
+            if (type === 'preferred') {
+                window.userPreferredIngredients.push(normalizedIngredient);
+            } else {
+                window.userExcludedIngredients.push(normalizedIngredient);
+            }
+
+            if (!silent) window.showMessage(`تم إضافة "${ingredient}" إلى قائمة المكونات الـ ${type === 'preferred' ? 'مفضلة' : 'مستبعدة'}.`, 'info');
+        }
+
+        window.removeTag = function(ingredient, type) {
+            const listElement = type === 'preferred' ? preferredIngredientsList : excludedIngredientsList;
+            const tags = listElement.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                if (tag.querySelector('span:first-child').textContent.toLowerCase() === ingredient.toLowerCase()) {
+                    tag.remove();
+                }
+            });
+
+            if (type === 'preferred') {
+                window.userPreferredIngredients = window.userPreferredIngredients.filter(item => item !== ingredient.toLowerCase());
+            } else {
+                window.userExcludedIngredients = window.userExcludedIngredients.filter(item => item !== ingredient.toLowerCase());
+            }
+            window.showMessage(`تم حذف "${ingredient}" من القائمة.`, 'info');
+        }
+
+        // PWA: Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                        window.showMessage('فشل تسجيل الخدمة العاملة (Service Worker). قد لا تعمل بعض ميزات التطبيق دون اتصال. يرجى التأكد من تشغيل التطبيق عبر HTTPS.', 'error');
+                    });
+            });
+        }
+
+        // Ensure all DOM elements are loaded before attempting to access them
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Assign DOM elements to global variables
+            skinTypeSelect = document.getElementById('skinType');
+            skinConcernCheckboxes = document.querySelectorAll('.skin-concern-checkbox');
+            preferredIngredientInput = document.getElementById('preferredIngredientInput');
+            addPreferredIngredient = document.getElementById('addPreferredIngredient');
+            preferredIngredientsList = document.getElementById('preferredIngredientsList');
+            excludedIngredientInput = document.getElementById('excludedIngredientInput');
+            addExcludedIngredient = document.getElementById('addExcludedIngredient');
+            excludedIngredientsList = document.getElementById('excludedIngredientsList');
+            ingredientsInput = document.getElementById('ingredientsInput');
+            analyzeButton = document.getElementById('analyzeButton');
+            resultsContainer = document.getElementById('resultsContainer');
+            ingredientList = document.getElementById('ingredientList');
+            summary = document.getElementById('summary');
+            messageBox = document.getElementById('messageBox');
+            profileNameInput = document.getElementById('profileNameInput');
+            existingProfilesSelect = document.getElementById('existingProfilesSelect');
+            firebaseStatusDisplay = document.getElementById('firebaseStatusDisplay'); 
+            imageUpload = document.getElementById('imageUpload');
+            imagePreview = document.getElementById('imagePreview');
+            imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            scanImageBtn = document.getElementById('scanImageBtn');
+            scanButtonText = document.getElementById('scanButtonText');
+            scanLoadingSpinner = document.getElementById('scanLoadingSpinner');
+
+            preferredSuggestions = document.getElementById('preferredSuggestions');
+            excludedSuggestions = document.getElementById('excludedSuggestions');
+            mainSuggestions = document.getElementById('mainSuggestions');
+
+            // Re-attach event listeners here to ensure DOM elements are ready
+            if (document.getElementById('saveProfileBtn')) {
+                document.getElementById('saveProfileBtn').addEventListener('click', async () => { 
+                    const profileName = profileNameInput.value.trim();
+                    await window.saveProfile(profileName); 
+                    profileNameInput.value = ''; 
+                });
+            }
+
+            if (document.getElementById('loadNamedProfileBtn')) {
+                document.getElementById('loadNamedProfileBtn').addEventListener('click', () => {
+                    const selectedProfileName = existingProfilesSelect.value;
+                    if (selectedProfileName) {
+                        window.loadProfile(selectedProfileName); 
+                    } else {
+                        window.showMessage("الرجاء اختيار ملف شخصي من القائمة لتحميله.", 'error');
+                    }
+                });
+            }
+
+            // Autocomplete event listeners
+            if (preferredIngredientInput && preferredSuggestions) {
+                preferredIngredientInput.addEventListener('input', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions));
+                preferredIngredientInput.addEventListener('blur', () => setTimeout(() => preferredSuggestions.classList.add('hidden'), 100));
+            }
+            if (excludedIngredientInput && excludedSuggestions) {
+                excludedIngredientInput.addEventListener('input', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions));
+                excludedIngredientInput.addEventListener('blur', () => setTimeout(() => excludedSuggestions.classList.add('hidden'), 100));
+            }
+            if (ingredientsInput && mainSuggestions) {
+                ingredientsInput.addEventListener('input', () => window.showSuggestions(ingredientsInput, mainSuggestions));
+                ingredientsInput.addEventListener('blur', () => setTimeout(() => mainSuggestions.classList.add('hidden'), 100));
+            }
+            
+            // General event listeners for adding/removing tags
+            if (addPreferredIngredient) {
+                addPreferredIngredient.addEventListener('click', () => {
+                    const ingredient = preferredIngredientInput.value.trim();
+                    if (ingredient) {
+                        window.addTag(ingredient, 'preferred');
+                        preferredIngredientInput.value = '';
+                    } else {
+                        window.showMessage('الرجاء إدخال مكون لإضافته إلى المفضلة.', 'error');
+                    }
+                });
+            }
+
+            if (addExcludedIngredient) {
+                addExcludedIngredient.addEventListener('click', () => {
+                    const ingredient = excludedIngredientInput.value.trim();
+                    if (ingredient) {
+                        window.addTag(ingredient, 'excluded');
+                        excludedIngredientInput.value = '';
+                    } else {
+                        window.showMessage('الرجاء إدخال مكون لإضافته إلى المستبعدة.', 'error');
+                    }
+                });
+            }
+
+            document.addEventListener('click', (event) => {
+                if (event.target.classList.contains('tag-remove')) {
+                    const ingredient = event.target.dataset.ingredient;
+                    const type = event.target.dataset.type;
+                    window.removeTag(ingredient, type);
+                }
+            });
+
+            // Image Upload and Scan functionality
+            if (imageUpload) {
+                imageUpload.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imagePreview.src = e.target.result;
+                            imagePreviewContainer.classList.remove('hidden');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        imagePreview.src = '#';
+                        imagePreviewContainer.classList.add('hidden');
+                    }
+                });
+            }
+
+            if (scanImageBtn) {
+                scanImageBtn.addEventListener('click', async () => {
+                    const file = imageUpload.files[0];
+                    if (!file) {
+                        window.showMessage('الرجاء تحميل صورة أولاً للمسح الضوئي.', 'error');
+                        return;
+                    }
+
+                    // Show loading indicator
+                    scanButtonText.textContent = 'جاري المسح والتحليل...';
+                    scanLoadingSpinner.classList.remove('hidden');
+                    scanImageBtn.disabled = true; // Disable button during scan
+
+                    const reader = new FileReader();
+                    reader.onloadend = async () => {
+                        const base64ImageData = reader.result.split(',')[1]; // Get base64 string without data:image/jpeg;base64, prefix
+
+                        try {
+                            const prompt = "من فضلك، قم باستخراج جميع المكونات التجميلية المذكورة في هذه الصورة. قم بفصل كل مكون بفاصلة. لا تقم بتضمين أي معلومات أخرى غير قائمة المكونات.";
+                            let chatHistory = [];
+                            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                            
+                            const payload = {
+                                contents: [
+                                    {
+                                        role: "user",
+                                        parts: [
+                                            { text: prompt },
+                                            {
+                                                inlineData: {
+                                                    mimeType: file.type, // Use the actual mime type of the uploaded file
+                                                    data: base64ImageData
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                            };
+
+                            const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                            
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const result = await response.json();
+                            
+                            if (result.candidates && result.candidates.length > 0 &&
+                                result.candidates[0].content && result.candidates[0].content.parts &&
+                                result.candidates[0].content.parts.length > 0) {
+                                const extractedText = result.candidates[0].content.parts[0].text;
+                                
+                                // Populate the ingredients input and trigger analysis
+                                ingredientsInput.value = extractedText;
+                                window.showMessage('تم استخراج المكونات بنجاح من الصورة! جاري التحليل...', 'info');
+                                analyzeButton.click(); // Trigger existing analysis
+                            } else {
+                                window.showMessage('لم يتم العثور على مكونات في الصورة أو تنسيق الاستجابة غير متوقع.', 'error');
+                                console.error("LLM response structure unexpected:", result);
+                            }
+
+                        } catch (error) {
+                            console.error("Error scanning image with LLM:", error);
+                            window.showMessage(`فشل مسح الصورة: ${error.message}. يرجى المحاولة مرة أخرى والتأكد من وضوح النص.`, 'error');
+                        } finally {
+                            // Hide loading indicator
+                            scanButtonText.textContent = 'مسح وتحليل المكونات من الصورة';
+                            scanLoadingSpinner.classList.add('hidden');
+                            scanImageBtn.disabled = false; // Re-enable button
+                        }
+                    };
+                    reader.readAsDataURL(file); // Start reading the file
+                });
+            }
+
+
+            if (analyzeButton) {
+                analyzeButton.addEventListener('click', () => {
+                    try { 
+                        window.hideMessage(); 
+                        ingredientList.innerHTML = ''; 
+                        summary.innerHTML = ''; 
+                        resultsContainer.classList.add('hidden'); 
+
+                        const rawInput = ingredientsInput.value.trim();
+                        if (!rawInput) {
+                            window.showMessage('الرجاء إدخال قائمة المكونات لتحليلها.');
+                            return;
+                        }
+
+                        const selectedSkinType = skinTypeSelect.value;
+                        const selectedSkinConcerns = Array.from(skinConcernCheckboxes)
+                                                        .filter(checkbox => checkbox.checked)
+                                                        .map(checkbox => checkbox.value);
+
+                        const inputIngredients = rawInput.split(/[,;\n.]/).map(item => item.trim()).filter(item => item.length > 0);
+
+                        if (inputIngredients.length === 0) {
+                            window.showMessage('لم يتم العثور على مكونات صالحة في الإدخال.');
+                            return;
+                        }
+
+                        let goodCount = 0;
+                        let warningCount = 0;
+                        let organicCount = 0;
+                        let veryHarmfulCount = 0;
+                        let analyzedCount = 0;
+                        let hasExcludedIngredient = false;
+                        let personalizedSkinNotes = [];
+                        let skinSuitabilityScore = 0;
+
+                        inputIngredients.forEach(inputIng => {
+                            const isExcluded = window.userExcludedIngredients.includes(inputIng.toLowerCase());
+                            if (isExcluded) {
+                                hasExcludedIngredient = true;
+                                skinSuitabilityScore -= 5;
+                            }
+
+                            const foundIngredient = window.ingredientsDatabase.find(dbIng => 
+                                dbIng.name.some(n => n.toLowerCase() === inputIng.toLowerCase())
+                            );
+
+                            const ingredientItem = document.createElement('div');
+                            ingredientItem.className = 'flex items-start gap-3';
+
+                            let iconSvg = `<svg class="w-6 h-6 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; 
+                            let textColorClass = 'text-gray-800';
+                            let classificationText = 'غير معروف';
+                            let descriptionText = 'لا تتوفر معلومات لهذا المكون في قاعدة بياناتنا الحالية.';
+                            let isPreferred = window.userPreferredIngredients.includes(inputIng.toLowerCase());
+                            let skinSpecificNoteHtml = '';
+                            let isSkinNoteNegative = false;
+
+                            if (foundIngredient) {
+                                analyzedCount++;
+                                classificationText = foundIngredient.classification;
+                                descriptionText = foundIngredient.description;
+
+                                if (foundIngredient.skin_notes) {
+                                    const relevantNotes = [];
+
+                                    if (foundIngredient.skin_notes[selectedSkinType]) {
+                                        const note = foundIngredient.skin_notes[selectedSkinType];
+                                        const skinTypeName = selectedSkinType === 'normal' ? 'عادية' : selectedSkinType === 'oily' ? 'الدهنية' : selectedSkinType === 'dry' ? 'الجافة' : selectedSkinType === 'combination' ? 'المختلطة' : 'الحساسة';
+                                        relevantNotes.push({ text: `ملاحظة لبشرتك ${skinTypeName}: ${note}`, type: selectedSkinType });
+                                    }
+                                    selectedSkinConcerns.forEach(concern => {
+                                        if (foundIngredient.skin_notes[concern]) {
+                                            const note = foundIngredient.skin_notes[concern];
+                                            const concernName = concern === 'acne' ? 'حب الشباب' : concern === 'aging' ? 'الشيخوخة' : concern === 'pigmentation' ? 'التصبغات' : concern === 'redness' ? 'الاحمرار' : 'الجفاف';
+                                            relevantNotes.push({ text: `ملاحظة لاهتمام ${concernName}: ${note}`, type: concern });
+                                        }
+                                    });
+
+                                    relevantNotes.forEach(noteObj => {
+                                        const noteText = noteObj.text;
+                                        let noteColorClass = 'text-fuchsia-600'; 
+
+                                        if (noteText.includes('يسد المسام') || noteText.includes('يزيد من حب الشباب') || noteText.includes('مهيج') || noteText.includes('يزيد الجفاف') || noteText.includes('تفاقم')) {
+                                            noteColorClass = 'text-red-600'; 
+                                            isSkinNoteNegative = true; 
+                                        } else if (noteText.includes('ممتاز') || noteText.includes('يساعد') || noteText.includes('يقلل') || noteText.includes('مهدئ') || noteText.includes('يعزز') || noteText.includes('مفيد') || noteText.includes('لطيف') || noteText.includes('توازن')) {
+                                            noteColorClass = 'text-green-600'; 
+                                        }
+
+                                        skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-1">${noteText}</span>`;
+                                        personalizedSkinNotes.push(`- ${inputIng} (${noteObj.type === 'normal' ? 'عادية' : noteObj.type === 'oily' ? 'دهنية' : noteObj.type === 'dry' ? 'جافة' : noteObj.type === 'combination' ? 'مختلطة' : noteObj.type === 'sensitive' ? 'حساسة' : noteObj.type === 'acne' ? 'حب الشباب' : noteObj.type === 'aging' ? 'الشيخوخة' : noteObj.type === 'pigmentation' ? 'التصبغات' : noteObj.type === 'redness' ? 'الاحمرار' : 'الجفاف'}): ${noteText}`);
+                                    });
+                                }
+
+                                if (foundIngredient.classification.includes('جيد للبشرة')) {
+                                    iconSvg = `<svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                                    textColorClass = 'text-emerald-700';
+                                    goodCount++;
+                                    skinSuitabilityScore += 1; 
+                                } else if (foundIngredient.classification.includes('تحذير: مكون ضار جداً')) {
+                                    iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg`;
+                                    textColorClass = 'text-red-900';
+                                    veryHarmfulCount++;
+                                    warningCount++;
+                                    skinSuitabilityScore -= 3; 
+                                } else if (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام') || foundIngredient.classification.includes('قد يحتوي على شوائب')) {
+                                    iconSvg = `<svg class="w-6 h-6 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
+                                    textColorClass = 'text-amber-700';
+                                    warningCount++;
+                                    skinSuitabilityScore -= 1; 
+                                } else if (foundIngredient.classification.includes('عضوي')) {
+                                    iconSvg = `<svg class="w-6 h-6 text-lime-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>`;
+                                    textColorClass = 'text-lime-800';
+                                    organicCount++;
+                                    goodCount++;
+                                    skinSuitabilityScore += 1; 
+                                } else if (foundIngredient.classification.includes('نوع منتج') || foundIngredient.classification.includes('نوع مكون')) {
+                                    iconSvg = `<svg class="w-6 h-6 text-sky-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm3 1a1 1 0 10-2 0v3a1 1 0 102 0V8z" clip-rule="evenodd"></path></svg>`;
+                                    textColorClass = 'text-sky-700';
+                                }
+                            }
+
+                            let personalizedNote = '';
+                            if (isExcluded) {
+                                iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
+                                textColorClass = 'text-red-900 font-bold';
+                                personalizedNote = '<span class="text-xs text-red-600 mr-2">(مستبعد في تفضيلاتك!)</span>';
+                            } else if (isPreferred) {
+                                iconSvg = `<svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                                textColorClass = 'text-blue-800 font-bold';
+                                personalizedNote = '<span class="text-xs text-blue-600 mr-2">(مكون مفضل لك!)</span>';
+                                skinSuitabilityScore += 1; 
+                            }
+
+                            if (isSkinNoteNegative) {
+                                skinSuitabilityScore -= 2; 
+                            }
+
+                            ingredientItem.innerHTML = `
+                                <div class="flex-shrink-0">
+                                    ${iconSvg}
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-semibold text-lg ${textColorClass}">${inputIng} ${personalizedNote} <span class="text-sm font-normal text-gray-500">(${classificationText})</span></p>
+                                    <p class="text-sm text-gray-600">${descriptionText} ${skinSpecificNoteHtml}</p>
+                                </div>
+                            `;
+                            ingredientList.appendChild(ingredientItem);
+                        });
+
+                        let recommendationTitle = '';
+                        let recommendationMessage = '';
+                        let recommendationClass = '';
+
+                        if (veryHarmfulCount > 0 || hasExcludedIngredient) {
+                            recommendationTitle = 'قد لا يكون هذا المنتج الأفضل لبشرتك.';
+                            recommendationMessage = `يحتوي على ${veryHarmfulCount > 0 ? `مكونات ضارة جداً (${veryHarmfulCount})` : ''} ${hasExcludedIngredient ? `و/أو مكونات قمت بتحديدها كمستبعدة.` : ''} يفضل تجنب المنتجات التي تحتوي على هذه المكونات إذا كانت بشرتك حساسة أو تعاني من مشاكل محددة.`;
+                            recommendationClass = 'bg-red-100 border-red-400 text-red-700';
+                        } else if (skinSuitabilityScore >= 3 && warningCount === 0) { 
+                            recommendationTitle = 'مناسب جداً لبشرتك!';
+                            recommendationMessage = 'يبدو أن هذا المنتج يحتوي على العديد من المكونات المفيدة والمتوافقة مع نوع بشرتك واهتماماتك، مع عدد قليل جداً أو لا يوجد أي مكونات تحتاج إلى انتباه.';
+                            recommendationClass = 'bg-green-100 border-green-400 text-green-700';
+                        } else if (skinSuitabilityScore >= 0) { 
+                            recommendationTitle = 'مناسب بشكل عام لبشرتك مع بعض التحفظات.';
+                            recommendationMessage = 'يحتوي هذا المنتج على مكونات جيدة، ولكن قد يتضمن أيضاً بعض المكونات التي قد لا تكون مثالية تماماً لنوع بشرتك أو اهتماماتك. يُنصح بمراجعة الملاحظات الفردية لكل مكون.';
+                            recommendationClass = 'bg-yellow-100 border-yellow-400 text-yellow-800';
+                        } else { 
+                            recommendationTitle = 'قد لا يكون هذا المنتج مثالياً لبشرتك.';
+                            recommendationMessage = 'على الرغم من عدم احتوائه على مكونات ضارة جداً، إلا أن هذا المنتج يضم مكونات قد لا تتوافق بشكل كبير مع احتياجات بشرتك أو قد تثير بعض اهتماماتك. راجع التحليل المفصل للمكونات.';
+                            recommendationClass = 'bg-orange-100 border-orange-400 text-orange-700';
+                        }
+
+                        if (analyzedCount > 0) {
+                            let topMessage = '';
+                            if (hasExcludedIngredient) {
+                                topMessage = `<div class="p-3 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-lg">
+                                                تنبيه: يحتوي هذا المنتج على مكونات قمت بتحديدها كمستبعدة في تفضيلاتك!
+                                            </div>`;
+                            }
+                            
+                            let skinProfileSummary = '';
+                            if (personalizedSkinNotes.length > 0) {
+                                skinProfileSummary = `
+                                    <h3 class="text-xl font-bold text-fuchsia-700 mt-6 mb-3 text-center">ملاحظات شخصية لبشرتك (${selectedSkinType === 'normal' ? 'عادية' : selectedSkinType === 'oily' ? 'دهنية' : selectedSkinType === 'dry' ? 'جافة' : selectedSkinType === 'combination' ? 'مختلطة' : 'حساسة'}):</h3>
+                                    <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-1">
+                                        ${personalizedSkinNotes.map(note => `<li>${note}</li>`).join('')}
+                                    </ul>
+                                `;
+                            }
+
+                            summary.innerHTML = `
+                                ${topMessage}
+                                <div class="p-4 rounded-lg ${recommendationClass} mb-4 text-center">
+                                    <h3 class="font-bold text-xl">${recommendationTitle}</h3>
+                                    <p class="text-sm">${recommendationMessage}</p>
+                                </div>
+                                <p class="text-lg">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p>
+                                <p class="text-lg">المكونات الجيدة: <strong class="text-emerald-700">${goodCount}</strong></p>
+                                <p class="text-lg">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p>
+                                <p class="text-lg">المكونات التي تحتاج إلى انتباه: <strong class="text-amber-700">${warningCount}</strong></p>
+                                <p class="text-lg ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p>
+                                ${skinProfileSummary}
+                            `;
+                            resultsContainer.classList.remove('hidden'); 
+                        } else {
+                            window.showMessage('لم يتم العثور على أي مكونات معروفة في قاعدة البيانات الحالية.');
+                        }
+                    } catch (error) {
+                        console.error("An error occurred during analysis:", error);
+                        window.showMessage('حدث خطأ أثناء تحليل المكونات. يرجى التأكد من صحة الإدخال والمحاولة مرة أخرى.', 'error');
+                    }
+                });
+            }
+        }); // End DOMContentLoaded for event listeners and global vars
+    </script>
 </body>
 </html>
