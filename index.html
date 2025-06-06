@@ -10,6 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Custom styles for Inter font */
+        html, body {
+            height: 100%; /* Ensure html and body take full height */
+        }
         body {
             font-family: 'Inter', sans-serif;
             direction: rtl; /* Ensure right-to-left for Arabic */
@@ -42,16 +45,17 @@
             background-color: #d1fae5; /* Green-100 */
             color: #065f46; /* Green-800 */
             border-radius: 9999px; /* Full rounded */
-            padding: 0.25rem 0.75rem; /* py-1 px-3 */
-            margin: 0.25rem;
-            font-size: 0.875rem; /* text-sm */
+            padding: 0.15rem 0.6rem; /* py-1 px-3 - Made even smaller */
+            margin: 0.2rem; /* Reduced margin */
+            font-size: 0.8rem; /* text-sm - Made smaller */
             white-space: nowrap; /* Prevent tags from wrapping */
         }
         .tag-remove {
-            margin-right: 0.5rem; /* Adjusted for RTL */
+            margin-right: 0.4rem; /* Adjusted for RTL - Made smaller */
             cursor: pointer;
             color: #065f46;
             font-weight: bold;
+            font-size: 0.9rem; /* Slightly larger X for visibility */
         }
         .tag-excluded {
             background-color: #fee2e2; /* Red-100 */
@@ -68,16 +72,16 @@
             background-color: #ffffff;
             border: 1px solid #e2e8f0; /* gray-200 */
             border-radius: 0.5rem; /* rounded-lg */
-            max-height: 200px;
+            max-height: 150px; /* Reduced max height */
             overflow-y: auto;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
             width: 100%; /* Ensure it spans the width of the input */
             text-align: right; /* RTL alignment */
         }
         .autocomplete-suggestion-item {
-            padding: 0.5rem 0.75rem;
+            padding: 0.4rem 0.6rem; /* Reduced padding */
             cursor: pointer;
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.8rem; /* text-sm - Reduced font size */
             color: #4a5568; /* gray-700 */
         }
         .autocomplete-suggestion-item:hover {
@@ -88,14 +92,14 @@
         }
         /* Loading spinner */
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #34d399; /* emerald-500 */
+            border: 3px solid #f3f3f3; /* Reduced border size */
+            border-top: 3px solid #34d399; /* emerald-500 */
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 20px; /* Reduced size */
+            height: 20px; /* Reduced size */
             animation: spin 1s linear infinite;
             display: inline-block;
-            margin-left: 0.5rem;
+            margin-left: 0.4rem; /* Reduced margin */
             vertical-align: middle;
         }
         @keyframes spin {
@@ -111,10 +115,18 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
+            display: flex; /* Default display when visible */
             align-items: center;
             justify-content: center;
             z-index: 60; /* Higher than other modals */
+        }
+        /* Ensure that .hidden overrides .flex */
+        #authOverlay.hidden {
+            display: none !important; /* Added !important to ensure override */
+        }
+        /* Style for the main app content to hide it when auth is needed */
+        #mainAppContent.hidden {
+            display: none !important;
         }
     </style>
     <!-- PWA: Link to manifest.json -->
@@ -124,53 +136,54 @@
     <!-- PWA: Set theme color for browser UI -->
     <meta name="theme-color" content="#4ADE80"/>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200 relative">
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen flex items-center justify-center p-3"> <!-- Reduced padding -->
+    <!-- Main Application Content - Initially hidden until authenticated -->
+    <div id="mainAppContent" class="bg-white p-4 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200 relative hidden"> <!-- Reduced padding -->
         <!-- Help Button - Top Right Corner -->
-        <button id="showHelpBtn" class="absolute top-4 left-4 bg-blue-600 text-white py-2 px-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-10 flex items-center gap-1">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <button id="showHelpBtn" class="absolute top-3 left-3 bg-blue-600 text-white py-1.5 px-2.5 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-20 flex items-center gap-0.5 text-xs"> <!-- Reduced padding, gap, font size, higher z-index -->
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"> <!-- Reduced icon size -->
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2zm1-5a1 1 0 10-2 0V9a1 1 0 102 0v1z" clip-rule="evenodd"></path>
             </svg>
-            <span class="text-sm font-semibold">مساعدة</span>
+            <span class="font-semibold">مساعدة</span>
         </button>
 
-        <!-- Logout Button - Top Right Corner (next to help button) -->
-        <button id="logoutBtn" class="absolute top-4 left-24 bg-gray-500 text-white py-2 px-3 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-300 z-10 flex items-center gap-1 hidden">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            <span class="text-sm font-semibold">تسجيل الخروج</span>
+        <!-- Logout Button - Top Left Corner -->
+        <button id="logoutBtn" class="absolute top-3 right-3 bg-gray-500 text-white py-1.5 px-2.5 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-300 z-20 flex items-center gap-0.5 hidden text-xs"> <!-- Reduced padding, gap, font size, higher z-index, changed to right -->
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span class="font-semibold">تسجيل الخروج</span>
         </button>
 
         <!-- Hero Section -->
-        <div class="text-center mb-8 pb-6 border-b border-green-200">
-            <h1 class="text-4xl font-extrabold text-emerald-800 mb-3 leading-tight">
+        <div class="text-center mb-4 pb-3 border-b border-green-200"> <!-- Reduced margins and padding -->
+            <h1 class="text-2xl font-extrabold text-emerald-800 mb-1.5 leading-tight"> <!-- Reduced font size -->
                 اكتشف سر بشرتك مع <br><span class="text-emerald-600">محلل المكونات الذكي</span>
             </h1>
-            <p class="text-lg text-gray-700 max-w-md mx-auto">
+            <p class="text-sm text-gray-700 max-w-md mx-auto"> <!-- Reduced font size -->
                 أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
             </p>
         </div>
 
         <!-- Dashboard Section -->
-        <div class="mb-8 p-6 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200">
-            <h2 class="text-2xl font-bold text-indigo-700 mb-4 text-center">لوحة التحكم</h2>
-            <p class="text-md text-gray-700 mb-3 text-center">
-                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-xl">0</span>
+        <div class="mb-4 p-3 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-indigo-700 mb-2 text-center">لوحة التحكم</h2> <!-- Reduced font size -->
+            <p class="text-xs text-gray-700 mb-1.5 text-center"> <!-- Reduced font size -->
+                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-base">0</span> <!-- Reduced font size -->
             </p>
-            <div id="globalAnnouncement" class="p-3 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-4 hidden">
+            <div id="globalAnnouncement" class="p-1.5 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-2 hidden text-xs"> <!-- Reduced padding, margins, font size -->
                 <p class="font-semibold">إعلان عام:</p>
-                <p id="announcementText" class="text-sm italic"></p>
+                <p id="announcementText" class="italic"></p>
             </div>
             
-            <div id="adminSettings" class="mt-6 p-4 bg-indigo-100 rounded-lg border border-indigo-300 hidden">
-                <h3 class="text-xl font-bold text-indigo-700 mb-3 text-center">إعدادات المسؤول</h3>
-                <p class="text-sm text-gray-700 mb-4 text-center">
+            <div id="adminSettings" class="mt-3 p-2.5 bg-indigo-100 rounded-lg border border-indigo-300 hidden"> <!-- Reduced padding and margins -->
+                <h3 class="text-base font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول</h3> <!-- Reduced font size -->
+                <p class="text-xs text-gray-700 mb-2 text-center"> <!-- Reduced font size -->
                     معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
                 </p>
-                <div class="mb-4">
-                    <label for="globalAnnouncementInput" class="block text-gray-700 text-sm font-semibold mb-2">رسالة الإعلان العامة:</label>
-                    <input type="text" id="globalAnnouncementInput" class="w-full p-2 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا">
+                <div class="mb-2"> <!-- Reduced margin -->
+                    <label for="globalAnnouncementInput" class="block text-gray-700 text-xs font-semibold mb-1">رسالة الإعلان العامة:</label>
+                    <input type="text" id="globalAnnouncementInput" class="w-full p-1.5 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا"> <!-- Reduced padding, font size -->
                 </div>
-                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md">
+                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
                     حفظ الإعدادات العامة
                 </button>
             </div>
@@ -178,31 +191,31 @@
         <!-- End Dashboard Section -->
 
         <!-- Section: Save/Load Profile -->
-        <div class="mb-8 p-6 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
-            <h2 class="text-2xl font-bold text-purple-700 mb-4 text-center">إدارة ملفاتك الشخصية</h2>
-            <p class="text-sm text-gray-700 mb-3 text-center">
+        <div class="mb-4 p-3 bg-purple-50 rounded-xl shadow-sm border border-purple-200"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-purple-700 mb-2 text-center">إدارة ملفاتك الشخصية</h2> <!-- Reduced font size -->
+            <p class="text-xs text-gray-700 mb-1.5 text-center"> <!-- Reduced font size -->
                 <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جارٍ التحميل...</span>
                 <br>
                 <span class="font-semibold">حالة Firebase:</span> <span id="firebaseStatusDisplay" class="font-mono text-purple-800 break-all">جاري التحقق...</span>
             </p>
 
-            <div class="mb-4">
-                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-2">اسم ملف البشرة (للحفظ/التحميل):</label>
-                <input type="text" id="profileNameInput" class="w-full p-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي الشتوية">
+            <div class="mb-2"> <!-- Reduced margin -->
+                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-1">اسم ملف البشرة (للحفظ/التحميل):</label> <!-- Reduced font size -->
+                <input type="text" id="profileNameInput" class="w-full p-1.5 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي الشتوية"> <!-- Reduced padding, font size -->
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-4">
-                <button id="saveProfileBtn" class="bg-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md">
+            <div class="flex flex-col sm:flex-row gap-2 justify-center mb-2"> <!-- Reduced gap and margin -->
+                <button id="saveProfileBtn" class="bg-purple-600 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
                     حفظ الملف الحالي
                 </button>
-                <button id="loadNamedProfileBtn" class="bg-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md">
+                <button id="loadNamedProfileBtn" class="bg-purple-500 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
                     تحميل الملف المحدد
                 </button>
             </div>
 
             <div>
-                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-2">الملفات المحفوظة:</label>
-                <select id="existingProfilesSelect" class="w-full p-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out">
+                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-1">الملفات المحفوظة:</label> <!-- Reduced font size -->
+                <select id="existingProfilesSelect" class="w-full p-1.5 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
                     <option value="">لا يوجد ملفات محفوظة</option>
                 </select>
             </div>
@@ -210,21 +223,21 @@
         <!-- End Section: Save/Load Profile -->
 
         <!-- Section: Scan Ingredients from Image -->
-        <div class="mb-8 p-6 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200">
-            <h2 class="text-2xl font-bold text-yellow-700 mb-4 text-center">مسح المكونات من صورة عبوة المنتج</h2>
-            <p class="text-sm text-gray-700 mb-4 text-center">
+        <div class="mb-4 p-3 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-yellow-700 mb-2 text-center">مسح المكونات من صورة عبوة المنتج</h2> <!-- Reduced font size -->
+            <p class="text-sm text-gray-700 mb-2 text-center"> <!-- Reduced font size -->
                 يمكنك تحميل صورة لعبوة المنتج (تأكد أن قائمة المكونات واضحة) وسنقوم بتحليلها لك تلقائياً.
             </p>
-            <div class="mb-4">
-                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-2">
+            <div class="mb-2"> <!-- Reduced margin -->
+                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
                     تحميل صورة عبوة المنتج:
                 </label>
-                <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out">
+                <input type="file" id="imageUpload" accept="image/*" class="w-full p-1.5 text-sm border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
             </div>
-            <div id="imagePreviewContainer" class="mb-4 text-center hidden">
+            <div id="imagePreviewContainer" class="mb-2 text-center hidden"> <!-- Reduced margin -->
                 <img id="imagePreview" src="#" alt="معاينة الصورة" class="max-w-full h-auto rounded-lg shadow-md mx-auto">
             </div>
-            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
+            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm"> <!-- Reduced padding, font size -->
                 <span id="scanButtonText">مسح وتحليل المكونات من الصورة</span>
                 <span id="scanLoadingSpinner" class="loader hidden"></span>
             </button>
@@ -232,12 +245,12 @@
         <!-- End Section: Scan Ingredients from Image -->
 
         <!-- Section: Skin Profile -->
-        <div class="mb-8 p-6 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200">
-            <h2 class="text-2xl font-bold text-fuchsia-700 mb-4 text-center">ملفك الشخصي للبشرة</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-4 p-3 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-fuchsia-700 mb-2 text-center">ملفك الشخصي للبشرة</h2> <!-- Reduced font size -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2"> <!-- Reduced gap -->
                 <div>
-                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-2">نوع بشرتك:</label>
-                    <select id="skinType" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
+                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-1">نوع بشرتك:</label> <!-- Reduced font size -->
+                    <select id="skinType" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
                         <option value="normal">عادية</option>
                         <option value="oily">دهنية</option>
                         <option value="dry">جافة</option>
@@ -246,134 +259,134 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-2">اهتمامات بشرتك:</label>
-                    <div class="flex flex-wrap gap-2 text-sm">
-                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                    <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات بشرتك:</label> <!-- Reduced font size -->
+                    <div class="flex flex-wrap gap-1.5 text-xs"> <!-- Reduced gap and font size -->
+                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors"> <!-- Reduced padding -->
+                            <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>حب الشباب</span>
                         </label>
-                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الشيخوخة/التجاعيد</span>
                         </label>
-                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>التصبغات</span>
                         </label>
-                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الاحمرار</span>
                         </label>
-                        <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded skin-concern-checkbox mr-2">
+                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                            <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الجفاف</span>
                         </label>
                     </div>
                 </div>
                 <!-- New fields for age, pregnancy, and medical conditions -->
                 <div>
-                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-2">عمرك:</label>
-                    <input type="number" id="userAge" min="1" max="120" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك">
+                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-1">عمرك:</label> <!-- Reduced font size -->
+                    <input type="number" id="userAge" min="1" max="120" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك"> <!-- Reduced padding, font size -->
                 </div>
                 <div class="md:col-span-2"> <!-- Span full width for this checkbox -->
-                    <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                        <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded mr-2">
+                    <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors text-xs"> <!-- Reduced padding, font size -->
+                        <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
                         <span>هل أنت حامل؟</span>
                     </label>
                 </div>
                 <div class="md:col-span-2"> <!-- Span full width for this textarea -->
-                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-2">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label>
-                    <textarea id="medicalConditionsInput" rows="2" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea>
+                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-1">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label> <!-- Reduced font size -->
+                    <textarea id="medicalConditionsInput" rows="1" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea> <!-- Reduced rows, padding, font size -->
                 </div>
             </div>
         </div>
         <!-- End Section: Skin Profile -->
 
         <!-- Section: Preferred & Excluded Ingredients -->
-        <div class="mb-8 p-6 bg-sky-50 rounded-xl shadow-sm border border-sky-200">
-            <h2 class="text-2xl font-bold text-sky-700 mb-4 text-center">تفضيلاتك الشخصية للمكونات</h2>
+        <div class="mb-4 p-3 bg-sky-50 rounded-xl shadow-sm border border-sky-200"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-sky-700 mb-2 text-center">تفضيلاتك الشخصية للمكونات</h2> <!-- Reduced font size -->
 
-            <div class="mb-4">
-                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-2">
+            <div class="mb-3"> <!-- Reduced margin -->
+                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
                     أضف مكوناتك المفضلة (مكون واحد لكل إضافة):
                 </label>
                 <div class="flex relative"> 
-                    <input type="text" id="preferredIngredientInput" class="flex-1 p-2 border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
-                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-2 px-4 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out">
+                    <input type="text" id="preferredIngredientInput" class="flex-1 p-1.5 text-sm border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد"> <!-- Reduced padding, font size -->
+                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-1.5 px-2.5 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out text-sm"> <!-- Reduced padding, font size -->
                         أضف
                     </button>
                     <div id="preferredSuggestions" class="autocomplete-suggestions hidden"></div>
                 </div>
-                <div id="preferredIngredientsList" class="mt-3 flex flex-wrap gap-2 justify-end">
+                <div id="preferredIngredientsList" class="mt-1.5 flex flex-wrap gap-1.5 justify-end"> <!-- Reduced margin-top and gap -->
                     </div>
             </div>
 
             <div>
-                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-2">
+                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
                     أضف مكوناتك المستبعدة/المتحسس منها:
                 </label>
                 <div class="flex relative"> 
-                    <input type="text" id="excludedIngredientInput" class="flex-1 p-2 border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور">
-                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-2 px-4 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out">
+                    <input type="text" id="excludedIngredientInput" class="flex-1 p-1.5 text-sm border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور"> <!-- Reduced padding, font size -->
+                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-1.5 px-2.5 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out text-sm"> <!-- Reduced padding, font size -->
                         أضف
                     </button>
                     <div id="excludedSuggestions" class="autocomplete-suggestions hidden"></div>
                 </div>
-                <div id="excludedIngredientsList" class="mt-3 flex flex-wrap gap-2 justify-end">
+                <div id="excludedIngredientsList" class="mt-1.5 flex flex-wrap gap-1.5 justify-end"> <!-- Reduced margin-top and gap -->
                     </div>
             </div>
         </div>
         <!-- End Section: Preferred & Excluding Ingredients -->
 
-        <div class="mb-6">
-            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-2">
+        <div class="mb-4"> <!-- Reduced margin -->
+            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
                 الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
             </label>
             <div class="relative"> 
-                <textarea id="ingredientsInput" rows="10" class="w-full p-3 border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
+                <textarea id="ingredientsInput" rows="6" class="w-full p-2 text-sm border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
 Aqua, Glycerin, Niacinamide
 ماء, جليسرين, نياسيناميد
-Parfum, Phthalates, Toluene"></textarea>
+Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -->
                 <div id="mainSuggestions" class="autocomplete-suggestions hidden"></div>
             </div>
         </div>
 
-        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg">
+        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg text-base"> <!-- Reduced padding, font size -->
             تحليل المكونات
         </button>
 
         <!-- The "كيفية استخدام الأداة" section is now removed from here as per previous request -->
 
-        <div id="resultsContainer" class="mt-8 p-6 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden">
-            <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
-            <div id="ingredientList" class="space-y-4">
+        <div id="resultsContainer" class="mt-4 p-3 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden"> <!-- Reduced padding and margins -->
+            <h2 class="text-lg font-bold text-emerald-700 mb-2 text-center">نتائج التحليل</h2> <!-- Reduced font size -->
+            <div id="ingredientList" class="space-y-2 text-sm"> <!-- Reduced space-y and font size -->
                 </div>
-            <div id="summary" class="mt-6 pt-4 border-t border-emerald-300 text-center text-gray-700 font-medium">
+            <div id="summary" class="mt-3 pt-2 border-t border-emerald-300 text-center text-gray-700 font-medium text-sm"> <!-- Reduced margin-top, padding-top, font size -->
                 </div>
         </div>
 
         <!-- Credit Section - Moved to bottom -->
-        <div class="mt-8 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-sm text-gray-600 italic">
+        <div class="mt-4 p-2.5 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-xs text-gray-600 italic"> <!-- Reduced padding, font size -->
             <p>هذه الأداة من تصميم وفكرة: <span class="font-semibold text-gray-800 not-italic">جورج جريج</span></p>
         </div>
         <!-- End Credit Section -->
 
         <!-- Message Box - Adjusted padding and text size -->
-        <div id="messageBox" class="mt-8 p-3 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
+        <div id="messageBox" class="mt-3 p-1.5 text-xs bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"> <!-- Reduced padding, font size -->
             </div>
     </div>
 
     <!-- Help Modal -->
     <div id="helpModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
         <!-- Adjusted max-w to md for a smaller dialog -->
-        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 relative">
-            <button id="closeHelpBtn" class="absolute top-4 left-4 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <div class="bg-white p-4 rounded-xl shadow-2xl w-full max-w-md mx-3 relative"> <!-- Reduced padding, mx-margin -->
+            <button id="closeHelpBtn" class="absolute top-2.5 left-2.5 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300"> <!-- Reduced padding -->
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> <!-- Reduced icon size -->
             </button>
-            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">كيفية استخدام الأداة</h2>
-            <div id="helpContent" class="text-gray-700 max-h-96 overflow-y-auto pr-2 pl-2 text-sm"> <!-- Smaller text for help content -->
+            <h2 class="text-xl font-bold text-blue-700 mb-2.5 text-center">كيفية استخدام الأداة</h2> <!-- Reduced font size -->
+            <div id="helpContent" class="text-gray-700 max-h-80 overflow-y-auto pr-1.5 pl-1.5 text-xs"> <!-- Reduced max-height, padding, font size -->
                 <!-- Content from "كيفية استخدام الأداة" will be moved here by JS -->
-                <ol class="list-decimal list-inside text-gray-700 space-y-3">
+                <ol class="list-decimal list-inside text-gray-700 space-y-1.5"> <!-- Reduced space-y -->
                     <li>
                         <strong class="text-blue-600">تحديد ملفك الشخصي للبشرة:</strong>
                         اختر نوع بشرتك (عادية، دهنية، جافة، مختلطة، حساسة) وحدد اهتمامات بشرتك (مثل حب الشباب، الشيخوخة، التصبغات) من خلال مربعات الاختيار.
@@ -381,7 +394,7 @@ Parfum, Phthalates, Toluene"></textarea>
                     <li>
                         <strong class="text-blue-600">إضافة تفضيلات المكونات:</strong>
                         في قسم "تفضيلاتك الشخصية للمكونات"، يمكنك:
-                        <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <ul class="list-disc list-inside ml-4 mt-0.5 space-y-0.5 text-xs"> <!-- Reduced ml, mt, space-y -->
                             <li>أضف **مكوناتك المفضلة** التي تحب رؤيتها في المنتجات.</li>
                             <li>أضف **مكوناتك المستبعدة/المتحسس منها** التي ترغب في تجنبها.</li>
                             <li>ستظهر لك **اقتراحات تلقائية** أثناء الكتابة، يمكنك النقر عليها لإضافتها.</li>
@@ -402,7 +415,7 @@ Parfum, Phthalates, Toluene"></textarea>
                     <li>
                         <strong class="text-blue-600">مراجعة النتائج:</strong>
                         سيظهر قسم "نتائج التحليل" مع:
-                        <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                        <ul class="list-disc list-inside ml-4 mt-0.5 space-y-0.5 text-xs"> <!-- Reduced ml, mt, space-y -->
                             <li><strong>تصنيف كل مكون:</strong> سواء كان جيدًا، يتطلب تحذيرًا، ضارًا جداً، أو غير معروف.</li>
                             <li><strong>ملاحظات مخصصة:</strong> بناءً على نوع بشرتك واهتماماتك، بالإضافة إلى المكونات المفضلة أو المستبعدة.</li>
                             <li><strong>ملخص عام:</strong> يقدم تقييماً شاملاً لمدى ملاءمة المنتج لبشرتك.</li>
@@ -418,26 +431,26 @@ Parfum, Phthalates, Toluene"></textarea>
     </div>
 
     <!-- Auth Overlay (Login/Register Form) -->
-    <div id="authOverlay" class="hidden">
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm mx-4 text-center">
-            <h2 class="text-3xl font-bold text-emerald-700 mb-6">تسجيل الدخول / التسجيل</h2>
-            <div class="mb-4">
-                <label for="authEmail" class="block text-gray-700 text-sm font-semibold mb-2 text-right">البريد الإلكتروني:</label>
-                <input type="email" id="authEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل بريدك الإلكتروني">
+    <div id="authOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-5 rounded-2xl shadow-xl w-full max-w-sm mx-3 text-center"> <!-- Reduced padding, mx-margin -->
+            <h2 class="text-xl font-bold text-emerald-700 mb-4">تسجيل الدخول / التسجيل</h2> <!-- Reduced font size -->
+            <div class="mb-2.5"> <!-- Reduced margin -->
+                <label for="authEmail" class="block text-gray-700 text-sm font-semibold mb-0.5 text-right">البريد الإلكتروني:</label> <!-- Reduced font size -->
+                <input type="email" id="authEmail" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل بريدك الإلكتروني"> <!-- Reduced padding, font size -->
             </div>
-            <div class="mb-6">
-                <label for="authPassword" class="block text-gray-700 text-sm font-semibold mb-2 text-right">كلمة المرور:</label>
-                <input type="password" id="authPassword" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل كلمة المرور">
+            <div class="mb-3"> <!-- Reduced margin -->
+                <label for="authPassword" class="block text-gray-700 text-sm font-semibold mb-0.5 text-right">كلمة المرور:</label> <!-- Reduced font size -->
+                <input type="password" id="authPassword" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل كلمة المرور"> <!-- Reduced padding, font size -->
             </div>
-            <div class="flex flex-col gap-4">
-                <button id="loginBtn" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-md">
+            <div class="flex flex-col gap-2"> <!-- Reduced gap -->
+                <button id="loginBtn" class="w-full bg-emerald-600 text-white py-2 px-2.5 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
                     تسجيل الدخول
                 </button>
-                <button id="registerBtn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 shadow-md">
+                <button id="registerBtn" class="w-full bg-blue-600 text-white py-2 px-2.5 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
                     إنشاء حساب جديد
                 </button>
                 <!-- Message box for auth errors -->
-                <div id="authMessageBox" class="mt-4 p-3 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"></div>
+                <div id="authMessageBox" class="mt-2.5 p-1.5 text-xs bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"></div> <!-- Reduced padding, font size -->
             </div>
         </div>
     </div>
@@ -451,18 +464,21 @@ Parfum, Phthalates, Toluene"></textarea>
 
         // Global variables for Firebase (MUST be defined even if empty string)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        // The initialAuthToken is typically for Canvas internal auth, not email/password.
-        // We will remove its direct use for determining admin access here for a more standard email/password flow.
-        // const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyBiTnYz0fuR3J3Dgcc6BEpyOfF4FjF1C5I",
+            authDomain: "skin-99c39.firebaseapp.com",
+            projectId: "skin-99c39",
+            storageBucket: "skin-99c39.appspot.com", // Corrected storageBucket path if it was firebase.appspot.com
+            messagingSenderId: "111983738514",
+            appId: "1:111983738514:web:27712c903e739cebb3304b",
+            measurementId: "G-GQ34RLMGS0"
+        };
 
         let app;
         let db;
         let auth;
         let currentUserId = null; 
         let isAuthReady = false; 
-        // For this demo, any authenticated user will see admin settings.
-        // In a real application, you would manage roles (e.g., via Firestore document for user roles).
         let isAdmin = false; 
 
         // DOM elements for authentication
@@ -473,12 +489,13 @@ Parfum, Phthalates, Toluene"></textarea>
         let registerBtn;
         let logoutBtn;
         let authMessageBox;
+        let mainAppContent; // Added reference to main app content
 
         // Function to show authentication message
         function showAuthMessage(message, type = 'info') {
             if (authMessageBox) {
                 authMessageBox.textContent = message;
-                authMessageBox.className = `mt-4 p-3 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                authMessageBox.className = `mt-3 p-1.5 text-xs rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
             }
         }
 
@@ -499,11 +516,26 @@ Parfum, Phthalates, Toluene"></textarea>
             registerBtn = document.getElementById('registerBtn');
             logoutBtn = document.getElementById('logoutBtn');
             authMessageBox = document.getElementById('authMessageBox');
+            mainAppContent = document.getElementById('mainAppContent'); // Get reference
 
-            if (Object.keys(firebaseConfig).length > 0) {
+            console.log("DOM Content Loaded. Initializing Firebase...");
+            console.log("mainAppContent element:", mainAppContent); // Debug mainAppContent
+
+            // Initially show the auth overlay and hide main content until auth state is confirmed
+            if (authOverlay) {
+                authOverlay.classList.remove('hidden');
+                authOverlay.style.display = 'flex';
+                console.log('Auth overlay set to visible on DOMContentLoaded.');
+            }
+            if (mainAppContent) {
+                mainAppContent.classList.add('hidden');
+                console.log('Main app content set to hidden on DOMContentLoaded.');
+            }
+
+            if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.apiKey) { // Added check for apiKey existence
                 console.log("Firebase: __app_id:", appId);
-                console.log("Firebase: __firebase_config received:", firebaseConfig);
-                
+                console.log("Firebase: Firebase config detected. Initializing app.");
+
                 if (window.firebaseStatusDisplay) {
                     window.firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
                 }
@@ -525,6 +557,7 @@ Parfum, Phthalates, Toluene"></textarea>
 
                     // --- Authentication Listeners ---
                     onAuthStateChanged(auth, async (user) => {
+                        console.log("onAuthStateChanged triggered. User:", user ? user.uid : "null");
                         if (user) {
                             currentUserId = user.uid;
                             isAuthReady = true;
@@ -541,8 +574,19 @@ Parfum, Phthalates, Toluene"></textarea>
                             }
                             
                             // Hide auth overlay and show main app content
-                            if (authOverlay) authOverlay.classList.add('hidden');
-                            if (logoutBtn) logoutBtn.classList.remove('hidden');
+                            if (authOverlay) {
+                                authOverlay.classList.add('hidden');
+                                authOverlay.style.display = 'none'; // Explicitly hide
+                                console.log('Auth overlay HIDDEN via onAuthStateChanged. Current display style:', authOverlay.style.display);
+                            }
+                            if (mainAppContent) {
+                                mainAppContent.classList.remove('hidden'); // Show main content
+                                console.log('Main app content SHOWN via onAuthStateChanged.');
+                            }
+                            if (logoutBtn) {
+                                logoutBtn.classList.remove('hidden');
+                                console.log('Logout button SHOWN via onAuthStateChanged.');
+                            }
                             if (window.adminSettings && isAdmin) { // Show admin settings if logged in and admin
                                 window.adminSettings.classList.remove('hidden');
                             } else if (window.adminSettings) {
@@ -574,8 +618,19 @@ Parfum, Phthalates, Toluene"></textarea>
                                 window.firebaseStatusDisplay.textContent = 'Firebase متصل (لم يتم تسجيل الدخول).';
                             }
                             // Show auth overlay and hide main app content
-                            if (authOverlay) authOverlay.classList.remove('hidden');
-                            if (logoutBtn) logoutBtn.classList.add('hidden');
+                            if (authOverlay) {
+                                authOverlay.classList.remove('hidden');
+                                authOverlay.style.display = 'flex'; // Explicitly show
+                                console.log('Auth overlay VISIBLE via onAuthStateChanged. Current display style:', authOverlay.style.display);
+                            }
+                            if (mainAppContent) {
+                                mainAppContent.classList.add('hidden'); // Hide main content
+                                console.log('Main app content HIDDEN via onAuthStateChanged.');
+                            }
+                            if (logoutBtn) {
+                                logoutBtn.classList.add('hidden');
+                                console.log('Logout button HIDDEN via onAuthStateChanged.');
+                            }
                             if (window.adminSettings) window.adminSettings.classList.add('hidden');
                             console.log("Firebase: No user is signed in.");
                         }
@@ -584,6 +639,7 @@ Parfum, Phthalates, Toluene"></textarea>
                     // --- Auth Button Event Listeners ---
                     if (loginBtn) {
                         loginBtn.addEventListener('click', async () => {
+                            console.log("Login button clicked.");
                             const email = authEmailInput.value;
                             const password = authPasswordInput.value;
                             hideAuthMessage();
@@ -594,6 +650,7 @@ Parfum, Phthalates, Toluene"></textarea>
                             try {
                                 await signInWithEmailAndPassword(auth, email, password);
                                 showAuthMessage('تم تسجيل الدخول بنجاح!', 'info');
+                                console.log("Sign-in successful. onAuthStateChanged should handle UI update.");
                                 authEmailInput.value = '';
                                 authPasswordInput.value = '';
                             } catch (error) {
@@ -603,6 +660,10 @@ Parfum, Phthalates, Toluene"></textarea>
                                     errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
                                 } else if (error.code === 'auth/invalid-email') {
                                     errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                                } else if (error.code === 'auth/network-request-failed') {
+                                    errorMessage = 'فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
+                                } else if (error.code === 'auth/operation-not-allowed') {
+                                    errorMessage = 'المصادقة بالبريد الإلكتروني/كلمة المرور غير مفعلة في إعدادات مشروع Firebase. يرجى تفعيلها.';
                                 }
                                 showAuthMessage(errorMessage, 'error');
                             }
@@ -611,6 +672,7 @@ Parfum, Phthalates, Toluene"></textarea>
 
                     if (registerBtn) {
                         registerBtn.addEventListener('click', async () => {
+                            console.log("Register button clicked.");
                             const email = authEmailInput.value;
                             const password = authPasswordInput.value;
                             hideAuthMessage();
@@ -625,6 +687,7 @@ Parfum, Phthalates, Toluene"></textarea>
                             try {
                                 await createUserWithEmailAndPassword(auth, email, password);
                                 showAuthMessage('تم إنشاء الحساب وتسجيل الدخول بنجاح!', 'info');
+                                console.log("Account created. onAuthStateChanged should handle UI update.");
                                 authEmailInput.value = '';
                                 authPasswordInput.value = '';
                             } catch (error) {
@@ -636,6 +699,10 @@ Parfum, Phthalates, Toluene"></textarea>
                                     errorMessage = 'كلمة المرور ضعيفة جداً.';
                                 } else if (error.code === 'auth/invalid-email') {
                                     errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                                } else if (error.code === 'auth/network-request-failed') {
+                                    errorMessage = 'فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
+                                } else if (error.code === 'auth/operation-not-allowed') {
+                                    errorMessage = 'المصادقة بالبريد الإلكتروني/كلمة المرور غير مفعلة في إعدادات مشروع Firebase. يرجى تفعيلها.';
                                 }
                                 showAuthMessage(errorMessage, 'error');
                             }
@@ -644,6 +711,7 @@ Parfum, Phthalates, Toluene"></textarea>
 
                     if (logoutBtn) {
                         logoutBtn.addEventListener('click', async () => {
+                            console.log("Logout button clicked.");
                             try {
                                 await signOut(auth);
                                 window.showMessage('تم تسجيل الخروج بنجاح.', 'info');
@@ -655,31 +723,39 @@ Parfum, Phthalates, Toluene"></textarea>
                         });
                     }
 
-
                 } catch (initError) {
                     console.error("Firebase initialization failed:", initError);
                     if (window.firebaseStatusDisplay) {
                         window.firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
                     }
                     window.showMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
-                    // Ensure auth overlay is shown if Firebase init fails
-                    if (authOverlay) authOverlay.classList.remove('hidden');
+                    if (authOverlay) { // Ensure overlay is shown if Firebase init fails completely
+                        authOverlay.classList.remove('hidden');
+                        authOverlay.style.display = 'flex';
+                    }
+                    if (mainAppContent) { // Ensure main content is hidden if Firebase init fails
+                        mainAppContent.classList.add('hidden');
+                    }
                     return; 
                 }
 
             } else {
-                console.warn("Firebase config not found. Save/Load profile functionality and Dashboard features will not be available.");
+                console.warn("Firebase config not found or incomplete. Save/Load profile functionality and Dashboard features will not be available.");
                 if (window.userIdDisplay) {
                     window.userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
                 }
                 if (window.firebaseStatusDisplay) {
                     window.firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود.';
                 }
-                if (window.adminSettings) window.adminSettings.classList.add('hidden'); // Hide admin settings if no Firebase
+                if (window.adminSettings) window.adminSettings.classList.add('hidden'); 
                 window.showMessage("لم يتم توفير تكوين Firebase. ميزة حفظ/تحميل ملفك الشخصي ولوحة التحكم غير متوفرة.", 'error');
-                // If Firebase is not configured, still show the app but disable Firebase-dependent features
-                if (authOverlay) authOverlay.classList.add('hidden'); // Allow access to app without Firebase auth
-                if (logoutBtn) logoutBtn.classList.add('hidden');
+                // If Firebase is not configured, allow access to app without auth
+                if (authOverlay) authOverlay.classList.add('hidden'); 
+                if (mainAppContent) mainAppContent.classList.remove('hidden'); // Show app content
+                if (logoutBtn) {
+                    logoutBtn.classList.add('hidden');
+                    console.log('Logout button hidden because Firebase is not configured.');
+                }
             }
         }); // End DOMContentLoaded for Firebase init
 
@@ -711,8 +787,8 @@ Parfum, Phthalates, Toluene"></textarea>
          * This indicates the user is "active".
          */
         async function updatePresence() {
-            if (!isAuthReady || !currentUserId) {
-                // console.log("Presence update skipped: Firebase not ready or user not authenticated.");
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
+                // console.log("Presence update skipped: Firebase not ready or user not authenticated or db not initialized.");
                 return;
             }
             try {
@@ -732,8 +808,8 @@ Parfum, Phthalates, Toluene"></textarea>
          * and updates the active users count.
          */
         function listenForActiveUsers() {
-            if (!isAuthReady || !currentUserId) {
-                console.warn("Skipping active users listener: Firebase not ready or user not authenticated.");
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
+                console.warn("Skipping active users listener: Firebase not ready or user not authenticated or db not initialized.");
                 return;
             }
             const presenceCollectionRef = collection(db, `artifacts/${appId}/public/presence`);
@@ -766,8 +842,8 @@ Parfum, Phthalates, Toluene"></textarea>
          * and updates the UI accordingly.
          */
         function listenForGlobalConfig() {
-            if (!isAuthReady || !currentUserId) {
-                console.warn("Skipping global config listener: Firebase not ready or user not authenticated.");
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
+                console.warn("Skipping global config listener: Firebase not ready or user not authenticated or db not initialized.");
                 return;
             }
             const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
@@ -805,9 +881,9 @@ Parfum, Phthalates, Toluene"></textarea>
          * Saves the global configuration (e.g., announcement message) to Firestore.
          */
         window.saveGlobalConfig = async function() {
-            if (!isAuthReady || !currentUserId || !isAdmin) { // Ensure user is authenticated and is admin
+            if (!isAuthReady || !currentUserId || !isAdmin || !db) { // Ensure user is authenticated and is admin, and db exists
                 window.showMessage("ليس لديك صلاحية لحفظ الإعدادات العامة.", 'error');
-                console.error("Save global config failed: Not authorized.");
+                console.error("Save global config failed: Not authorized or db not initialized.");
                 return;
             }
             try {
@@ -832,9 +908,9 @@ Parfum, Phthalates, Toluene"></textarea>
         // Functions to save and load profile from Firestore
         // هذه الوظائف تم تعريفها على الكائن 'window' لتكون متاحة للسكربت الرئيسي.
         window.saveProfile = async function(profileName) {
-            if (!isAuthReady || !currentUserId) {
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
                 window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل الحفظ.", 'error');
-                console.error("Save profile failed: Firebase not ready or user not authenticated.");
+                console.error("Save profile failed: Firebase not ready or user not authenticated or db not initialized.");
                 return;
             }
             if (!profileName || profileName.trim() === '') {
@@ -882,9 +958,9 @@ Parfum, Phthalates, Toluene"></textarea>
         };
 
         window.loadProfile = async function(profileName, silent = false) {
-            if (!isAuthReady || !currentUserId) {
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
                 if (!silent) window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل التحميل.", 'error');
-                console.error("Load profile failed: Firebase not ready or user not authenticated.");
+                console.error("Load profile failed: Firebase not ready or user not authenticated or db not initialized.");
                 return;
             }
             if (!profileName || profileName.trim() === '') {
@@ -947,8 +1023,8 @@ Parfum, Phthalates, Toluene"></textarea>
         };
 
         async function populateProfileDropdown() {
-            if (!isAuthReady || !currentUserId) {
-                console.warn("populateProfileDropdown: Skipping population because Firebase authentication is not ready or user ID is null.");
+            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
+                console.warn("populateProfileDropdown: Skipping population because Firebase authentication is not ready or user ID is null or db not initialized.");
                 if (window.existingProfilesSelect) {
                     window.existingProfilesSelect.innerHTML = '<option value="">الرجاء انتظار تحميل ملفك الشخصي</option>';
                 }
@@ -1137,13 +1213,18 @@ Parfum, Phthalates, Toluene"></textarea>
         let currentSuggestionsDiv = null;
 
         window.showSuggestions = function(inputElement, suggestionsDiv) {
+            console.log("showSuggestions called for:", inputElement.id);
             const inputValue = inputElement.tagName === 'TEXTAREA' ? 
                                getLastWord(inputElement.value, inputElement.selectionStart).toLowerCase() : 
                                inputElement.value.toLowerCase();
+            
+            console.log("Input value for suggestions:", inputValue);
             suggestionsDiv.innerHTML = ''; 
             suggestionsDiv.classList.add('hidden'); 
 
-            if (inputValue.length < 1) { 
+            // Only show suggestions if input value is not empty and not just spaces
+            if (inputValue.trim().length < 1) { 
+                console.log("Input value too short or just spaces for suggestions.");
                 return;
             }
 
@@ -1153,13 +1234,16 @@ Parfum, Phthalates, Toluene"></textarea>
             const uniqueMatchedNames = new Set();
             window.ingredientsDatabase.forEach(ingredient => { // Use window.ingredientsDatabase
                 ingredient.name.forEach(name => {
+                    // Match if the input value is a substring of the ingredient name
                     if (name.toLowerCase().includes(inputValue)) {
                         uniqueMatchedNames.add(name);
                     }
                 });
             });
+            console.log("Found unique matched names:", Array.from(uniqueMatchedNames));
 
             if (uniqueMatchedNames.size === 0) {
+                console.log("No unique matched names found.");
                 return;
             }
 
@@ -1170,6 +1254,7 @@ Parfum, Phthalates, Toluene"></textarea>
                 suggestionItem.classList.add('autocomplete-suggestion-item');
                 suggestionItem.textContent = suggestion;
                 suggestionItem.addEventListener('click', () => {
+                    console.log("Suggestion clicked:", suggestion);
                     if (inputElement.tagName === 'TEXTAREA') {
                         const cursorPosition = inputElement.selectionStart;
                         const textBeforeCursor = inputElement.value.substring(0, cursorPosition);
@@ -1202,22 +1287,35 @@ Parfum, Phthalates, Toluene"></textarea>
             });
 
             suggestionsDiv.classList.remove('hidden');
+            console.log("Suggestions div made visible for:", inputElement.id);
             const inputRect = inputElement.getBoundingClientRect();
             const parentRect = inputElement.parentElement.getBoundingClientRect();
             
+            // Adjust position for RTL: right should align to the right side of the input, and width should be input width
+            // Calculate 'right' from the parent's right edge
+            const rightPosition = parentRect.width - (inputRect.left - parentRect.left) - inputRect.width;
+            suggestionsDiv.style.right = `${rightPosition}px`;
+            suggestionsDiv.style.left = 'auto'; // Remove left positioning if it was set
             suggestionsDiv.style.top = `${inputRect.bottom - parentRect.top + 5}px`;
-            suggestionsDiv.style.left = `${inputRect.left - parentRect.left}px`;
             suggestionsDiv.style.width = `${inputRect.width}px`;
+            console.log("Suggestions div positioned:", suggestionsDiv.style.top, suggestionsDiv.style.right, suggestionsDiv.style.width);
         }
 
         window.getLastWord = function(text, cursorPosition) {
             const textBeforeCursor = text.substring(0, cursorPosition);
-            const lastSpaceIndex = Math.max(textBeforeCursor.lastIndexOf(' '), textBeforeCursor.lastIndexOf(','), textBeforeCursor.lastIndexOf('\n'), textBeforeCursor.lastIndexOf('.'));
-            return textBeforeCursor.substring(lastSpaceIndex + 1);
+            // Look for common delimiters: space, comma, newline, dot
+            const lastDelimiterIndex = Math.max(
+                textBeforeCursor.lastIndexOf(' '), 
+                textBeforeCursor.lastIndexOf(','), 
+                textBeforeCursor.lastIndexOf('\n'), 
+                textBeforeCursor.lastIndexOf('.')
+            );
+            return textBeforeCursor.substring(lastDelimiterIndex + 1).trim(); // Trim to get just the word
         }
 
         document.addEventListener('click', (event) => {
             if (currentSuggestionsDiv && !currentSuggestionsDiv.contains(event.target) && activeInput && !activeInput.contains(event.target)) {
+                console.log("Hiding suggestions because clicked outside.");
                 currentSuggestionsDiv.classList.add('hidden');
             }
         });
@@ -1225,8 +1323,9 @@ Parfum, Phthalates, Toluene"></textarea>
         window.showMessage = function(message, type = 'info') {
             if (messageBox) { 
                 messageBox.textContent = message;
-                messageBox.className = `mt-8 p-3 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                messageBox.className = `mt-3 p-1.5 text-xs rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
                 if (resultsContainer) resultsContainer.classList.add('hidden'); 
+                console.log("Message displayed:", message);
             } else {
                 console.warn("Message box element not found, showing message in console:", message);
             }
@@ -1235,6 +1334,7 @@ Parfum, Phthalates, Toluene"></textarea>
         window.hideMessage = function() {
             if (messageBox) { 
                 messageBox.classList.add('hidden');
+                console.log("Message box hidden.");
             }
         }
 
@@ -1250,12 +1350,14 @@ Parfum, Phthalates, Toluene"></textarea>
                 return;
             }
 
+            // Check if the ingredient exists in the database
             const foundInDb = window.ingredientsDatabase.some(dbIng => 
                 dbIng.name.some(n => n.toLowerCase() === normalizedIngredient)
             );
 
             if (!foundInDb) {
                 if (!silent) window.showMessage(`المكون "${ingredient}" غير معروف في قاعدة بياناتنا. يرجى إدخال مكون تجميلي محدد من الاقتراحات.`, 'error');
+                console.warn(`Attempted to add unknown ingredient "${ingredient}" of type "${type}".`);
                 return;
             }
 
@@ -1269,8 +1371,10 @@ Parfum, Phthalates, Toluene"></textarea>
 
             if (type === 'preferred') {
                 window.userPreferredIngredients.push(normalizedIngredient);
+                console.log("Preferred ingredients:", window.userPreferredIngredients);
             } else {
                 window.userExcludedIngredients.push(normalizedIngredient);
+                console.log("Excluded ingredients:", window.userExcludedIngredients);
             }
 
             if (!silent) window.showMessage(`تم إضافة "${ingredient}" إلى قائمة المكونات الـ ${type === 'preferred' ? 'مفضلة' : 'مستبعدة'}.`, 'info');
@@ -1291,6 +1395,7 @@ Parfum, Phthalates, Toluene"></textarea>
                 window.userExcludedIngredients = window.userExcludedIngredients.filter(item => item !== ingredient.toLowerCase());
             }
             window.showMessage(`تم حذف "${ingredient}" من القائمة.`, 'info');
+            console.log(`Removed "${ingredient}" from ${type} list.`);
         }
 
         // PWA: Register Service Worker
@@ -1369,11 +1474,13 @@ Parfum, Phthalates, Toluene"></textarea>
             if (showHelpBtn) {
                 showHelpBtn.addEventListener('click', () => {
                     if (helpModal) helpModal.classList.remove('hidden');
+                    console.log('Help button clicked, modal shown.');
                 });
             }
             if (closeHelpBtn) {
                 closeHelpBtn.addEventListener('click', () => {
                     if (helpModal) helpModal.classList.add('hidden');
+                    console.log('Close Help button clicked, modal hidden.');
                 });
             }
             if (helpModal) {
@@ -1381,6 +1488,7 @@ Parfum, Phthalates, Toluene"></textarea>
                     // Close modal if clicking outside the modal content area
                     if (e.target === helpModal) {
                         helpModal.classList.add('hidden');
+                        console.log('Help modal clicked outside, modal hidden.');
                     }
                 });
             }
@@ -1414,15 +1522,25 @@ Parfum, Phthalates, Toluene"></textarea>
             // Autocomplete event listeners
             if (preferredIngredientInput && preferredSuggestions) {
                 preferredIngredientInput.addEventListener('input', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions));
-                preferredIngredientInput.addEventListener('blur', () => setTimeout(() => preferredSuggestions.classList.add('hidden'), 100));
+                preferredIngredientInput.addEventListener('focus', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions)); // Show on focus too
+                preferredIngredientInput.addEventListener('blur', () => {
+                    // Give a small delay to allow click on suggestion before hiding
+                    setTimeout(() => preferredSuggestions.classList.add('hidden'), 150); 
+                });
             }
             if (excludedIngredientInput && excludedSuggestions) {
                 excludedIngredientInput.addEventListener('input', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions));
-                excludedIngredientInput.addEventListener('blur', () => setTimeout(() => excludedSuggestions.classList.add('hidden'), 100));
+                excludedIngredientInput.addEventListener('focus', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions)); // Show on focus too
+                excludedIngredientInput.addEventListener('blur', () => {
+                    setTimeout(() => excludedSuggestions.classList.add('hidden'), 150); 
+                });
             }
             if (ingredientsInput && mainSuggestions) {
                 ingredientsInput.addEventListener('input', () => window.showSuggestions(ingredientsInput, mainSuggestions));
-                ingredientsInput.addEventListener('blur', () => setTimeout(() => mainSuggestions.classList.add('hidden'), 100));
+                ingredientsInput.addEventListener('focus', () => window.showSuggestions(ingredientsInput, mainSuggestions)); // Show on focus too
+                ingredientsInput.addEventListener('blur', () => {
+                    setTimeout(() => mainSuggestions.classList.add('hidden'), 150); 
+                });
             }
             
             // General event listeners for adding/removing tags
@@ -1488,10 +1606,12 @@ Parfum, Phthalates, Toluene"></textarea>
                     scanButtonText.textContent = 'جاري المسح والتحليل...';
                     scanLoadingSpinner.classList.remove('hidden');
                     scanImageBtn.disabled = true; // Disable button during scan
+                    console.log("Scanning image: Loading indicator shown.");
 
                     const reader = new FileReader();
                     reader.onloadend = async () => {
                         const base64ImageData = reader.result.split(',')[1]; // Get base64 string without data:image/jpeg;base64, prefix
+                        console.log("Image read as base64. Calling LLM...");
 
                         try {
                             const prompt = "من فضلك، قم باستخراج جميع المكونات التجميلية المذكورة في هذه الصورة. قم بفصل كل مكون بفاصلة. لا تقم بتضمين أي معلومات أخرى غير قائمة المكونات.";
@@ -1515,7 +1635,7 @@ Parfum, Phthalates, Toluene"></textarea>
                                 ],
                             };
 
-                            const apiKey = ""; // If you want to use models other than gemini-2.0-flash or imagen-3.0-generate-002, provide an API key here. Otherwise, leave this as-is.
+                            const apiKey = ""; 
                             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
                             
                             const response = await fetch(apiUrl, {
@@ -1529,11 +1649,13 @@ Parfum, Phthalates, Toluene"></textarea>
                             }
 
                             const result = await response.json();
+                            console.log("LLM response received:", result);
                             
                             if (result.candidates && result.candidates.length > 0 &&
                                 result.candidates[0].content && result.candidates[0].content.parts &&
                                 result.candidates[0].content.parts.length > 0) {
                                 const extractedText = result.candidates[0].content.parts[0].text;
+                                console.log("Extracted text from LLM:", extractedText);
                                 
                                 // Populate the ingredients input and trigger analysis
                                 ingredientsInput.value = extractedText;
@@ -1552,6 +1674,7 @@ Parfum, Phthalates, Toluene"></textarea>
                             scanButtonText.textContent = 'مسح وتحليل المكونات من الصورة';
                             scanLoadingSpinner.classList.add('hidden');
                             scanImageBtn.disabled = false; // Re-enable button
+                            console.log("Scanning image: Loading indicator hidden, button re-enabled.");
                         }
                     };
                     reader.readAsDataURL(file); // Start reading the file
@@ -1561,6 +1684,7 @@ Parfum, Phthalates, Toluene"></textarea>
 
             if (analyzeButton) {
                 analyzeButton.addEventListener('click', () => {
+                    console.log("Analyze button clicked.");
                     try { 
                         window.hideMessage(); 
                         ingredientList.innerHTML = ''; 
@@ -1568,6 +1692,7 @@ Parfum, Phthalates, Toluene"></textarea>
                         resultsContainer.classList.add('hidden'); 
 
                         const rawInput = ingredientsInput.value.trim();
+                        console.log("Raw input for analysis:", rawInput); 
                         if (!rawInput) {
                             window.showMessage('الرجاء إدخال قائمة المكونات لتحليلها.');
                             return;
@@ -1579,12 +1704,14 @@ Parfum, Phthalates, Toluene"></textarea>
                                                         .map(checkbox => checkbox.value);
                         const userAge = parseInt(userAgeInput.value, 10);
                         const isPregnant = isPregnantCheckbox.checked;
-                        const medicalConditionsText = medicalConditionsInput.value.toLowerCase(); // For keyword matching
+                        const medicalConditionsText = medicalConditionsInput.value.toLowerCase(); 
 
                         const inputIngredients = rawInput.split(/[,;\n.]/).map(item => item.trim()).filter(item => item.length > 0);
+                        console.log("Parsed input ingredients:", inputIngredients); 
 
                         if (inputIngredients.length === 0) {
                             window.showMessage('لم يتم العثور على مكونات صالحة في الإدخال.');
+                            console.log("No valid ingredients found after parsing.");
                             return;
                         }
 
@@ -1602,29 +1729,31 @@ Parfum, Phthalates, Toluene"></textarea>
                             if (isExcluded) {
                                 hasExcludedIngredient = true;
                                 skinSuitabilityScore -= 5;
+                                console.log(`Ingredient "${inputIng}" is excluded.`);
                             }
 
                             const foundIngredient = window.ingredientsDatabase.find(dbIng => 
                                 dbIng.name.some(n => n.toLowerCase() === inputIng.toLowerCase())
                             );
+                            console.log(`Analyzing "${inputIng}": Found in DB?`, !!foundIngredient); 
 
                             const ingredientItem = document.createElement('div');
-                            ingredientItem.className = 'flex items-start gap-3';
+                            ingredientItem.className = 'flex items-start gap-2'; /* Reduced gap */
 
-                            let iconSvg = `<svg class="w-6 h-6 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; 
+                            let iconSvg = `<svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                             let textColorClass = 'text-gray-800';
                             let classificationText = 'غير معروف';
                             let descriptionText = 'لا تتوفر معلومات لهذا المكون في قاعدة بياناتنا الحالية.';
                             let isPreferred = window.userPreferredIngredients.includes(inputIng.toLowerCase());
                             let skinSpecificNoteHtml = '';
-                            let isSkinNoteNegative = false;
                             
-                            const relevantNotes = []; // Collect all relevant notes here
+                            const relevantNotes = []; 
 
                             if (foundIngredient) {
                                 analyzedCount++;
                                 classificationText = foundIngredient.classification;
                                 descriptionText = foundIngredient.description;
+                                console.log(`Ingredient "${inputIng}" classification: ${classificationText}, description: ${descriptionText}`);
 
                                 // Add skin type and concern notes
                                 if (foundIngredient.skin_notes) {
@@ -1644,8 +1773,6 @@ Parfum, Phthalates, Toluene"></textarea>
 
                                 // Add age notes
                                 if (!isNaN(userAge) && userAge > 0 && foundIngredient.age_notes) {
-                                    // Example logic: if ingredient has age restriction/note
-                                    // You might want more complex age logic (e.g., specific age ranges)
                                     relevantNotes.push({ text: `ملاحظة للعمر: ${foundIngredient.age_notes}`, type: 'age', negative: true });
                                 }
                                 
@@ -1668,72 +1795,67 @@ Parfum, Phthalates, Toluene"></textarea>
                                     const noteText = noteObj.text;
                                     let noteColorClass = 'text-fuchsia-600'; 
 
-                                    // Determine if the note is negative and adjust color/score
                                     if (noteText.includes('يسد المسام') || noteText.includes('يزيد من حب الشباب') || noteText.includes('مهيج') || noteText.includes('يزيد الجفاف') || noteText.includes('تفاقم') || noteText.includes('تجنبه تماماً') || noteText.includes('لا يفضل') || noteObj.negative) {
                                         noteColorClass = 'text-red-600'; 
-                                        isSkinNoteNegative = true; 
-                                        skinSuitabilityScore -= (noteObj.type === 'pregnancy' || noteObj.type === 'age' || noteObj.type === 'medical') ? 4 : 2; // Higher penalty for critical notes
+                                        skinSuitabilityScore -= (noteObj.type === 'pregnancy' || noteObj.type === 'age' || noteObj.type === 'medical') ? 4 : 2; 
+                                        console.log(`Negative note for "${inputIng}": ${noteText}. Score adjusted to ${skinSuitabilityScore}`);
                                     } else if (noteText.includes('ممتاز') || noteText.includes('يساعد') || noteText.includes('يقلل') || noteText.includes('مهدئ') || noteText.includes('يعزز') || noteText.includes('مفيد') || noteText.includes('لطيف') || noteText.includes('توازن')) {
                                         noteColorClass = 'text-green-600'; 
+                                        console.log(`Positive note for "${inputIng}": ${noteText}.`);
                                     }
 
-                                    skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-1">${noteText}</span>`;
+                                    skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-0.5">${noteText}</span>`; /* Reduced margin-top, font size */
                                     personalizedSkinNotes.push(`- ${inputIng} (${noteObj.type === 'normal' ? 'عادية' : noteObj.type === 'oily' ? 'دهنية' : noteObj.type === 'dry' ? 'جافة' : noteObj.type === 'combination' ? 'مختلطة' : noteObj.type === 'sensitive' ? 'حساسة' : noteObj.type === 'acne' ? 'حب الشباب' : noteObj.type === 'aging' ? 'الشيخوخة' : noteObj.type === 'pigmentation' ? 'التصبغات' : noteObj.type === 'redness' ? 'الاحمرار' : noteObj.type === 'dehydration' ? 'الجفاف' : noteObj.type === 'age' ? 'العمر' : noteObj.type === 'pregnancy' ? 'الحمل' : noteObj.type === 'medical' ? 'الحالة الصحية' : ''}): ${noteText}`);
                                 });
 
 
                                 if (foundIngredient.classification.includes('جيد للبشرة')) {
-                                    iconSvg = `<svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                                    iconSvg = `<svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                     textColorClass = 'text-emerald-700';
                                     goodCount++;
                                     skinSuitabilityScore += 1; 
                                 } else if (foundIngredient.classification.includes('تحذير: مكون ضار جداً')) {
-                                    iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg`;
+                                    iconSvg = `<svg class="w-5 h-5 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                     textColorClass = 'text-red-900';
                                     veryHarmfulCount++;
                                     warningCount++;
                                     skinSuitabilityScore -= 3; 
                                 } else if (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام') || foundIngredient.classification.includes('قد يحتوي على شوائب')) {
-                                    iconSvg = `<svg class="w-6 h-6 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
+                                    iconSvg = `<svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                     textColorClass = 'text-amber-700';
                                     warningCount++;
                                     skinSuitabilityScore -= 1; 
                                 } else if (foundIngredient.classification.includes('عضوي')) {
-                                    iconSvg = `<svg class="w-6 h-6 text-lime-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>`;
+                                    iconSvg = `<svg class="w-5 h-5 text-lime-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>`; /* Reduced icon size */
                                     textColorClass = 'text-lime-800';
                                     organicCount++;
                                     goodCount++;
                                     skinSuitabilityScore += 1; 
                                 } else if (foundIngredient.classification.includes('نوع منتج') || foundIngredient.classification.includes('نوع مكون')) {
-                                    iconSvg = `<svg class="w-6 h-6 text-sky-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm3 1a1 1 0 10-2 0v3a1 1 0 102 0V8z" clip-rule="evenodd"></path></svg>`;
+                                    iconSvg = `<svg class="w-5 h-5 text-sky-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm3 1a1 1 0 10-2 0v3a1 1 0 102 0V8z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                     textColorClass = 'text-sky-700';
                                 }
                             }
 
                             let personalizedNote = '';
                             if (isExcluded) {
-                                iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
+                                iconSvg = `<svg class="w-5 h-5 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                 textColorClass = 'text-red-900 font-bold';
-                                personalizedNote = '<span class="text-xs text-red-600 mr-2">(مستبعد في تفضيلاتك!)</span>';
+                                personalizedNote = '<span class="text-xs text-red-600 mr-1.5">(مستبعد في تفضيلاتك!)</span>'; /* Reduced margin */
                             } else if (isPreferred) {
-                                iconSvg = `<svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
+                                iconSvg = `<svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
                                 textColorClass = 'text-blue-800 font-bold';
-                                personalizedNote = '<span class="text-xs text-blue-600 mr-2">(مكون مفضل لك!)</span>';
+                                personalizedNote = '<span class="text-xs text-blue-600 mr-1.5">(مكون مفضل لك!)</span>'; /* Reduced margin */
                                 skinSuitabilityScore += 1; 
                             }
-
-                            // isSkinNoteNegative logic is now integrated into the relevantNotes loop where score penalty is applied
-                            // if (isSkinNoteNegative) {
-                            //     skinSuitabilityScore -= 2; 
-                            // }
 
                             ingredientItem.innerHTML = `
                                 <div class="flex-shrink-0">
                                     ${iconSvg}
                                 </div>
                                 <div class="flex-1">
-                                    <p class="font-semibold text-lg ${textColorClass}">${inputIng} ${personalizedNote} <span class="text-sm font-normal text-gray-500">(${classificationText})</span></p>
-                                    <p class="text-sm text-gray-600">${descriptionText} ${skinSpecificNoteHtml}</p>
+                                    <p class="font-semibold text-sm ${textColorClass}">${inputIng} ${personalizedNote} <span class="text-xs font-normal text-gray-500">(${classificationText})</span></p> /* Reduced font size */
+                                    <p class="text-xs text-gray-600">${descriptionText} ${skinSpecificNoteHtml}</p> /* Reduced font size */
                                 </div>
                             `;
                             ingredientList.appendChild(ingredientItem);
@@ -1742,8 +1864,8 @@ Parfum, Phthalates, Toluene"></textarea>
                         let recommendationTitle = '';
                         let recommendationMessage = '';
                         let recommendationClass = '';
+                        console.log("Final skin suitability score:", skinSuitabilityScore);
 
-                        // Adjust overall recommendation based on skin suitability score
                         if (skinSuitabilityScore < -5 || veryHarmfulCount > 0 || hasExcludedIngredient) {
                             recommendationTitle = 'قد لا يكون هذا المنتج الأفضل لبشرتك.';
                             recommendationMessage = `يحتوي على ${veryHarmfulCount > 0 ? `مكونات ضارة جداً (${veryHarmfulCount})` : ''} ${hasExcludedIngredient ? `و/أو مكونات قمت بتحديدها كمستبعدة.` : ''} يفضل تجنب المنتجات التي تحتوي على هذه المكونات إذا كانت بشرتك حساسة أو تعاني من مشاكل محددة أو في ظروف خاصة (مثل الحمل/العمر).`;
@@ -1765,7 +1887,7 @@ Parfum, Phthalates, Toluene"></textarea>
                         if (analyzedCount > 0) {
                             let topMessage = '';
                             if (hasExcludedIngredient || veryHarmfulCount > 0 || personalizedSkinNotes.some(note => note.includes('تجنبه تماماً') || note.includes('لا يفضل') || note.includes('غير آمن للحمل') || note.includes('ملاحظة للعمر'))) {
-                                topMessage = `<div class="p-3 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-lg">
+                                topMessage = `<div class="p-2.5 mb-2.5 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-sm"> /* Reduced padding, margins, font size */
                                                 تنبيه: قد يحتوي هذا المنتج على مكونات غير مناسبة بناءً على ملفك الشخصي أو تفضيلاتك!
                                             </div>`;
                             }
@@ -1773,8 +1895,8 @@ Parfum, Phthalates, Toluene"></textarea>
                             let skinProfileSummary = '';
                             if (personalizedSkinNotes.length > 0) {
                                 skinProfileSummary = `
-                                    <h3 class="text-xl font-bold text-fuchsia-700 mt-6 mb-3 text-center">ملاحظات شخصية لبشرتك:</h3>
-                                    <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-1">
+                                    <h3 class="text-base font-bold text-fuchsia-700 mt-3 mb-1.5 text-center">ملاحظات شخصية لبشرتك:</h3> /* Reduced font size, margins */
+                                    <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-0.5 text-xs"> /* Reduced space-y, font size */
                                         ${personalizedSkinNotes.map(note => `<li>${note}</li>`).join('')}
                                     </ul>
                                 `;
@@ -1782,20 +1904,23 @@ Parfum, Phthalates, Toluene"></textarea>
 
                             summary.innerHTML = `
                                 ${topMessage}
-                                <div class="p-4 rounded-lg ${recommendationClass} mb-4 text-center">
-                                    <h3 class="font-bold text-xl">${recommendationTitle}</h3>
-                                    <p class="text-sm">${recommendationMessage}</p>
+                                <div class="p-2.5 rounded-lg ${recommendationClass} mb-2.5 text-center"> /* Reduced padding, margins */
+                                    <h3 class="font-bold text-sm">${recommendationTitle}</h3> /* Reduced font size */
+                                    <p class="text-xs">${recommendationMessage}</p> /* Reduced font size */
                                 </div>
-                                <p class="text-lg">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p>
-                                <p class="text-lg">المكونات الجيدة: <strong class="text-emerald-700">${goodCount}</strong></p>
-                                <p class="text-lg">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p>
-                                <p class="text-lg">المكونات التي تحتاج إلى انتباه: <strong class="text-amber-700">${warningCount}</strong></p>
-                                <p class="text-lg ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p>
+                                <p class="text-sm">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p> /* Reduced font size */
+                                <p class="text-sm">المكونات الجيدة: <strong class="text-emerald-700">${goodCount}</strong></p> /* Reduced font size */
+                                <p class="text-sm">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p> /* Reduced font size */
+                                <p class="text-sm">المكونات التي تحتاج إلى انتباه: <strong class="text-amber-700">${warningCount}</strong></p> /* Reduced font size */
+                                <p class="text-sm ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p> /* Reduced font size */
                                 ${skinProfileSummary}
                             `;
                             resultsContainer.classList.remove('hidden'); 
+                            console.log("Results container should be visible now."); 
                         } else {
                             window.showMessage('لم يتم العثور على أي مكونات معروفة في قاعدة البيانات الحالية.');
+                            resultsContainer.classList.add('hidden'); 
+                            console.log("No known ingredients found, results container remains hidden.");
                         }
                     } catch (error) {
                         console.error("An error occurred during analysis:", error);
@@ -1803,7 +1928,7 @@ Parfum, Phthalates, Toluene"></textarea>
                     }
                 });
             }
-        }); // End DOMContentLoaded for event listeners and global vars
+        }); 
     </script>
 </body>
 </html>
