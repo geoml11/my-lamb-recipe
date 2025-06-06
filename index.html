@@ -102,6 +102,20 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Full page overlay for authentication */
+        #authOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 60; /* Higher than other modals */
+        }
     </style>
     <!-- PWA: Link to manifest.json -->
     <link rel="manifest" href="/manifest.json">
@@ -111,7 +125,21 @@
     <meta name="theme-color" content="#4ADE80"/>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200">
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200 relative">
+        <!-- Help Button - Top Right Corner -->
+        <button id="showHelpBtn" class="absolute top-4 left-4 bg-blue-600 text-white py-2 px-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-10 flex items-center gap-1">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2zm1-5a1 1 0 10-2 0V9a1 1 0 102 0v1z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-sm font-semibold">مساعدة</span>
+        </button>
+
+        <!-- Logout Button - Top Right Corner (next to help button) -->
+        <button id="logoutBtn" class="absolute top-4 left-24 bg-gray-500 text-white py-2 px-3 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-300 z-10 flex items-center gap-1 hidden">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span class="text-sm font-semibold">تسجيل الخروج</span>
+        </button>
+
         <!-- Hero Section -->
         <div class="text-center mb-8 pb-6 border-b border-green-200">
             <h1 class="text-4xl font-extrabold text-emerald-800 mb-3 leading-tight">
@@ -121,6 +149,33 @@
                 أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
             </p>
         </div>
+
+        <!-- Dashboard Section -->
+        <div class="mb-8 p-6 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200">
+            <h2 class="text-2xl font-bold text-indigo-700 mb-4 text-center">لوحة التحكم</h2>
+            <p class="text-md text-gray-700 mb-3 text-center">
+                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-xl">0</span>
+            </p>
+            <div id="globalAnnouncement" class="p-3 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-4 hidden">
+                <p class="font-semibold">إعلان عام:</p>
+                <p id="announcementText" class="text-sm italic"></p>
+            </div>
+            
+            <div id="adminSettings" class="mt-6 p-4 bg-indigo-100 rounded-lg border border-indigo-300 hidden">
+                <h3 class="text-xl font-bold text-indigo-700 mb-3 text-center">إعدادات المسؤول</h3>
+                <p class="text-sm text-gray-700 mb-4 text-center">
+                    معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
+                </p>
+                <div class="mb-4">
+                    <label for="globalAnnouncementInput" class="block text-gray-700 text-sm font-semibold mb-2">رسالة الإعلان العامة:</label>
+                    <input type="text" id="globalAnnouncementInput" class="w-full p-2 border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا">
+                </div>
+                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md">
+                    حفظ الإعدادات العامة
+                </button>
+            </div>
+        </div>
+        <!-- End Dashboard Section -->
 
         <!-- Section: Save/Load Profile -->
         <div class="mb-8 p-6 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
@@ -215,6 +270,21 @@
                         </label>
                     </div>
                 </div>
+                <!-- New fields for age, pregnancy, and medical conditions -->
+                <div>
+                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-2">عمرك:</label>
+                    <input type="number" id="userAge" min="1" max="120" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك">
+                </div>
+                <div class="md:col-span-2"> <!-- Span full width for this checkbox -->
+                    <label class="inline-flex items-center p-2 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                        <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-4 w-4 rounded mr-2">
+                        <span>هل أنت حامل؟</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2"> <!-- Span full width for this textarea -->
+                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-2">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label>
+                    <textarea id="medicalConditionsInput" rows="2" class="w-full p-2 border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea>
+                </div>
             </div>
         </div>
         <!-- End Section: Skin Profile -->
@@ -253,7 +323,7 @@
                     </div>
             </div>
         </div>
-        <!-- End Section: Preferred & Excluded Ingredients -->
+        <!-- End Section: Preferred & Excluding Ingredients -->
 
         <div class="mb-6">
             <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-2">
@@ -272,55 +342,8 @@ Parfum, Phthalates, Toluene"></textarea>
             تحليل المكونات
         </button>
 
-        ---
+        <!-- The "كيفية استخدام الأداة" section is now removed from here as per previous request -->
 
-        <div class="mb-8 p-6 bg-blue-50 rounded-xl shadow-sm border border-blue-200">
-            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">
-                كيفية استخدام الأداة
-            </h2>
-            <ol class="list-decimal list-inside text-gray-700 space-y-3">
-                <li>
-                    <strong class="text-blue-600">تحديد ملفك الشخصي للبشرة:</strong>
-                    اختر نوع بشرتك (عادية، دهنية، جافة، مختلطة، حساسة) وحدد اهتمامات بشرتك (مثل حب الشباب، الشيخوخة، التصبغات) من خلال مربعات الاختيار.
-                </li>
-                <li>
-                    <strong class="text-blue-600">إضافة تفضيلات المكونات:</strong>
-                    في قسم "تفضيلاتك الشخصية للمكونات"، يمكنك:
-                    <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
-                        <li>أضف **مكوناتك المفضلة** التي تحب رؤيتها في المنتجات.</li>
-                        <li>أضف **مكوناتك المستبعدة/المتحسس منها** التي ترغب في تجنبها.</li>
-                        <li>ستظهر لك **اقتراحات تلقائية** أثناء الكتابة، يمكنك النقر عليها لإضافتها.</li>
-                    </ul>
-                </li>
-                <li>
-                    <strong class="text-blue-600">مسح المكونات من صورة:</strong>
-                    في قسم "مسح المكونات من صورة عبوة المنتج"، حمّل صورة لعبوة المنتج. بعد تحميلها، انقر على زر "مسح وتحليل المكونات من الصورة" لاستخراج المكونات تلقائياً وتحليلها.
-                </li>
-                <li>
-                    <strong class="text-blue-600">لصق قائمة المكونات للتحليل (بديل للمسح):</strong>
-                    إذا لم ترغب في استخدام ميزة المسح، يمكنك في حقل النص الكبير، الصق قائمة المكونات من منتج العناية بالبشرة الذي ترغب في تحليله. يمكنك فصل المكونات بفاصلة (`,`) أو نقطة (`.`) أو كل مكون في سطر جديد.
-                </li>
-                <li>
-                    <strong class="text-blue-600">بدء التحليل:</strong>
-                    انقر على زر "<strong class="text-emerald-600">تحليل المكونات</strong>" لتبدأ الأداة في مقارنة المكونات المدخلة مع قاعدة بياناتها وتفضيلاتك الشخصية.
-                </li>
-                <li>
-                    <strong class="text-blue-600">مراجعة النتائج:</strong>
-                    سيظهر قسم "نتائج التحليل" مع:
-                    <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
-                        <li><strong>تصنيف كل مكون:</strong> سواء كان جيدًا، يتطلب تحذيرًا، ضارًا جداً، أو غير معروف.</li>
-                        <li><strong>ملاحظات مخصصة:</strong> بناءً على نوع بشرتك واهتماماتك، بالإضافة إلى المكونات المفضلة أو المستبعدة.</li>
-                        <li><strong>ملخص عام:</strong> يقدم تقييماً شاملاً لمدى ملاءمة المنتج لبشرتك.</li>
-                    </ul>
-                </li>
-                <li>
-                    <strong class="text-blue-600">حفظ وتحميل ملفاتك الشخصية:</strong>
-                    في قسم "إدارة ملفاتك الشخصية"، يمكنك حفظ إعدادات بشرتك وتفضيلات المكونات لتحميلها لاحقاً. فقط أدخل اسماً للملف وانقر على "حفظ"، أو اختر من القائمة وانقر "تحميل".
-                </li>
-            </ol>
-        </div>
-
-        ---
         <div id="resultsContainer" class="mt-8 p-6 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden">
             <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
             <div id="ingredientList" class="space-y-4">
@@ -329,138 +352,482 @@ Parfum, Phthalates, Toluene"></textarea>
                 </div>
         </div>
 
-        <div id="messageBox" class="mt-8 p-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
+        <!-- Credit Section - Moved to bottom -->
+        <div class="mt-8 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-sm text-gray-600 italic">
+            <p>هذه الأداة من تصميم وفكرة: <span class="font-semibold text-gray-800 not-italic">جورج جريج</span></p>
+        </div>
+        <!-- End Credit Section -->
+
+        <!-- Message Box - Adjusted padding and text size -->
+        <div id="messageBox" class="mt-8 p-3 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
             </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <!-- Adjusted max-w to md for a smaller dialog -->
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md mx-4 relative">
+            <button id="closeHelpBtn" class="absolute top-4 left-4 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">كيفية استخدام الأداة</h2>
+            <div id="helpContent" class="text-gray-700 max-h-96 overflow-y-auto pr-2 pl-2 text-sm"> <!-- Smaller text for help content -->
+                <!-- Content from "كيفية استخدام الأداة" will be moved here by JS -->
+                <ol class="list-decimal list-inside text-gray-700 space-y-3">
+                    <li>
+                        <strong class="text-blue-600">تحديد ملفك الشخصي للبشرة:</strong>
+                        اختر نوع بشرتك (عادية، دهنية، جافة، مختلطة، حساسة) وحدد اهتمامات بشرتك (مثل حب الشباب، الشيخوخة، التصبغات) من خلال مربعات الاختيار.
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">إضافة تفضيلات المكونات:</strong>
+                        في قسم "تفضيلاتك الشخصية للمكونات"، يمكنك:
+                        <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                            <li>أضف **مكوناتك المفضلة** التي تحب رؤيتها في المنتجات.</li>
+                            <li>أضف **مكوناتك المستبعدة/المتحسس منها** التي ترغب في تجنبها.</li>
+                            <li>ستظهر لك **اقتراحات تلقائية** أثناء الكتابة، يمكنك النقر عليها لإضافتها.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">مسح المكونات من صورة:</strong>
+                        في قسم "مسح المكونات من صورة عبوة المنتج"، حمّل صورة لعبوة المنتج. بعد تحميلها، انقر على زر "مسح وتحليل المكونات من الصورة" لاستخراج المكونات تلقائياً وتحليلها.
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">لصق قائمة المكونات للتحليل (بديل للمسح):</strong>
+                        إذا لم ترغب في استخدام ميزة المسح، يمكنك في حقل النص الكبير، الصق قائمة المكونات من منتج العناية بالبشرة الذي ترغب في تحليله. يمكنك فصل المكونات بفاصلة (`,`) أو نقطة (`.`) أو كل مكون في سطر جديد.
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">بدء التحليل:</strong>
+                        انقر على زر "<strong class="text-emerald-600">تحليل المكونات</strong>" لتبدأ الأداة في مقارنة المكونات المدخلة مع قاعدة بياناتها وتفضيلاتك الشخصية.
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">مراجعة النتائج:</strong>
+                        سيظهر قسم "نتائج التحليل" مع:
+                        <ul class="list-disc list-inside ml-5 mt-1 space-y-1">
+                            <li><strong>تصنيف كل مكون:</strong> سواء كان جيدًا، يتطلب تحذيرًا، ضارًا جداً، أو غير معروف.</li>
+                            <li><strong>ملاحظات مخصصة:</strong> بناءً على نوع بشرتك واهتماماتك، بالإضافة إلى المكونات المفضلة أو المستبعدة.</li>
+                            <li><strong>ملخص عام:</strong> يقدم تقييماً شاملاً لمدى ملاءمة المنتج لبشرتك.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong class="text-blue-600">حفظ وتحميل ملفاتك الشخصية:</strong>
+                        في قسم "إدارة ملفاتك الشخصية"، يمكنك حفظ إعدادات بشرتك وتفضيلات المكونات لتحميلها لاحقاً. فقط أدخل اسماً للملف وانقر على "حفظ"، أو اختر من القائمة وانقر "تحميل".
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Overlay (Login/Register Form) -->
+    <div id="authOverlay" class="hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm mx-4 text-center">
+            <h2 class="text-3xl font-bold text-emerald-700 mb-6">تسجيل الدخول / التسجيل</h2>
+            <div class="mb-4">
+                <label for="authEmail" class="block text-gray-700 text-sm font-semibold mb-2 text-right">البريد الإلكتروني:</label>
+                <input type="email" id="authEmail" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل بريدك الإلكتروني">
+            </div>
+            <div class="mb-6">
+                <label for="authPassword" class="block text-gray-700 text-sm font-semibold mb-2 text-right">كلمة المرور:</label>
+                <input type="password" id="authPassword" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل كلمة المرور">
+            </div>
+            <div class="flex flex-col gap-4">
+                <button id="loginBtn" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-md">
+                    تسجيل الدخول
+                </button>
+                <button id="registerBtn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 shadow-md">
+                    إنشاء حساب جديد
+                </button>
+                <!-- Message box for auth errors -->
+                <div id="authMessageBox" class="mt-4 p-3 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Firebase SDK Script -->
     <!-- Place this script at the end of the body to ensure DOM elements are loaded -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
 
         // Global variables for Firebase (MUST be defined even if empty string)
-        // هذه المتغيرات يتم توفيرها تلقائيًا من بيئة Canvas (إذا كانت متوفرة)
-        // It is mandatory to use these variables for Firebase initialization.
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // The initialAuthToken is typically for Canvas internal auth, not email/password.
+        // We will remove its direct use for determining admin access here for a more standard email/password flow.
+        // const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
 
         let app;
         let db;
         let auth;
         let currentUserId = null; 
         let isAuthReady = false; 
+        // For this demo, any authenticated user will see admin settings.
+        // In a real application, you would manage roles (e.g., via Firestore document for user roles).
+        let isAdmin = false; 
+
+        // DOM elements for authentication
+        let authOverlay;
+        let authEmailInput;
+        let authPasswordInput;
+        let loginBtn;
+        let registerBtn;
+        let logoutBtn;
+        let authMessageBox;
+
+        // Function to show authentication message
+        function showAuthMessage(message, type = 'info') {
+            if (authMessageBox) {
+                authMessageBox.textContent = message;
+                authMessageBox.className = `mt-4 p-3 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+            }
+        }
+
+        // Function to hide authentication message
+        function hideAuthMessage() {
+            if (authMessageBox) {
+                authMessageBox.classList.add('hidden');
+            }
+        }
 
         // Initialize Firebase
-        if (Object.keys(firebaseConfig).length > 0) {
-            console.log("Firebase: __app_id:", appId);
-            console.log("Firebase: __firebase_config received:", firebaseConfig);
-            console.log("Firebase: __initial_auth_token received:", initialAuthToken ? "exists" : "null/undefined");
-            
-            // Set initial status message for Firebase, assuming elements exist by now
-            if (window.firebaseStatusDisplay) {
-                window.firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
-            }
-            if (window.userIdDisplay) {
-                window.userIdDisplay.textContent = 'جارٍ التحميل...';
-            }
-            
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                console.log("Firebase: App and services initialized successfully.");
-                if (window.firebaseStatusDisplay) {
-                    window.firebaseStatusDisplay.textContent = 'تم تهيئة Firebase بنجاح.';
-                }
-            } catch (initError) {
-                console.error("Firebase initialization failed:", initError);
-                if (window.firebaseStatusDisplay) {
-                    window.firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
-                }
-                window.showMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
-                return; 
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get auth-related DOM elements
+            authOverlay = document.getElementById('authOverlay');
+            authEmailInput = document.getElementById('authEmail');
+            authPasswordInput = document.getElementById('authPassword');
+            loginBtn = document.getElementById('loginBtn');
+            registerBtn = document.getElementById('registerBtn');
+            logoutBtn = document.getElementById('logoutBtn');
+            authMessageBox = document.getElementById('authMessageBox');
 
-            // Authentication Listener
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    currentUserId = user.uid;
-                    isAuthReady = true;
-                    console.log("Firebase Authenticated! User ID:", currentUserId);
-                    if (window.userIdDisplay) {
-                        window.userIdDisplay.textContent = currentUserId;
-                    }
+            if (Object.keys(firebaseConfig).length > 0) {
+                console.log("Firebase: __app_id:", appId);
+                console.log("Firebase: __firebase_config received:", firebaseConfig);
+                
+                if (window.firebaseStatusDisplay) {
+                    window.firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
+                }
+                if (window.userIdDisplay) {
+                    window.userIdDisplay.textContent = 'جارٍ التحميل...';
+                }
+                if (window.adminUserIdDisplay) {
+                    window.adminUserIdDisplay.textContent = 'جارٍ التحميل...';
+                }
+                
+                try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    console.log("Firebase: App and services initialized successfully.");
                     if (window.firebaseStatusDisplay) {
-                        window.firebaseStatusDisplay.textContent = 'Firebase جاهز (تم تسجيل الدخول).';
+                        window.firebaseStatusDisplay.textContent = 'تم تهيئة Firebase بنجاح.';
                     }
-                    
-                    // Fetch and populate profiles after authentication
-                    await populateProfileDropdown();
-                    // Attempt to load a default profile automatically
-                    await window.loadProfile('default-profile', true); // Silent load for default
 
-                } else {
-                    currentUserId = null;
-                    isAuthReady = false;
-                    if (window.userIdDisplay) {
-                        window.userIdDisplay.textContent = 'غير متوفر (يرجى تسجيل الدخول)';
-                    }
-                    if (window.firebaseStatusDisplay) {
-                        window.firebaseStatusDisplay.textContent = 'Firebase متصل (لم يتم تسجيل الدخول).';
-                    }
-                    console.log("Firebase: No user is signed in.");
-                    // Attempt anonymous sign-in if no token provided
-                    if (!initialAuthToken) {
-                        try {
-                            console.log("Firebase: Attempting anonymous sign-in...");
-                            await signInAnonymously(auth);
-                            console.log("Firebase: Signed in anonymously.");
-                        } catch (error) {
-                            console.error("Firebase Anonymous sign-in failed:", error);
-                            window.showMessage("فشل تسجيل الدخول المجهول إلى Firebase. لن يتم حفظ/تحميل ملفك الشخصي.", 'error');
-                            if (window.firebaseStatusDisplay) {
-                                window.firebaseStatusDisplay.textContent = 'فشل تسجيل الدخول المجهول.';
+                    // --- Authentication Listeners ---
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            currentUserId = user.uid;
+                            isAuthReady = true;
+                            isAdmin = true; // For demo purposes, any logged-in user is "admin"
+                            console.log("Firebase Authenticated! User ID:", currentUserId);
+                            if (window.userIdDisplay) {
+                                window.userIdDisplay.textContent = currentUserId;
                             }
+                            if (window.adminUserIdDisplay) {
+                                window.adminUserIdDisplay.textContent = currentUserId;
+                            }
+                            if (window.firebaseStatusDisplay) {
+                                window.firebaseStatusDisplay.textContent = 'Firebase جاهز (تم تسجيل الدخول).';
+                            }
+                            
+                            // Hide auth overlay and show main app content
+                            if (authOverlay) authOverlay.classList.add('hidden');
+                            if (logoutBtn) logoutBtn.classList.remove('hidden');
+                            if (window.adminSettings && isAdmin) { // Show admin settings if logged in and admin
+                                window.adminSettings.classList.remove('hidden');
+                            } else if (window.adminSettings) {
+                                window.adminSettings.classList.add('hidden');
+                            }
+                            
+                            // Fetch and populate profiles after authentication
+                            await populateProfileDropdown();
+                            // Attempt to load a default profile automatically
+                            await window.loadProfile('default-profile', true); // Silent load for default
+
+                            // Start presence updates and listeners for global config
+                            updatePresence(); // Initial presence update
+                            setInterval(updatePresence, 30000); // Update presence every 30 seconds
+                            listenForActiveUsers();
+                            listenForGlobalConfig();
+
+                        } else {
+                            currentUserId = null;
+                            isAuthReady = false;
+                            isAdmin = false;
+                            if (window.userIdDisplay) {
+                                window.userIdDisplay.textContent = 'الرجاء تسجيل الدخول';
+                            }
+                            if (window.adminUserIdDisplay) {
+                                window.adminUserIdDisplay.textContent = 'غير متوفر (يرجى تسجيل الدخول)';
+                            }
+                            if (window.firebaseStatusDisplay) {
+                                window.firebaseStatusDisplay.textContent = 'Firebase متصل (لم يتم تسجيل الدخول).';
+                            }
+                            // Show auth overlay and hide main app content
+                            if (authOverlay) authOverlay.classList.remove('hidden');
+                            if (logoutBtn) logoutBtn.classList.add('hidden');
+                            if (window.adminSettings) window.adminSettings.classList.add('hidden');
+                            console.log("Firebase: No user is signed in.");
+                        }
+                    });
+
+                    // --- Auth Button Event Listeners ---
+                    if (loginBtn) {
+                        loginBtn.addEventListener('click', async () => {
+                            const email = authEmailInput.value;
+                            const password = authPasswordInput.value;
+                            hideAuthMessage();
+                            if (!email || !password) {
+                                showAuthMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور.', 'error');
+                                return;
+                            }
+                            try {
+                                await signInWithEmailAndPassword(auth, email, password);
+                                showAuthMessage('تم تسجيل الدخول بنجاح!', 'info');
+                                authEmailInput.value = '';
+                                authPasswordInput.value = '';
+                            } catch (error) {
+                                console.error("Login failed:", error);
+                                let errorMessage = 'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.';
+                                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                                    errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+                                } else if (error.code === 'auth/invalid-email') {
+                                    errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                                }
+                                showAuthMessage(errorMessage, 'error');
+                            }
+                        });
+                    }
+
+                    if (registerBtn) {
+                        registerBtn.addEventListener('click', async () => {
+                            const email = authEmailInput.value;
+                            const password = authPasswordInput.value;
+                            hideAuthMessage();
+                            if (!email || !password) {
+                                showAuthMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور لإنشاء حساب.', 'error');
+                                return;
+                            }
+                            if (password.length < 6) {
+                                showAuthMessage('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.', 'error');
+                                return;
+                            }
+                            try {
+                                await createUserWithEmailAndPassword(auth, email, password);
+                                showAuthMessage('تم إنشاء الحساب وتسجيل الدخول بنجاح!', 'info');
+                                authEmailInput.value = '';
+                                authPasswordInput.value = '';
+                            } catch (error) {
+                                console.error("Registration failed:", error);
+                                let errorMessage = 'فشل إنشاء الحساب.';
+                                if (error.code === 'auth/email-already-in-use') {
+                                    errorMessage = 'هذا البريد الإلكتروني مستخدم بالفعل. حاول تسجيل الدخول.';
+                                } else if (error.code === 'auth/weak-password') {
+                                    errorMessage = 'كلمة المرور ضعيفة جداً.';
+                                } else if (error.code === 'auth/invalid-email') {
+                                    errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
+                                }
+                                showAuthMessage(errorMessage, 'error');
+                            }
+                        });
+                    }
+
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', async () => {
+                            try {
+                                await signOut(auth);
+                                window.showMessage('تم تسجيل الخروج بنجاح.', 'info');
+                                // UI will update via onAuthStateChanged listener
+                            } catch (error) {
+                                console.error("Logout failed:", error);
+                                window.showMessage('فشل تسجيل الخروج. يرجى المحاولة مرة أخرى.', 'error');
+                            }
+                        });
+                    }
+
+
+                } catch (initError) {
+                    console.error("Firebase initialization failed:", initError);
+                    if (window.firebaseStatusDisplay) {
+                        window.firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
+                    }
+                    window.showMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
+                    // Ensure auth overlay is shown if Firebase init fails
+                    if (authOverlay) authOverlay.classList.remove('hidden');
+                    return; 
+                }
+
+            } else {
+                console.warn("Firebase config not found. Save/Load profile functionality and Dashboard features will not be available.");
+                if (window.userIdDisplay) {
+                    window.userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
+                }
+                if (window.firebaseStatusDisplay) {
+                    window.firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود.';
+                }
+                if (window.adminSettings) window.adminSettings.classList.add('hidden'); // Hide admin settings if no Firebase
+                window.showMessage("لم يتم توفير تكوين Firebase. ميزة حفظ/تحميل ملفك الشخصي ولوحة التحكم غير متوفرة.", 'error');
+                // If Firebase is not configured, still show the app but disable Firebase-dependent features
+                if (authOverlay) authOverlay.classList.add('hidden'); // Allow access to app without Firebase auth
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+            }
+        }); // End DOMContentLoaded for Firebase init
+
+        /**
+         * Firestore Rules for this app:
+         *
+         * // For user-specific profiles (private data)
+         * match /artifacts/{appId}/users/{userId}/profiles/{documentId} {
+         * allow read, write: if request.auth != null && request.auth.uid == userId;
+         * }
+         *
+         * // For public data like presence and global config
+         * match /artifacts/{appId}/public/presence/{userId} {
+         * allow read, write: if request.auth != null; // Anyone logged in can update their presence
+         * }
+         *
+         * match /artifacts/{appId}/public/config/appConfig {
+         * allow read: if request.auth != null; // Anyone logged in can read global config
+         * // For this Canvas demo, we allow write for any authenticated user for simplicity:
+         * allow write: if request.auth != null;
+         * }
+         */
+
+
+        // --- Firestore Utility Functions (Presence and Global Config) ---
+
+        /**
+         * Updates the current user's presence timestamp in Firestore.
+         * This indicates the user is "active".
+         */
+        async function updatePresence() {
+            if (!isAuthReady || !currentUserId) {
+                // console.log("Presence update skipped: Firebase not ready or user not authenticated.");
+                return;
+            }
+            try {
+                const presenceDocRef = doc(db, `artifacts/${appId}/public/presence/${currentUserId}`);
+                await setDoc(presenceDocRef, {
+                    lastActive: serverTimestamp(), // Use serverTimestamp for accuracy
+                    // You could add other user info here if needed, e.g., browser agent etc.
+                }, { merge: true }); // Use merge to avoid overwriting other fields if they exist
+                // console.log("Presence updated for user:", currentUserId);
+            } catch (error) {
+                console.error("Error updating presence:", error);
+            }
+        }
+
+        /**
+         * Listens for real-time updates on the presence collection
+         * and updates the active users count.
+         */
+        function listenForActiveUsers() {
+            if (!isAuthReady || !currentUserId) {
+                console.warn("Skipping active users listener: Firebase not ready or user not authenticated.");
+                return;
+            }
+            const presenceCollectionRef = collection(db, `artifacts/${appId}/public/presence`);
+            
+            // Listen for changes
+            onSnapshot(presenceCollectionRef, (snapshot) => {
+                let activeUsers = 0;
+                const now = Date.now();
+                const thirtySecondsAgo = now - (30 * 1000 * 2); // Consider active if updated in last 60 seconds (2x update interval)
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    // Check if lastActive exists and is recent
+                    if (data.lastActive && data.lastActive.toMillis() > thirtySecondsAgo) {
+                        activeUsers++;
+                    }
+                });
+                if (window.activeUsersCount) {
+                    window.activeUsersCount.textContent = activeUsers;
+                }
+                console.log("Active users count updated:", activeUsers);
+            }, (error) => {
+                console.error("Error listening for active users:", error);
+                window.showMessage("فشل تحديث عدد المستخدمين النشطين.", 'error');
+            });
+        }
+
+        /**
+         * Listens for real-time updates on the global configuration document
+         * and updates the UI accordingly.
+         */
+        function listenForGlobalConfig() {
+            if (!isAuthReady || !currentUserId) {
+                console.warn("Skipping global config listener: Firebase not ready or user not authenticated.");
+                return;
+            }
+            const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
+            
+            onSnapshot(configDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const configData = docSnap.data();
+                    const announcement = configData.globalAnnouncement || '';
+                    if (window.announcementText) {
+                        window.announcementText.textContent = announcement;
+                        if (announcement) {
+                            window.globalAnnouncement.classList.remove('hidden');
+                        } else {
+                            window.globalAnnouncement.classList.add('hidden');
                         }
                     }
+                    if (window.globalAnnouncementInput && isAdmin) { // Only update admin input if it's the admin
+                        window.globalAnnouncementInput.value = announcement;
+                    }
+                    console.log("Global configuration updated:", configData);
+                } else {
+                    if (window.announcementText) {
+                        window.announcementText.textContent = '';
+                        window.globalAnnouncement.classList.add('hidden');
+                    }
+                    console.log("Global config document does not exist yet.");
                 }
+            }, (error) => {
+                console.error("Error listening for global config:", error);
+                window.showMessage("فشل تحديث الإعدادات العامة.", 'error');
             });
-
-            // Sign in with custom token if provided
-            if (initialAuthToken) {
-                console.log("Firebase: Attempting custom token sign-in...");
-                signInWithCustomToken(auth, initialAuthToken)
-                    .then((userCredential) => {
-                        console.log("Firebase: Signed in with custom token:", userCredential.user.uid);
-                    })
-                    .catch((error) => {
-                        console.error("Firebase Custom token sign-in failed:", error);
-                        window.showMessage("فشل تسجيل الدخول باستخدام التوكن. قد لا تعمل ميزة الحفظ/التحميل بشكل صحيح.", 'error');
-                        if (window.firebaseStatusDisplay) {
-                            window.firebaseStatusDisplay.textContent = 'فشل تسجيل الدخول بالتوكن.';
-                        }
-                        // Fallback to anonymous if custom token fails
-                        signInAnonymously(auth)
-                            .then(() => console.log("Firebase: Fell back to anonymous sign-in."))
-                            .catch(anonError => console.error("Firebase Anonymous fallback failed:", anonError));
-                    });
-            } else {
-                console.log("Firebase: No initial auth token provided. Relying on onAuthStateChanged for anonymous sign-in.");
-            }
-
-        } else {
-            console.warn("Firebase config not found. Save/Load profile functionality will not be available.");
-            if (window.userIdDisplay) {
-                window.userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
-            }
-            if (window.firebaseStatusDisplay) {
-                window.firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود.';
-            }
-            window.showMessage("لم يتم توفير تكوين Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
         }
+
+        /**
+         * Saves the global configuration (e.g., announcement message) to Firestore.
+         */
+        window.saveGlobalConfig = async function() {
+            if (!isAuthReady || !currentUserId || !isAdmin) { // Ensure user is authenticated and is admin
+                window.showMessage("ليس لديك صلاحية لحفظ الإعدادات العامة.", 'error');
+                console.error("Save global config failed: Not authorized.");
+                return;
+            }
+            try {
+                const announcement = window.globalAnnouncementInput.value.trim();
+                const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
+                await setDoc(configDocRef, { globalAnnouncement: announcement }, { merge: true });
+                window.showMessage("تم حفظ الإعدادات العامة بنجاح!", 'info');
+                console.log("Global config saved:", { globalAnnouncement: announcement });
+            } catch (error) {
+                console.error("Error saving global config:", error);
+                if (error.code === 'permission-denied') {
+                    window.showMessage("حدث خطأ في الأذونات أثناء حفظ الإعدادات العامة. يرجى التحقق من قواعد أمان Firebase.", 'error');
+                } else {
+                    window.showMessage("حدث خطأ أثناء حفظ الإعدادات العامة. الرجاء المحاولة مرة أخرى.", 'error');
+                }
+            }
+        };
+
+        // --- End Firestore Utility Functions ---
+
 
         // Functions to save and load profile from Firestore
         // هذه الوظائف تم تعريفها على الكائن 'window' لتكون متاحة للسكربت الرئيسي.
@@ -481,12 +848,18 @@ Parfum, Phthalates, Toluene"></textarea>
                 const skinConcerns = Array.from(window.skinConcernCheckboxes)
                                            .filter(cb => cb.checked)
                                            .map(cb => cb.value);
+                const userAge = parseInt(window.userAgeInput.value, 10); // Get age
+                const isPregnant = window.isPregnantCheckbox.checked; // Get pregnancy status
+                const medicalConditions = window.medicalConditionsInput.value.trim(); // Get medical conditions
                 
                 const profileData = {
                     skinType: skinType,
                     skinConcerns: skinConcerns,
                     preferredIngredients: window.userPreferredIngredients,
                     excludedIngredients: window.userExcludedIngredients,
+                    age: !isNaN(userAge) && userAge > 0 ? userAge : null, // Store age only if valid
+                    isPregnant: isPregnant,
+                    medicalConditions: medicalConditions,
                     lastSaved: new Date().toISOString() // ISO string for better compatibility
                 };
 
@@ -537,6 +910,11 @@ Parfum, Phthalates, Toluene"></textarea>
                         const checkbox = document.querySelector(`.skin-concern-checkbox[value="${concern}"]`);
                         if (checkbox) checkbox.checked = true;
                     });
+
+                    // Load age, pregnancy, medical conditions
+                    window.userAgeInput.value = data.age || '';
+                    window.isPregnantCheckbox.checked = data.isPregnant || false;
+                    window.medicalConditionsInput.value = data.medicalConditions || '';
 
                     // Clear existing tags and repopulate
                     window.preferredIngredientsList.innerHTML = '';
@@ -627,6 +1005,9 @@ Parfum, Phthalates, Toluene"></textarea>
         // Global variables for DOM elements and data
         let skinTypeSelect;
         let skinConcernCheckboxes;
+        let userAgeInput; // New
+        let isPregnantCheckbox; // New
+        let medicalConditionsInput; // New
         let preferredIngredientInput;
         let addPreferredIngredient;
         let preferredIngredientsList;
@@ -654,6 +1035,16 @@ Parfum, Phthalates, Toluene"></textarea>
         let excludedSuggestions;
         let mainSuggestions;
 
+        // Dashboard elements
+        let activeUsersCount;
+        let adminSettings;
+        let adminUserIdDisplay;
+        let globalAnnouncementInput;
+        let updateGlobalSettingsBtn;
+        let globalAnnouncement;
+        let announcementText;
+
+
         // User preference arrays (Accessible globally by other scripts via window.userPreferredIngredients)
         window.userPreferredIngredients = [];
         window.userExcludedIngredients = [];
@@ -664,7 +1055,7 @@ Parfum, Phthalates, Toluene"></textarea>
             { name: ['Aqua', 'ماء'], classification: 'جيد للبشرة', description: 'الماء هو المذيب الأساسي في العديد من مستحضرات التجميل.' },
             { name: ['Glycerin', 'جليسرين', 'الجليسرين'], classification: 'جيد للبشرة', description: 'مرطب ممتاز يجذب الرطوبة إلى البشرة ويمنع فقدان الماء.', skin_notes: { dry: 'ممتاز للبشرة الجافة والمجففة.', dehydration: 'يساعد بشكل كبير في ترطيب البشرة المجففة.' } },
             { name: ['Niacinamide', 'نياسيناميد'], classification: 'جيد للبشرة', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب.', skin_notes: { acne: 'يساعد في تقليل حب الشباب والتحكم في الإفرازات الدهنية.', redness: 'يقلل الاحمرار والالتهاب.', aging: 'يحسن مظهر الخطوط الدقيقة والتصبغات.' } },
-            { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.', skin_notes: { dry: 'مرطب فعال للغاية للبشرة الجافة.', dehydration: 'يعزز ترطيب البشرة ويجعلها أكثر امتلاءً.' } },
+            { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'شكل من حمض الهيالورونيك، مرطب قوي للبشرة.', skin_notes: { dry: 'مرطب فعال للغاية للبشرة الجافة.', dehydration: 'يعزز ترطيب البشرة ويجعلها أكثر امتلاءً.' } } ,
             { name: ['Tocopherol', 'فيتامين E', 'توكوفيرول'], classification: 'جيد للبشرة', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة.', skin_notes: { aging: 'يساعد في حماية البشرة من أضرار الجذور الحرة التي تساهم في الشيخوخة.' } },
             { name: ['Aloe Barbadensis Leaf Juice', 'عصير أوراق الألوفيرا', 'صبار'], classification: 'عضوي', description: 'عصير أوراق الألوفيرا، مهدئ ومرطب للبشرة.', skin_notes: { sensitive: 'مهدئ ممتاز للبشرة الحساسة والمتهيجة.', redness: 'يساعد في تخفيف الاحمرار.' } },
             { name: ['Simmondsia Chinensis Seed Oil', 'زيت الجوجوبا'], classification: 'عضوي', description: 'زيت الجوجوبا، يرطب البشرة دون انسداد المسام.', skin_notes: { oily: 'يشبه الزيوت الطبيعية للبشرة، مما يساعد على توازن إفراز الدهون.', acne: 'غير كوميدوغينيك، لا يسد المسام.' } },
@@ -694,13 +1085,23 @@ Parfum, Phthalates, Toluene"></textarea>
             { name: ['Linalool', 'لينالول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، ولكنه قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
             { name: ['Geraniol', 'جيرانيول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
             // New Ingredients Added in "اليوم الأول"
-            { name: ['Salicylic Acid', 'حمض الساليسيليك'], classification: 'جيد للبشرة', description: 'حمض بيتا هيدروكسي (BHA) يعمل كمقشر داخل المسام، فعال في علاج حب الشباب والرؤوس السوداء.', skin_notes: { acne: 'ممتاز لتقليل البثور والرؤوس السوداء والبيضاء.', oily: 'يساعد على التحكم في إفراز الزيوت وتنقيع المسام.', sensitive: 'قد يسبب جفافاً أو تهيجاً في البداية، ابدأ بتركيزات منخفضة.' } },
+            { name: ['Salicylic Acid', 'حمض الساليسيليك'], classification: 'جيد للبشرة', description: 'حمض بيتا هيدروكسي (BHA) يعمل كمقشر داخل المسام، فعال في علاج حب الشباب والرؤوس السوداء.', skin_notes: { acne: 'ممتاز لتقليل البثور والرؤوس السوداء والبيضاء.', oily: 'يساعد على التحكم في إفراز الزيوت وتنقيع المسام.', sensitive: 'قد يسبب جفافاً أو تهيجاً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, // Added pregnancy note
             { name: ['Squalene', 'سكوالين'], classification: 'جيد للبشرة', description: 'دهن طبيعي موجود في زيوت البشرة، يُستخدم كمرطب ومطري ممتاز، مشتق عادةً من الزيتون أو قصب السكر. (يختلف عن السكوالان Squalane الذي هو شكل مستقر منه).', skin_notes: { dry: 'يرطب البشرة بعمق ويعزز حاجزها الطبيعي.', sensitive: 'لطيف للغاية ونادراً ما يسبب تهيجاً.', normal: 'يشبه الزيوت الطبيعية للبشرة، مما يجعله متوافقاً مع معظم الأنواع.' } },
             { name: ['Amber', 'عنبر'], classification: 'مكون عطري', description: 'في العطور، "العنبر" عادة ما يشير إلى اتفاق عطري دافئ وغني وحلو يذكرنا بالراتنجات، وغالباً ما يكون صناعياً. (لا يجب الخلط بينه وبين "العنبرية" أو "قيء الحوت" Ambergris وهو مكون حيواني مختلف).', skin_notes: { sensitive: 'قد تسبب المكونات العطرية بشكل عام تهيجاً للبشرة الحساسة.' } },
             // New Ingredients Added in "اليوم الثاني"
             { name: ['Ascorbic Acid', 'حمض الأسكوربيك'], classification: 'جيد للبشرة', description: 'هو الشكل النقي لفيتامين C، وهو مضاد أكسدة قوي يساعد على تفتيح البشرة، تقليل التصبغات، وتعزيز إنتاج الكولاجين. قد يكون غير مستقر ويتأكسد بسهولة.', skin_notes: { pigmentation: 'فعال جداً في تفتيح البقع الداكنة وتوحيد لون البشرة.', aging: 'يحفز إنتاج الكولاجين لتحسين مرونة البشرة وتقليل الخطوط الدقيقة.', sensitive: 'قد يسبب وخزاً خفيفاً أو تهيجاً في البداية لبعض أنواع البشرة الحساسة، خصوصاً في التركيزات العالية.' } },
             { name: ['Polysorbate 20', 'بولي سوربات 20'], classification: 'جيد للبشرة', description: 'مستحلب ومذيب غير أيوني يُستخدم للمساعدة في خلط الزيوت والعطور مع الماء في المستحضرات، كما يعمل كعامل ترطيب خفيف.', skin_notes: { normal: 'يعتبر آمناً بشكل عام وغير مهيج لمعظم أنواع البشرة في التركيزات المستخدمة في مستحضرات التجميل.' } },
             { name: ['BHT', 'Butylated Hydroxytoluene', 'بي إتش تي'], classification: 'تحذير: مكون مثير للجدل', description: 'مضاد أكسدة صناعي يُستخدم لمنع تزنخ الزيوت والمكونات الأخرى، ويُضاف كمادة حافظة في العديد من المنتجات. أثيرت حوله بعض المخاوف الصحية والبيئية.', skin_notes: { sensitive: 'قد يسبب تفاعلات تحسسية لدى بعض الأشخاص، ولكن هذا نادر الحدوث.' } },
+
+            // New Ingredients Added
+            { name: ['Ceramides', 'سيراميدات', 'السيراميدات'], classification: 'جيد للبشرة', description: 'دهون طبيعية ضرورية تشكل حاجز البشرة، تساعد في الحفاظ على ترطيبها وحمايتها.', skin_notes: { dry: 'ضرورية لترميم حاجز البشرة الجافة ومنع فقدان الماء.', sensitive: 'تهدئ البشرة الحساسة وتقوي حاجزها الواقي.' } },
+            { name: ['Peptides', 'ببتيدات', 'الببتيدات'], classification: 'جيد للبشرة', description: 'سلاسل قصيرة من الأحماض الأمينية التي يمكن أن تحفز إنتاج الكولاجين والإيلاستين لتحسين مرونة البشرة.', skin_notes: { aging: 'تساعد في تقليل ظهور الخطوط الدقيقة والتجاعيد وتعزز تماسك البشرة.' } },
+            { name: ['Hyaluronic Acid', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'مرطب قوي يجذب الرطوبة ويحتفظ بها في البشرة، مما يجعلها تبدو أكثر امتلاءً ونضارة.', skin_notes: { dry: 'يرطب البشرة بعمق ويحسن مرونتها.', dehydration: 'يعد أحد أفضل المكونات لمكافحة جفاف البشرة.' } },
+            { name: ['Retinol', 'ريتينول', 'الريتينول'], classification: 'جيد للبشرة', description: 'شكل من فيتامين A، يعزز تجديد الخلايا ويقلل من علامات الشيخوخة وحب الشباب. قد يسبب تهيجاً في البداية.', skin_notes: { aging: 'يقلل التجاعيد ويحسن ملمس البشرة.', acne: 'فعال في علاج حب الشباب بتقليل انسداد المسام.', sensitive: 'قد يسبب احمراراً أو تقشيراً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'يجب تجنبه تماماً أثناء الحمل والرضاعة.' }, // Added pregnancy note
+            { name: ['Glycolic Acid', 'حمض الجليكوليك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) يعمل كمقشر كيميائي لإزالة الخلايا الميتة من سطح البشرة وتحسين الإشراق.', skin_notes: { pigmentation: 'يساعد في تقليل التصبغات والبقع الداكنة.', sensitive: 'قد يسبب تهيجاً واحمراراً للبشرة الحساسة، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, // Added pregnancy note
+            { name: ['Tea Tree Oil', 'زيت شجرة الشاي'], classification: 'عضوي', description: 'زيت طبيعي له خصائص مضادة للبكتيريا والالتهابات، يستخدم في علاج حب الشباب.', skin_notes: { acne: 'فعال في تقليل حب الشباب وتقليل الالتهاب.', sensitive: 'قد يكون قوياً ومهيجاً للبشرة الحساسة، يجب تخفيفه قبل الاستخدام.' }, medical_notes: [{keyword: 'سكري', text: 'قد يؤثر على مستويات السكر في الدم عند تناوله عن طريق الفم، لكن الاستخدام الموضعي آمن بشكل عام.'}] }, // Added medical note
+            { name: ['Colloidal Oatmeal', 'دقيق الشوفان الغروي'], classification: 'جيد للبشرة', description: 'مكون طبيعي مهدئ ومضاد للالتهابات، يساعد على تخفيف الحكة والاحمرار والجفاف.', skin_notes: { sensitive: 'ممتاز للبشرة الحساسة والمتهيجة والمعرضة للإكزيما.', dry: 'يساعد على تهدئة البشرة الجافة جداً والمتهيجة وترطيبها.' } },
+
 
             // Harmful/Controversial Ingredients
             { name: ['Parfum', 'عطر', 'عطور', 'Fragrance'], classification: 'تحذير: مهيج محتمل', description: 'العطور قد تسبب تهيجًا للبشرة الحساسة أو ردود فعل تحسسية.', skin_notes: { sensitive: 'سبب شائع للحساسية والتهيج.', redness: 'قد يزيد من الاحمرار والالتهاب.' } },
@@ -824,7 +1225,7 @@ Parfum, Phthalates, Toluene"></textarea>
         window.showMessage = function(message, type = 'info') {
             if (messageBox) { 
                 messageBox.textContent = message;
-                messageBox.className = `mt-8 p-4 rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                messageBox.className = `mt-8 p-3 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
                 if (resultsContainer) resultsContainer.classList.add('hidden'); 
             } else {
                 console.warn("Message box element not found, showing message in console:", message);
@@ -849,7 +1250,7 @@ Parfum, Phthalates, Toluene"></textarea>
                 return;
             }
 
-            const foundInDb = window.ingredientsDatabase.some(dbIng => // Use window.ingredientsDatabase
+            const foundInDb = window.ingredientsDatabase.some(dbIng => 
                 dbIng.name.some(n => n.toLowerCase() === normalizedIngredient)
             );
 
@@ -911,6 +1312,9 @@ Parfum, Phthalates, Toluene"></textarea>
             // Assign DOM elements to global variables
             skinTypeSelect = document.getElementById('skinType');
             skinConcernCheckboxes = document.querySelectorAll('.skin-concern-checkbox');
+            userAgeInput = document.getElementById('userAge'); // New
+            isPregnantCheckbox = document.getElementById('isPregnant'); // New
+            medicalConditionsInput = document.getElementById('medicalConditionsInput'); // New
             preferredIngredientInput = document.getElementById('preferredIngredientInput');
             addPreferredIngredient = document.getElementById('addPreferredIngredient');
             preferredIngredientsList = document.getElementById('preferredIngredientsList');
@@ -937,6 +1341,51 @@ Parfum, Phthalates, Toluene"></textarea>
             excludedSuggestions = document.getElementById('excludedSuggestions');
             mainSuggestions = document.getElementById('mainSuggestions');
 
+            // Dashboard elements assignment
+            activeUsersCount = document.getElementById('activeUsersCount');
+            adminSettings = document.getElementById('adminSettings');
+            adminUserIdDisplay = document.getElementById('adminUserIdDisplay');
+            globalAnnouncementInput = document.getElementById('globalAnnouncementInput');
+            updateGlobalSettingsBtn = document.getElementById('updateGlobalSettingsBtn');
+            globalAnnouncement = document.getElementById('globalAnnouncement');
+            announcementText = document.getElementById('announcementText');
+
+
+            // Help Modal elements
+            const showHelpBtn = document.getElementById('showHelpBtn');
+            const helpModal = document.getElementById('helpModal');
+            const closeHelpBtn = document.getElementById('closeHelpBtn');
+            const helpContent = document.getElementById('helpContent');
+            const howToUseSection = document.getElementById('howToUseSection');
+
+
+            // Copy content from howToUseSection to helpContent and then hide original
+            if (howToUseSection && helpContent) {
+                helpContent.innerHTML = howToUseSection.innerHTML;
+                howToUseSection.remove(); // Remove the original section from main display
+            }
+
+            // Event listeners for help modal
+            if (showHelpBtn) {
+                showHelpBtn.addEventListener('click', () => {
+                    if (helpModal) helpModal.classList.remove('hidden');
+                });
+            }
+            if (closeHelpBtn) {
+                closeHelpBtn.addEventListener('click', () => {
+                    if (helpModal) helpModal.classList.add('hidden');
+                });
+            }
+            if (helpModal) {
+                helpModal.addEventListener('click', (e) => {
+                    // Close modal if clicking outside the modal content area
+                    if (e.target === helpModal) {
+                        helpModal.classList.add('hidden');
+                    }
+                });
+            }
+
+
             // Re-attach event listeners here to ensure DOM elements are ready
             if (document.getElementById('saveProfileBtn')) {
                 document.getElementById('saveProfileBtn').addEventListener('click', async () => { 
@@ -955,6 +1404,11 @@ Parfum, Phthalates, Toluene"></textarea>
                         window.showMessage("الرجاء اختيار ملف شخصي من القائمة لتحميله.", 'error');
                     }
                 });
+            }
+
+            // Event listener for updating global settings
+            if (updateGlobalSettingsBtn) {
+                updateGlobalSettingsBtn.addEventListener('click', window.saveGlobalConfig);
             }
 
             // Autocomplete event listeners
@@ -1123,6 +1577,9 @@ Parfum, Phthalates, Toluene"></textarea>
                         const selectedSkinConcerns = Array.from(skinConcernCheckboxes)
                                                         .filter(checkbox => checkbox.checked)
                                                         .map(checkbox => checkbox.value);
+                        const userAge = parseInt(userAgeInput.value, 10);
+                        const isPregnant = isPregnantCheckbox.checked;
+                        const medicalConditionsText = medicalConditionsInput.value.toLowerCase(); // For keyword matching
 
                         const inputIngredients = rawInput.split(/[,;\n.]/).map(item => item.trim()).filter(item => item.length > 0);
 
@@ -1161,18 +1618,19 @@ Parfum, Phthalates, Toluene"></textarea>
                             let isPreferred = window.userPreferredIngredients.includes(inputIng.toLowerCase());
                             let skinSpecificNoteHtml = '';
                             let isSkinNoteNegative = false;
+                            
+                            const relevantNotes = []; // Collect all relevant notes here
 
                             if (foundIngredient) {
                                 analyzedCount++;
                                 classificationText = foundIngredient.classification;
                                 descriptionText = foundIngredient.description;
 
+                                // Add skin type and concern notes
                                 if (foundIngredient.skin_notes) {
-                                    const relevantNotes = [];
-
                                     if (foundIngredient.skin_notes[selectedSkinType]) {
                                         const note = foundIngredient.skin_notes[selectedSkinType];
-                                        const skinTypeName = selectedSkinType === 'normal' ? 'عادية' : selectedSkinType === 'oily' ? 'الدهنية' : selectedSkinType === 'dry' ? 'الجافة' : selectedSkinType === 'combination' ? 'المختلطة' : 'الحساسة';
+                                        const skinTypeName = selectedSkinType === 'normal' ? 'عادية' : selectedSkinType === 'oily' ? 'الدهنية' : selectedSkinType === 'dry' ? 'جافة' : selectedSkinType === 'combination' ? 'مختلطة' : 'الحساسة';
                                         relevantNotes.push({ text: `ملاحظة لبشرتك ${skinTypeName}: ${note}`, type: selectedSkinType });
                                     }
                                     selectedSkinConcerns.forEach(concern => {
@@ -1182,22 +1640,47 @@ Parfum, Phthalates, Toluene"></textarea>
                                             relevantNotes.push({ text: `ملاحظة لاهتمام ${concernName}: ${note}`, type: concern });
                                         }
                                     });
+                                }
 
-                                    relevantNotes.forEach(noteObj => {
-                                        const noteText = noteObj.text;
-                                        let noteColorClass = 'text-fuchsia-600'; 
+                                // Add age notes
+                                if (!isNaN(userAge) && userAge > 0 && foundIngredient.age_notes) {
+                                    // Example logic: if ingredient has age restriction/note
+                                    // You might want more complex age logic (e.g., specific age ranges)
+                                    relevantNotes.push({ text: `ملاحظة للعمر: ${foundIngredient.age_notes}`, type: 'age', negative: true });
+                                }
+                                
+                                // Add pregnancy notes
+                                if (isPregnant && foundIngredient.pregnancy_notes) {
+                                    relevantNotes.push({ text: `ملاحظة للحمل: ${foundIngredient.pregnancy_notes}`, type: 'pregnancy', negative: true });
+                                }
 
-                                        if (noteText.includes('يسد المسام') || noteText.includes('يزيد من حب الشباب') || noteText.includes('مهيج') || noteText.includes('يزيد الجفاف') || noteText.includes('تفاقم')) {
-                                            noteColorClass = 'text-red-600'; 
-                                            isSkinNoteNegative = true; 
-                                        } else if (noteText.includes('ممتاز') || noteText.includes('يساعد') || noteText.includes('يقلل') || noteText.includes('مهدئ') || noteText.includes('يعزز') || noteText.includes('مفيد') || noteText.includes('لطيف') || noteText.includes('توازن')) {
-                                            noteColorClass = 'text-green-600'; 
+                                // Add medical condition notes (simple keyword match for demo)
+                                if (medicalConditionsText && foundIngredient.medical_notes) {
+                                    foundIngredient.medical_notes.forEach(note => {
+                                        if (medicalConditionsText.includes(note.keyword.toLowerCase())) {
+                                            relevantNotes.push({ text: `ملاحظة لحالتك الصحية (${note.keyword}): ${note.text}`, type: 'medical', negative: true });
                                         }
-
-                                        skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-1">${noteText}</span>`;
-                                        personalizedSkinNotes.push(`- ${inputIng} (${noteObj.type === 'normal' ? 'عادية' : noteObj.type === 'oily' ? 'دهنية' : noteObj.type === 'dry' ? 'جافة' : noteObj.type === 'combination' ? 'مختلطة' : noteObj.type === 'sensitive' ? 'حساسة' : noteObj.type === 'acne' ? 'حب الشباب' : noteObj.type === 'aging' ? 'الشيخوخة' : noteObj.type === 'pigmentation' ? 'التصبغات' : noteObj.type === 'redness' ? 'الاحمرار' : 'الجفاف'}): ${noteText}`);
                                     });
                                 }
+
+                                // Process all collected relevant notes
+                                relevantNotes.forEach(noteObj => {
+                                    const noteText = noteObj.text;
+                                    let noteColorClass = 'text-fuchsia-600'; 
+
+                                    // Determine if the note is negative and adjust color/score
+                                    if (noteText.includes('يسد المسام') || noteText.includes('يزيد من حب الشباب') || noteText.includes('مهيج') || noteText.includes('يزيد الجفاف') || noteText.includes('تفاقم') || noteText.includes('تجنبه تماماً') || noteText.includes('لا يفضل') || noteObj.negative) {
+                                        noteColorClass = 'text-red-600'; 
+                                        isSkinNoteNegative = true; 
+                                        skinSuitabilityScore -= (noteObj.type === 'pregnancy' || noteObj.type === 'age' || noteObj.type === 'medical') ? 4 : 2; // Higher penalty for critical notes
+                                    } else if (noteText.includes('ممتاز') || noteText.includes('يساعد') || noteText.includes('يقلل') || noteText.includes('مهدئ') || noteText.includes('يعزز') || noteText.includes('مفيد') || noteText.includes('لطيف') || noteText.includes('توازن')) {
+                                        noteColorClass = 'text-green-600'; 
+                                    }
+
+                                    skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-1">${noteText}</span>`;
+                                    personalizedSkinNotes.push(`- ${inputIng} (${noteObj.type === 'normal' ? 'عادية' : noteObj.type === 'oily' ? 'دهنية' : noteObj.type === 'dry' ? 'جافة' : noteObj.type === 'combination' ? 'مختلطة' : noteObj.type === 'sensitive' ? 'حساسة' : noteObj.type === 'acne' ? 'حب الشباب' : noteObj.type === 'aging' ? 'الشيخوخة' : noteObj.type === 'pigmentation' ? 'التصبغات' : noteObj.type === 'redness' ? 'الاحمرار' : noteObj.type === 'dehydration' ? 'الجفاف' : noteObj.type === 'age' ? 'العمر' : noteObj.type === 'pregnancy' ? 'الحمل' : noteObj.type === 'medical' ? 'الحالة الصحية' : ''}): ${noteText}`);
+                                });
+
 
                                 if (foundIngredient.classification.includes('جيد للبشرة')) {
                                     iconSvg = `<svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
@@ -1239,9 +1722,10 @@ Parfum, Phthalates, Toluene"></textarea>
                                 skinSuitabilityScore += 1; 
                             }
 
-                            if (isSkinNoteNegative) {
-                                skinSuitabilityScore -= 2; 
-                            }
+                            // isSkinNoteNegative logic is now integrated into the relevantNotes loop where score penalty is applied
+                            // if (isSkinNoteNegative) {
+                            //     skinSuitabilityScore -= 2; 
+                            // }
 
                             ingredientItem.innerHTML = `
                                 <div class="flex-shrink-0">
@@ -1259,9 +1743,10 @@ Parfum, Phthalates, Toluene"></textarea>
                         let recommendationMessage = '';
                         let recommendationClass = '';
 
-                        if (veryHarmfulCount > 0 || hasExcludedIngredient) {
+                        // Adjust overall recommendation based on skin suitability score
+                        if (skinSuitabilityScore < -5 || veryHarmfulCount > 0 || hasExcludedIngredient) {
                             recommendationTitle = 'قد لا يكون هذا المنتج الأفضل لبشرتك.';
-                            recommendationMessage = `يحتوي على ${veryHarmfulCount > 0 ? `مكونات ضارة جداً (${veryHarmfulCount})` : ''} ${hasExcludedIngredient ? `و/أو مكونات قمت بتحديدها كمستبعدة.` : ''} يفضل تجنب المنتجات التي تحتوي على هذه المكونات إذا كانت بشرتك حساسة أو تعاني من مشاكل محددة.`;
+                            recommendationMessage = `يحتوي على ${veryHarmfulCount > 0 ? `مكونات ضارة جداً (${veryHarmfulCount})` : ''} ${hasExcludedIngredient ? `و/أو مكونات قمت بتحديدها كمستبعدة.` : ''} يفضل تجنب المنتجات التي تحتوي على هذه المكونات إذا كانت بشرتك حساسة أو تعاني من مشاكل محددة أو في ظروف خاصة (مثل الحمل/العمر).`;
                             recommendationClass = 'bg-red-100 border-red-400 text-red-700';
                         } else if (skinSuitabilityScore >= 3 && warningCount === 0) { 
                             recommendationTitle = 'مناسب جداً لبشرتك!';
@@ -1269,26 +1754,26 @@ Parfum, Phthalates, Toluene"></textarea>
                             recommendationClass = 'bg-green-100 border-green-400 text-green-700';
                         } else if (skinSuitabilityScore >= 0) { 
                             recommendationTitle = 'مناسب بشكل عام لبشرتك مع بعض التحفظات.';
-                            recommendationMessage = 'يحتوي هذا المنتج على مكونات جيدة، ولكن قد يتضمن أيضاً بعض المكونات التي قد لا تكون مثالية تماماً لنوع بشرتك أو اهتماماتك. يُنصح بمراجعة الملاحظات الفردية لكل مكون.';
+                            recommendationMessage = 'يحتوي هذا المنتج على مكونات جيدة، ولكن قد يتضمن أيضاً بعض المكونات التي قد لا تكون مثالية تماماً لنوع بشرتك أو اهتماماتك أو عمرك/حالتك. يُنصح بمراجعة الملاحظات الفردية لكل مكون.';
                             recommendationClass = 'bg-yellow-100 border-yellow-400 text-yellow-800';
                         } else { 
                             recommendationTitle = 'قد لا يكون هذا المنتج مثالياً لبشرتك.';
-                            recommendationMessage = 'على الرغم من عدم احتوائه على مكونات ضارة جداً، إلا أن هذا المنتج يضم مكونات قد لا تتوافق بشكل كبير مع احتياجات بشرتك أو قد تثير بعض اهتماماتك. راجع التحليل المفصل للمكونات.';
+                            recommendationMessage = 'على الرغم من عدم احتوائه على مكونات ضارة جداً، إلا أن هذا المنتج يضم مكونات قد لا تتوافق بشكل كبير مع احتياجات بشرتك أو قد تثير بعض اهتماماتك أو عمرك/حالتك. راجع التحليل المفصل للمكونات.';
                             recommendationClass = 'bg-orange-100 border-orange-400 text-orange-700';
                         }
 
                         if (analyzedCount > 0) {
                             let topMessage = '';
-                            if (hasExcludedIngredient) {
+                            if (hasExcludedIngredient || veryHarmfulCount > 0 || personalizedSkinNotes.some(note => note.includes('تجنبه تماماً') || note.includes('لا يفضل') || note.includes('غير آمن للحمل') || note.includes('ملاحظة للعمر'))) {
                                 topMessage = `<div class="p-3 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-lg">
-                                                تنبيه: يحتوي هذا المنتج على مكونات قمت بتحديدها كمستبعدة في تفضيلاتك!
+                                                تنبيه: قد يحتوي هذا المنتج على مكونات غير مناسبة بناءً على ملفك الشخصي أو تفضيلاتك!
                                             </div>`;
                             }
                             
                             let skinProfileSummary = '';
                             if (personalizedSkinNotes.length > 0) {
                                 skinProfileSummary = `
-                                    <h3 class="text-xl font-bold text-fuchsia-700 mt-6 mb-3 text-center">ملاحظات شخصية لبشرتك (${selectedSkinType === 'normal' ? 'عادية' : selectedSkinType === 'oily' ? 'دهنية' : selectedSkinType === 'dry' ? 'جافة' : selectedSkinType === 'combination' ? 'مختلطة' : 'حساسة'}):</h3>
+                                    <h3 class="text-xl font-bold text-fuchsia-700 mt-6 mb-3 text-center">ملاحظات شخصية لبشرتك:</h3>
                                     <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-1">
                                         ${personalizedSkinNotes.map(note => `<li>${note}</li>`).join('')}
                                     </ul>
