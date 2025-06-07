@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family="Inter":wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* Custom styles for Inter font */
         html, body {
@@ -17,6 +17,15 @@
             font-family: 'Inter', sans-serif;
             direction: rtl; /* Ensure right-to-left for Arabic */
             text-align: right; /* Align text to the right for Arabic */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex; /* Use flexbox for body */
+            flex-direction: column; /* Stack children vertically */
+            align-items: center; /* Center horizontally */
+            padding-top: 5rem; /* Add sufficient padding at the top for buttons */
+            padding-bottom: 2rem; /* Add padding at the bottom */
+            padding-left: 1rem; /* Padding on sides for small screens */
+            padding-right: 1rem;
+            box-sizing: border-box; /* Include padding in element's total width and height */
         }
         /* Adjust alignment for specific elements if needed */
         .text-center {
@@ -45,17 +54,16 @@
             background-color: #d1fae5; /* Green-100 */
             color: #065f46; /* Green-800 */
             border-radius: 9999px; /* Full rounded */
-            padding: 0.15rem 0.6rem; /* py-1 px-3 - Made even smaller */
-            margin: 0.2rem; /* Reduced margin */
-            font-size: 0.8rem; /* text-sm - Made smaller */
+            padding: 0.25rem 0.75rem; /* py-1 px-3 */
+            margin: 0.25rem;
+            font-size: 0.875rem; /* text-sm */
             white-space: nowrap; /* Prevent tags from wrapping */
         }
         .tag-remove {
-            margin-right: 0.4rem; /* Adjusted for RTL - Made smaller */
+            margin-right: 0.5rem; /* Adjusted for RTL */
             cursor: pointer;
             color: #065f46;
             font-weight: bold;
-            font-size: 0.9rem; /* Slightly larger X for visibility */
         }
         .tag-excluded {
             background-color: #fee2e2; /* Red-100 */
@@ -72,16 +80,16 @@
             background-color: #ffffff;
             border: 1px solid #e2e8f0; /* gray-200 */
             border-radius: 0.5rem; /* rounded-lg */
-            max-height: 150px; /* Reduced max height */
+            max-height: 200px;
             overflow-y: auto;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
             width: 100%; /* Ensure it spans the width of the input */
             text-align: right; /* RTL alignment */
         }
         .autocomplete-suggestion-item {
-            padding: 0.4rem 0.6rem; /* Reduced padding */
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
-            font-size: 0.8rem; /* text-sm - Reduced font size */
+            font-size: 0.875rem; /* text-sm */
             color: #4a5568; /* gray-700 */
         }
         .autocomplete-suggestion-item:hover {
@@ -92,41 +100,19 @@
         }
         /* Loading spinner */
         .loader {
-            border: 3px solid #f3f3f3; /* Reduced border size */
-            border-top: 3px solid #34d399; /* emerald-500 */
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #34d399; /* emerald-500 */
             border-radius: 50%;
-            width: 20px; /* Reduced size */
-            height: 20px; /* Reduced size */
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
             display: inline-block;
-            margin-left: 0.4rem; /* Reduced margin */
+            margin-left: 0.5rem;
             vertical-align: middle;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-
-        /* Full page overlay for authentication */
-        #authOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex; /* Default display when visible */
-            align-items: center;
-            justify-content: center;
-            z-index: 60; /* Higher than other modals */
-        }
-        /* Ensure that .hidden overrides .flex */
-        #authOverlay.hidden {
-            display: none !important; /* Added !important to ensure override */
-        }
-        /* Style for the main app content to hide it when auth is needed */
-        #mainAppContent.hidden {
-            display: none !important;
         }
     </style>
     <!-- PWA: Link to manifest.json -->
@@ -136,54 +122,49 @@
     <!-- PWA: Set theme color for browser UI -->
     <meta name="theme-color" content="#4ADE80"/>
 </head>
-<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen flex items-center justify-center p-3"> <!-- Reduced padding -->
-    <!-- Main Application Content - Initially hidden until authenticated -->
-    <div id="mainAppContent" class="bg-white p-4 rounded-2xl shadow-xl w-full max-w-2xl border border-green-200 relative hidden"> <!-- Reduced padding -->
-        <!-- Help Button - Top Right Corner -->
-        <button id="showHelpBtn" class="absolute top-3 left-3 bg-blue-600 text-white py-1.5 px-2.5 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-20 flex items-center gap-0.5 text-xs"> <!-- Reduced padding, gap, font size, higher z-index -->
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"> <!-- Reduced icon size -->
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2zm1-5a1 1 0 10-2 0V9a1 1 0 102 0v1z" clip-rule="evenodd"></path>
-            </svg>
-            <span class="font-semibold">مساعدة</span>
-        </button>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100">
+    <!-- Help Button - Always visible -->
+    <button id="showHelpBtn" class="absolute top-4 left-4 bg-blue-600 text-white py-2 px-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-50 flex items-center gap-1 text-sm">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2zm1-5a1 1 0 10-2 0V9a1 1 0 102 0v1z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="font-semibold">مساعدة</span>
+    </button>
 
-        <!-- Logout Button - Top Left Corner -->
-        <button id="logoutBtn" class="absolute top-3 right-3 bg-gray-500 text-white py-1.5 px-2.5 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-300 z-20 flex items-center gap-0.5 hidden text-xs"> <!-- Reduced padding, gap, font size, higher z-index, changed to right -->
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            <span class="font-semibold">تسجيل الخروج</span>
-        </button>
-
+    <!-- Main Application Content (Always visible now) -->
+    <div id="mainAppContent" class="w-full max-w-2xl mx-auto p-4 md:p-6 bg-white rounded-2xl shadow-xl border border-green-200 relative">
         <!-- Hero Section -->
-        <div class="text-center mb-4 pb-3 border-b border-green-200"> <!-- Reduced margins and padding -->
-            <h1 class="text-2xl font-extrabold text-emerald-800 mb-1.5 leading-tight"> <!-- Reduced font size -->
+        <div class="text-center mb-6 pb-4 border-b border-green-200">
+            <h1 class="text-3xl font-extrabold text-emerald-800 mb-2 leading-tight">
                 اكتشف سر بشرتك مع <br><span class="text-emerald-600">محلل المكونات الذكي</span>
             </h1>
-            <p class="text-sm text-gray-700 max-w-md mx-auto"> <!-- Reduced font size -->
+            <p class="text-base text-gray-700 max-w-md mx-auto">
                 أداة بسيطة لمساعدتك على فهم مكونات منتجات العناية بالبشرة. الصق القائمة ودعنا نكشف لك الحقائق!
             </p>
         </div>
 
         <!-- Dashboard Section -->
-        <div class="mb-4 p-3 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-indigo-700 mb-2 text-center">لوحة التحكم</h2> <!-- Reduced font size -->
-            <p class="text-xs text-gray-700 mb-1.5 text-center"> <!-- Reduced font size -->
-                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-base">0</span> <!-- Reduced font size -->
+        <div class="mb-6 p-4 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200">
+            <h2 class="text-xl font-bold text-indigo-700 mb-3 text-center">لوحة التحكم</h2>
+            <p class="text-sm text-gray-700 mb-2 text-center">
+                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-lg">0</span>
             </p>
-            <div id="globalAnnouncement" class="p-1.5 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-2 hidden text-xs"> <!-- Reduced padding, margins, font size -->
+            <div id="globalAnnouncement" class="p-2 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-3 hidden text-sm">
                 <p class="font-semibold">إعلان عام:</p>
                 <p id="announcementText" class="italic"></p>
             </div>
             
-            <div id="adminSettings" class="mt-3 p-2.5 bg-indigo-100 rounded-lg border border-indigo-300 hidden"> <!-- Reduced padding and margins -->
-                <h3 class="text-base font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول</h3> <!-- Reduced font size -->
-                <p class="text-xs text-gray-700 mb-2 text-center"> <!-- Reduced font size -->
+            <!-- Admin settings are now hidden by default and shown conditionally by JS -->
+            <div id="adminSettings" class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300 hidden">
+                <h3 class="text-lg font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول (تحديد إعلان عام)</h3>
+                <p class="text-xs text-gray-700 mb-3 text-center">
                     معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
                 </p>
-                <div class="mb-2"> <!-- Reduced margin -->
+                <div class="mb-3">
                     <label for="globalAnnouncementInput" class="block text-gray-700 text-xs font-semibold mb-1">رسالة الإعلان العامة:</label>
-                    <input type="text" id="globalAnnouncementInput" class="w-full p-1.5 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا"> <!-- Reduced padding, font size -->
+                    <input type="text" id="globalAnnouncementInput" class="w-full p-2 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا">
                 </div>
-                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
+                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm">
                     حفظ الإعدادات العامة
                 </button>
             </div>
@@ -191,53 +172,56 @@
         <!-- End Dashboard Section -->
 
         <!-- Section: Save/Load Profile -->
-        <div class="mb-4 p-3 bg-purple-50 rounded-xl shadow-sm border border-purple-200"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-purple-700 mb-2 text-center">إدارة ملفاتك الشخصية</h2> <!-- Reduced font size -->
-            <p class="text-xs text-gray-700 mb-1.5 text-center"> <!-- Reduced font size -->
-                <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جارٍ التحميل...</span>
+        <div class="mb-6 p-4 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
+            <h2 class="text-xl font-bold text-purple-700 mb-3 text-center">إدارة ملفاتك الشخصية</h2>
+            <p class="text-xs text-gray-700 mb-2 text-center">
+                <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جاري الاتصال...</span>
                 <br>
                 <span class="font-semibold">حالة Firebase:</span> <span id="firebaseStatusDisplay" class="font-mono text-purple-800 break-all">جاري التحقق...</span>
             </p>
 
-            <div class="mb-2"> <!-- Reduced margin -->
-                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-1">اسم ملف البشرة (للحفظ/التحميل):</label> <!-- Reduced font size -->
-                <input type="text" id="profileNameInput" class="w-full p-1.5 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي الشتوية"> <!-- Reduced padding, font size -->
+            <div class="mb-3">
+                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-1">اسم ملف البشرة (للحفظ/التحميل):</label>
+                <input type="text" id="profileNameInput" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي الشتوية">
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-2 justify-center mb-2"> <!-- Reduced gap and margin -->
-                <button id="saveProfileBtn" class="bg-purple-600 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
-                    حفظ الملف الحالي
+            <div class="flex flex-col sm:flex-row gap-3 justify-center mb-3">
+                <button id="saveProfileBtn" class="bg-gray-400 text-white py-2 px-3 rounded-lg font-semibold cursor-not-allowed text-sm" disabled>
+                    حفظ الملف الحالي (يلزم تسجيل الدخول)
                 </button>
-                <button id="loadNamedProfileBtn" class="bg-purple-500 text-white py-1.5 px-2.5 rounded-lg font-semibold hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
-                    تحميل الملف المحدد
+                <button id="loadNamedProfileBtn" class="bg-gray-400 text-white py-2 px-3 rounded-lg font-semibold cursor-not-allowed text-sm" disabled>
+                    تحميل الملف المحدد (يلزم تسجيل الدخول)
+                </button>
+                <button id="deleteProfileBtn" class="bg-gray-400 text-white py-2 px-3 rounded-lg font-semibold cursor-not-allowed text-sm" disabled>
+                    حذف الملف المحدد (يلزم تسجيل الدخول)
                 </button>
             </div>
 
             <div>
-                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-1">الملفات المحفوظة:</label> <!-- Reduced font size -->
-                <select id="existingProfilesSelect" class="w-full p-1.5 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
-                    <option value="">لا يوجد ملفات محفوظة</option>
+                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-1">الملفات المحفوظة:</label>
+                <select id="existingProfilesSelect" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" disabled>
+                    <option value="">يلزم تسجيل الدخول لتحميل الملفات الشخصية</option>
                 </select>
             </div>
         </div>
         <!-- End Section: Save/Load Profile -->
 
         <!-- Section: Scan Ingredients from Image -->
-        <div class="mb-4 p-3 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-yellow-700 mb-2 text-center">مسح المكونات من صورة عبوة المنتج</h2> <!-- Reduced font size -->
-            <p class="text-sm text-gray-700 mb-2 text-center"> <!-- Reduced font size -->
+        <div class="mb-6 p-4 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200">
+            <h2 class="text-xl font-bold text-yellow-700 mb-3 text-center">مسح المكونات من صورة عبوة المنتج</h2>
+            <p class="text-sm text-gray-700 mb-3 text-center">
                 يمكنك تحميل صورة لعبوة المنتج (تأكد أن قائمة المكونات واضحة) وسنقوم بتحليلها لك تلقائياً.
             </p>
-            <div class="mb-2"> <!-- Reduced margin -->
-                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
+            <div class="mb-3">
+                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-1">
                     تحميل صورة عبوة المنتج:
                 </label>
-                <input type="file" id="imageUpload" accept="image/*" class="w-full p-1.5 text-sm border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
+                <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 text-sm border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out">
             </div>
-            <div id="imagePreviewContainer" class="mb-2 text-center hidden"> <!-- Reduced margin -->
+            <div id="imagePreviewContainer" class="mb-3 text-center hidden">
                 <img id="imagePreview" src="#" alt="معاينة الصورة" class="max-w-full h-auto rounded-lg shadow-md mx-auto">
             </div>
-            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm"> <!-- Reduced padding, font size -->
+            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm">
                 <span id="scanButtonText">مسح وتحليل المكونات من الصورة</span>
                 <span id="scanLoadingSpinner" class="loader hidden"></span>
             </button>
@@ -245,12 +229,12 @@
         <!-- End Section: Scan Ingredients from Image -->
 
         <!-- Section: Skin Profile -->
-        <div class="mb-4 p-3 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-fuchsia-700 mb-2 text-center">ملفك الشخصي للبشرة</h2> <!-- Reduced font size -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2"> <!-- Reduced gap -->
+        <div class="mb-6 p-4 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200">
+            <h2 class="text-xl font-bold text-fuchsia-700 mb-3 text-center">ملفك الشخصي للبشرة</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-1">نوع بشرتك:</label> <!-- Reduced font size -->
-                    <select id="skinType" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out"> <!-- Reduced padding, font size -->
+                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-1">نوع بشرتك:</label>
+                    <select id="skinType" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
                         <option value="normal">عادية</option>
                         <option value="oily">دهنية</option>
                         <option value="dry">جافة</option>
@@ -259,25 +243,25 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات بشرتك:</label> <!-- Reduced font size -->
-                    <div class="flex flex-wrap gap-1.5 text-xs"> <!-- Reduced gap and font size -->
-                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors"> <!-- Reduced padding -->
+                    <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات بشرتك:</label>
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
                             <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>حب الشباب</span>
                         </label>
-                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
                             <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الشيخوخة/التجاعيد</span>
                         </label>
-                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
                             <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>التصبغات</span>
                         </label>
-                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
                             <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الاحمرار</span>
                         </label>
-                        <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
                             <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
                             <span>الجفاف</span>
                         </label>
@@ -285,108 +269,105 @@
                 </div>
                 <!-- New fields for age, pregnancy, and medical conditions -->
                 <div>
-                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-1">عمرك:</label> <!-- Reduced font size -->
-                    <input type="number" id="userAge" min="1" max="120" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك"> <!-- Reduced padding, font size -->
+                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-1">عمرك:</label>
+                    <input type="number" id="userAge" min="1" max="120" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك">
                 </div>
                 <div class="md:col-span-2"> <!-- Span full width for this checkbox -->
-                    <label class="inline-flex items-center p-1 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors text-xs"> <!-- Reduced padding, font size -->
+                    <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors text-xs">
                         <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
                         <span>هل أنت حامل؟</span>
                     </label>
                 </div>
                 <div class="md:col-span-2"> <!-- Span full width for this textarea -->
-                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-1">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label> <!-- Reduced font size -->
-                    <textarea id="medicalConditionsInput" rows="1" class="w-full p-1.5 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea> <!-- Reduced rows, padding, font size -->
+                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-1">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label>
+                    <textarea id="medicalConditionsInput" rows="2" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea>
                 </div>
             </div>
         </div>
         <!-- End Section: Skin Profile -->
 
         <!-- Section: Preferred & Excluded Ingredients -->
-        <div class="mb-4 p-3 bg-sky-50 rounded-xl shadow-sm border border-sky-200"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-sky-700 mb-2 text-center">تفضيلاتك الشخصية للمكونات</h2> <!-- Reduced font size -->
+        <div class="mb-6 p-4 bg-sky-50 rounded-xl shadow-sm border border-sky-200">
+            <h2 class="text-xl font-bold text-sky-700 mb-3 text-center">تفضيلاتك الشخصية للمكونات</h2>
 
-            <div class="mb-3"> <!-- Reduced margin -->
-                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
+            <div class="mb-4">
+                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
                     أضف مكوناتك المفضلة (مكون واحد لكل إضافة):
                 </label>
                 <div class="flex relative"> 
-                    <input type="text" id="preferredIngredientInput" class="flex-1 p-1.5 text-sm border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد"> <!-- Reduced padding, font size -->
-                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-1.5 px-2.5 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out text-sm"> <!-- Reduced padding, font size -->
+                    <input type="text" id="preferredIngredientInput" class="flex-1 p-2 text-sm border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
+                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out text-sm">
                         أضف
                     </button>
                     <div id="preferredSuggestions" class="autocomplete-suggestions hidden"></div>
                 </div>
-                <div id="preferredIngredientsList" class="mt-1.5 flex flex-wrap gap-1.5 justify-end"> <!-- Reduced margin-top and gap -->
+                <div id="preferredIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
                     </div>
             </div>
 
             <div>
-                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
+                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
                     أضف مكوناتك المستبعدة/المتحسس منها:
                 </label>
                 <div class="flex relative"> 
-                    <input type="text" id="excludedIngredientInput" class="flex-1 p-1.5 text-sm border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور"> <!-- Reduced padding, font size -->
-                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-1.5 px-2.5 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out text-sm"> <!-- Reduced padding, font size -->
+                    <input type="text" id="excludedIngredientInput" class="flex-1 p-2 text-sm border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور">
+                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out text-sm">
                         أضف
                     </button>
                     <div id="excludedSuggestions" class="autocomplete-suggestions hidden"></div>
                 </div>
-                <div id="excludedIngredientsList" class="mt-1.5 flex flex-wrap gap-1.5 justify-end"> <!-- Reduced margin-top and gap -->
+                <div id="excludedIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
                     </div>
             </div>
         </div>
         <!-- End Section: Preferred & Excluding Ingredients -->
 
-        <div class="mb-4"> <!-- Reduced margin -->
-            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-1"> <!-- Reduced font size -->
+        <div class="mb-6">
+            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-1">
                 الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
             </label>
             <div class="relative"> 
-                <textarea id="ingredientsInput" rows="6" class="w-full p-2 text-sm border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
+                <textarea id="ingredientsInput" rows="8" class="w-full p-2 text-sm border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
 Aqua, Glycerin, Niacinamide
 ماء, جليسرين, نياسيناميد
-Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -->
+Parfum, Phthalates, Toluene"></textarea>
                 <div id="mainSuggestions" class="autocomplete-suggestions hidden"></div>
             </div>
         </div>
 
-        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg text-base"> <!-- Reduced padding, font size -->
+        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg text-lg">
             تحليل المكونات
         </button>
 
-        <!-- The "كيفية استخدام الأداة" section is now removed from here as per previous request -->
-
-        <div id="resultsContainer" class="mt-4 p-3 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden"> <!-- Reduced padding and margins -->
-            <h2 class="text-lg font-bold text-emerald-700 mb-2 text-center">نتائج التحليل</h2> <!-- Reduced font size -->
-            <div id="ingredientList" class="space-y-2 text-sm"> <!-- Reduced space-y and font size -->
+        <div id="resultsContainer" class="mt-6 p-4 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden">
+            <h2 class="text-xl font-bold text-emerald-700 mb-3 text-center">نتائج التحليل</h2>
+            <div id="ingredientList" class="space-y-3 text-sm">
                 </div>
-            <div id="summary" class="mt-3 pt-2 border-t border-emerald-300 text-center text-gray-700 font-medium text-sm"> <!-- Reduced margin-top, padding-top, font size -->
+            <div id="summary" class="mt-4 pt-3 border-t border-emerald-300 text-center text-gray-700 font-medium text-sm">
                 </div>
         </div>
 
         <!-- Credit Section - Moved to bottom -->
-        <div class="mt-4 p-2.5 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-xs text-gray-600 italic"> <!-- Reduced padding, font size -->
+        <div class="mt-6 p-3 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-xs text-gray-600 italic">
             <p>هذه الأداة من تصميم وفكرة: <span class="font-semibold text-gray-800 not-italic">جورج جريج</span></p>
         </div>
         <!-- End Credit Section -->
 
         <!-- Message Box - Adjusted padding and text size -->
-        <div id="messageBox" class="mt-3 p-1.5 text-xs bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"> <!-- Reduced padding, font size -->
+        <div id="messageBox" class="mt-4 p-2 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
             </div>
     </div>
 
     <!-- Help Modal -->
     <div id="helpModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
         <!-- Adjusted max-w to md for a smaller dialog -->
-        <div class="bg-white p-4 rounded-xl shadow-2xl w-full max-w-md mx-3 relative"> <!-- Reduced padding, mx-margin -->
-            <button id="closeHelpBtn" class="absolute top-2.5 left-2.5 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300"> <!-- Reduced padding -->
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> <!-- Reduced icon size -->
+        <div class="bg-white p-5 rounded-xl shadow-2xl w-full max-w-md mx-4 relative">
+            <button id="closeHelpBtn" class="absolute top-3 left-3 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-            <h2 class="text-xl font-bold text-blue-700 mb-2.5 text-center">كيفية استخدام الأداة</h2> <!-- Reduced font size -->
-            <div id="helpContent" class="text-gray-700 max-h-80 overflow-y-auto pr-1.5 pl-1.5 text-xs"> <!-- Reduced max-height, padding, font size -->
-                <!-- Content from "كيفية استخدام الأداة" will be moved here by JS -->
-                <ol class="list-decimal list-inside text-gray-700 space-y-1.5"> <!-- Reduced space-y -->
+            <h2 class="text-xl font-bold text-blue-700 mb-3 text-center">كيفية استخدام الأداة</h2>
+            <div id="helpContent" class="text-gray-700 max-h-96 overflow-y-auto pr-2 pl-2 text-sm"> <!-- Smaller text for help content -->
+                <ol class="list-decimal list-inside text-gray-700 space-y-2">
                     <li>
                         <strong class="text-blue-600">تحديد ملفك الشخصي للبشرة:</strong>
                         اختر نوع بشرتك (عادية، دهنية، جافة، مختلطة، حساسة) وحدد اهتمامات بشرتك (مثل حب الشباب، الشيخوخة، التصبغات) من خلال مربعات الاختيار.
@@ -394,7 +375,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                     <li>
                         <strong class="text-blue-600">إضافة تفضيلات المكونات:</strong>
                         في قسم "تفضيلاتك الشخصية للمكونات"، يمكنك:
-                        <ul class="list-disc list-inside ml-4 mt-0.5 space-y-0.5 text-xs"> <!-- Reduced ml, mt, space-y -->
+                        <ul class="list-disc list-inside ml-5 mt-1 space-y-0.5 text-xs">
                             <li>أضف **مكوناتك المفضلة** التي تحب رؤيتها في المنتجات.</li>
                             <li>أضف **مكوناتك المستبعدة/المتحسس منها** التي ترغب في تجنبها.</li>
                             <li>ستظهر لك **اقتراحات تلقائية** أثناء الكتابة، يمكنك النقر عليها لإضافتها.</li>
@@ -415,7 +396,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                     <li>
                         <strong class="text-blue-600">مراجعة النتائج:</strong>
                         سيظهر قسم "نتائج التحليل" مع:
-                        <ul class="list-disc list-inside ml-4 mt-0.5 space-y-0.5 text-xs"> <!-- Reduced ml, mt, space-y -->
+                        <ul class="list-disc list-inside ml-5 mt-1 space-y-0.5 text-xs">
                             <li><strong>تصنيف كل مكون:</strong> سواء كان جيدًا، يتطلب تحذيرًا، ضارًا جداً، أو غير معروف.</li>
                             <li><strong>ملاحظات مخصصة:</strong> بناءً على نوع بشرتك واهتماماتك، بالإضافة إلى المكونات المفضلة أو المستبعدة.</li>
                             <li><strong>ملخص عام:</strong> يقدم تقييماً شاملاً لمدى ملاءمة المنتج لبشرتك.</li>
@@ -423,34 +404,9 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                     </li>
                     <li>
                         <strong class="text-blue-600">حفظ وتحميل ملفاتك الشخصية:</strong>
-                        في قسم "إدارة ملفاتك الشخصية"، يمكنك حفظ إعدادات بشرتك وتفضيلات المكونات لتحميلها لاحقاً. فقط أدخل اسماً للملف وانقر على "حفظ"، أو اختر من القائمة وانقر "تحميل".
+                        في قسم "إدارة ملفاتك الشخصية"، ستجد هذه الميزات معطلة مؤقتًا حاليًا لأنها تتطلب تسجيل الدخول بحساب لتخزين بياناتك بشكل آمن.
                     </li>
                 </ol>
-            </div>
-        </div>
-    </div>
-
-    <!-- Auth Overlay (Login/Register Form) -->
-    <div id="authOverlay" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-5 rounded-2xl shadow-xl w-full max-w-sm mx-3 text-center"> <!-- Reduced padding, mx-margin -->
-            <h2 class="text-xl font-bold text-emerald-700 mb-4">تسجيل الدخول / التسجيل</h2> <!-- Reduced font size -->
-            <div class="mb-2.5"> <!-- Reduced margin -->
-                <label for="authEmail" class="block text-gray-700 text-sm font-semibold mb-0.5 text-right">البريد الإلكتروني:</label> <!-- Reduced font size -->
-                <input type="email" id="authEmail" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل بريدك الإلكتروني"> <!-- Reduced padding, font size -->
-            </div>
-            <div class="mb-3"> <!-- Reduced margin -->
-                <label for="authPassword" class="block text-gray-700 text-sm font-semibold mb-0.5 text-right">كلمة المرور:</label> <!-- Reduced font size -->
-                <input type="password" id="authPassword" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out" placeholder="أدخل كلمة المرور"> <!-- Reduced padding, font size -->
-            </div>
-            <div class="flex flex-col gap-2"> <!-- Reduced gap -->
-                <button id="loginBtn" class="w-full bg-emerald-600 text-white py-2 px-2.5 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
-                    تسجيل الدخول
-                </button>
-                <button id="registerBtn" class="w-full bg-blue-600 text-white py-2 px-2.5 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 shadow-md text-sm"> <!-- Reduced padding, font size -->
-                    إنشاء حساب جديد
-                </button>
-                <!-- Message box for auth errors -->
-                <div id="authMessageBox" class="mt-2.5 p-1.5 text-xs bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert"></div> <!-- Reduced padding, font size -->
             </div>
         </div>
     </div>
@@ -459,391 +415,229 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
     <!-- Place this script at the end of the body to ensure DOM elements are loaded -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, query, where, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
 
         // Global variables for Firebase (MUST be defined even if empty string)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        console.log("App ID:", appId); // Log appId
+
+        // Use __firebase_config if available, otherwise use the hardcoded one
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyBiTnYz0fuR3J3Dgcc6BEpyOfF4FjF1C5I",
+            apiKey: "AIzaSyBiTnYz0fuR3J3Dgcc6BEpyOfF4FjF1C5I", 
             authDomain: "skin-99c39.firebaseapp.com",
             projectId: "skin-99c39",
-            storageBucket: "skin-99c39.appspot.com", // Corrected storageBucket path if it was firebase.appspot.com
+            storageBucket: "skin-99c39.firebasestorage.app",
             messagingSenderId: "111983738514",
             appId: "1:111983738514:web:27712c903e739cebb3304b",
             measurementId: "G-GQ34RLMGS0"
         };
+        console.log("Firebase Config:", firebaseConfig); // Log Firebase Config
 
         let app;
         let db;
         let auth;
         let currentUserId = null; 
         let isAuthReady = false; 
-        let isAdmin = false; 
+        let isAdmin = false; // Flag to determine if the current user is an admin
 
-        // DOM elements for authentication
-        let authOverlay;
-        let authEmailInput;
-        let authPasswordInput;
-        let loginBtn;
-        let registerBtn;
-        let logoutBtn;
-        let authMessageBox;
-        let mainAppContent; // Added reference to main app content
+        // DOM elements for Firebase status and buttons
+        let userIdDisplay;
+        let firebaseStatusDisplay;
+        let saveProfileBtn;
+        let loadNamedProfileBtn;
+        let deleteProfileBtn;
+        let existingProfilesSelect;
+        let adminSettings;
+        let adminUserIdDisplay;
+        let globalAnnouncementInput;
+        let updateGlobalSettingsBtn;
+        let activeUsersCount;
+        let globalAnnouncement;
+        let announcementText;
 
-        // Function to show authentication message
-        function showAuthMessage(message, type = 'info') {
-            if (authMessageBox) {
-                authMessageBox.textContent = message;
-                authMessageBox.className = `mt-3 p-1.5 text-xs rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
-            }
-        }
 
-        // Function to hide authentication message
-        function hideAuthMessage() {
-            if (authMessageBox) {
-                authMessageBox.classList.add('hidden');
+        // Function to show application-wide messages
+        function showApplicationMessage(message, type = 'info') {
+            if (window.messageBox) { // Assuming messageBox is defined in the main script and globally accessible
+                window.messageBox.textContent = message;
+                window.messageBox.className = `mt-4 p-2 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                if (window.resultsContainer) window.resultsContainer.classList.add('hidden'); 
+            } else {
+                console.warn("Message box element not found, showing message in console:", message);
             }
         }
 
         // Initialize Firebase
         document.addEventListener('DOMContentLoaded', () => {
-            // Get auth-related DOM elements
-            authOverlay = document.getElementById('authOverlay');
-            authEmailInput = document.getElementById('authEmail');
-            authPasswordInput = document.getElementById('authPassword');
-            loginBtn = document.getElementById('loginBtn');
-            registerBtn = document.getElementById('registerBtn');
-            logoutBtn = document.getElementById('logoutBtn');
-            authMessageBox = document.getElementById('authMessageBox');
-            mainAppContent = document.getElementById('mainAppContent'); // Get reference
+            // Get DOM elements here as they are part of the main app content
+            userIdDisplay = document.getElementById('userIdDisplay');
+            firebaseStatusDisplay = document.getElementById('firebaseStatusDisplay');
+            saveProfileBtn = document.getElementById('saveProfileBtn');
+            loadNamedProfileBtn = document.getElementById('loadNamedProfileBtn');
+            deleteProfileBtn = document.getElementById('deleteProfileBtn');
+            existingProfilesSelect = document.getElementById('existingProfilesSelect');
+            adminSettings = document.getElementById('adminSettings'); // Admin settings div
+            adminUserIdDisplay = document.getElementById('adminUserIdDisplay');
+            globalAnnouncementInput = document.getElementById('globalAnnouncementInput');
+            updateGlobalSettingsBtn = document.getElementById('updateGlobalSettingsBtn');
+            activeUsersCount = document.getElementById('activeUsersCount');
+            globalAnnouncement = document.getElementById('globalAnnouncement');
+            announcementText = document.getElementById('announcementText');
+
+            // Initially hide admin settings as per HTML, JS will show if admin
+            if (adminSettings) adminSettings.classList.add('hidden'); 
 
             console.log("DOM Content Loaded. Initializing Firebase...");
-            console.log("mainAppContent element:", mainAppContent); // Debug mainAppContent
 
-            // Initially show the auth overlay and hide main content until auth state is confirmed
-            if (authOverlay) {
-                authOverlay.classList.remove('hidden');
-                authOverlay.style.display = 'flex';
-                console.log('Auth overlay set to visible on DOMContentLoaded.');
-            }
-            if (mainAppContent) {
-                mainAppContent.classList.add('hidden');
-                console.log('Main app content set to hidden on DOMContentLoaded.');
-            }
-
-            if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.apiKey) { // Added check for apiKey existence
-                console.log("Firebase: __app_id:", appId);
-                console.log("Firebase: Firebase config detected. Initializing app.");
-
-                if (window.firebaseStatusDisplay) {
-                    window.firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
-                }
-                if (window.userIdDisplay) {
-                    window.userIdDisplay.textContent = 'جارٍ التحميل...';
-                }
-                if (window.adminUserIdDisplay) {
-                    window.adminUserIdDisplay.textContent = 'جارٍ التحميل...';
-                }
+            // Added a check to ensure firebaseConfig is not just an empty object or invalid
+            if (firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") { 
+                if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'جاري الاتصال بـ Firebase...';
+                if (userIdDisplay) userIdDisplay.textContent = 'جارٍ التحميل...';
                 
                 try {
                     app = initializeApp(firebaseConfig);
                     db = getFirestore(app);
                     auth = getAuth(app);
                     console.log("Firebase: App and services initialized successfully.");
-                    if (window.firebaseStatusDisplay) {
-                        window.firebaseStatusDisplay.textContent = 'تم تهيئة Firebase بنجاح.';
-                    }
+                    if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'تم تهيئة Firebase بنجاح.';
 
-                    // --- Authentication Listeners ---
                     onAuthStateChanged(auth, async (user) => {
-                        console.log("onAuthStateChanged triggered. User:", user ? user.uid : "null");
-                        if (user) {
-                            currentUserId = user.uid;
-                            isAuthReady = true;
-                            isAdmin = true; // For demo purposes, any logged-in user is "admin"
-                            console.log("Firebase Authenticated! User ID:", currentUserId);
-                            if (window.userIdDisplay) {
-                                window.userIdDisplay.textContent = currentUserId;
-                            }
-                            if (window.adminUserIdDisplay) {
-                                window.adminUserIdDisplay.textContent = currentUserId;
-                            }
-                            if (window.firebaseStatusDisplay) {
-                                window.firebaseStatusDisplay.textContent = 'Firebase جاهز (تم تسجيل الدخول).';
-                            }
-                            
-                            // Hide auth overlay and show main app content
-                            if (authOverlay) {
-                                authOverlay.classList.add('hidden');
-                                authOverlay.style.display = 'none'; // Explicitly hide
-                                console.log('Auth overlay HIDDEN via onAuthStateChanged. Current display style:', authOverlay.style.display);
-                            }
-                            if (mainAppContent) {
-                                mainAppContent.classList.remove('hidden'); // Show main content
-                                console.log('Main app content SHOWN via onAuthStateChanged.');
-                            }
-                            if (logoutBtn) {
-                                logoutBtn.classList.remove('hidden');
-                                console.log('Logout button SHOWN via onAuthStateChanged.');
-                            }
-                            if (window.adminSettings && isAdmin) { // Show admin settings if logged in and admin
-                                window.adminSettings.classList.remove('hidden');
-                            } else if (window.adminSettings) {
-                                window.adminSettings.classList.add('hidden');
-                            }
-                            
-                            // Fetch and populate profiles after authentication
-                            await populateProfileDropdown();
-                            // Attempt to load a default profile automatically
-                            await window.loadProfile('default-profile', true); // Silent load for default
+                        try { // Added try-catch around onAuthStateChanged callback
+                            console.log("onAuthStateChanged triggered. User:", user ? user.uid : "null");
+                            if (user) {
+                                currentUserId = user.uid;
+                                isAuthReady = true;
+                                console.log("Current User ID:", currentUserId); // Log the actual UID
 
-                            // Start presence updates and listeners for global config
-                            updatePresence(); // Initial presence update
-                            setInterval(updatePresence, 30000); // Update presence every 30 seconds
-                            listenForActiveUsers();
-                            listenForGlobalConfig();
+                                // **************************************************************************************************
+                                // هذا هو السطر الذي يجب تعديله بعد الحصول على معرف المستخدم الخاص بك!
+                                //
+                                // استبدل 'YOUR_ADMIN_UID_HERE' بمعرف المستخدم (UID) الخاص بك الذي يظهر في الواجهة.
+                                // على سبيل المثال: 'yourActualFirebaseUIDString'
+                                const TEST_ADMIN_UID = 'ehhahtecgOh2PB7p8dnI5RwYh1u2'; 
+                                // **************************************************************************************************
 
-                        } else {
-                            currentUserId = null;
-                            isAuthReady = false;
-                            isAdmin = false;
-                            if (window.userIdDisplay) {
-                                window.userIdDisplay.textContent = 'الرجاء تسجيل الدخول';
+                                isAdmin = (currentUserId === TEST_ADMIN_UID);
+                                console.log("Is Admin:", isAdmin); // Log if user is identified as admin
+
+                                console.log("Firebase User active. User ID:", currentUserId);
+                                if (userIdDisplay) userIdDisplay.textContent = currentUserId + (isAdmin ? " (مسؤول)" : " (مجهول)"); 
+                                if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'Firebase جاهز (متصل).';
+
+                                // Show/hide admin settings based on isAdmin flag
+                                if (adminSettings) {
+                                    if (isAdmin) {
+                                        adminSettings.classList.remove('hidden');
+                                        if (adminUserIdDisplay) adminUserIdDisplay.textContent = currentUserId + " (أنت المسؤول)";
+                                        if (updateGlobalSettingsBtn) updateGlobalSettingsBtn.disabled = false; // Enable admin button
+                                    } else {
+                                        adminSettings.classList.add('hidden');
+                                        if (adminUserIdDisplay) adminUserIdDisplay.textContent = currentUserId + " (ليس مسؤول)"; // Show current ID for non-admin
+                                        if (updateGlobalSettingsBtn) updateGlobalSettingsBtn.disabled = true; // Disable for non-admin
+                                    }
+                                }
+                                
+                                // Public dashboard features will work with anonymous auth
+                                updatePresence();
+                                setInterval(updatePresence, 30000);
+                                listenForActiveUsers();
+                                listenForGlobalConfig();
+
+                            } else {
+                                console.log("No user found, attempting anonymous sign-in...");
+                                // If no user, sign in anonymously to allow access to public rules
+                                try {
+                                    await signInAnonymously(auth);
+                                    console.log("Signed in anonymously successfully.");
+                                    // onAuthStateChanged will trigger again with the anonymous user
+                                } catch (anonError) {
+                                    console.error("Failed to sign in anonymously:", anonError);
+                                    if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'فشل الاتصال بـ Firebase (خطأ مجهول).';
+                                    showApplicationMessage("فشل الاتصال بخدمات Firebase. بعض الميزات قد لا تعمل.", 'error');
+                                }
                             }
-                            if (window.adminUserIdDisplay) {
-                                window.adminUserIdDisplay.textContent = 'غير متوفر (يرجى تسجيل الدخول)';
-                            }
-                            if (window.firebaseStatusDisplay) {
-                                window.firebaseStatusDisplay.textContent = 'Firebase متصل (لم يتم تسجيل الدخول).';
-                            }
-                            // Show auth overlay and hide main app content
-                            if (authOverlay) {
-                                authOverlay.classList.remove('hidden');
-                                authOverlay.style.display = 'flex'; // Explicitly show
-                                console.log('Auth overlay VISIBLE via onAuthStateChanged. Current display style:', authOverlay.style.display);
-                            }
-                            if (mainAppContent) {
-                                mainAppContent.classList.add('hidden'); // Hide main content
-                                console.log('Main app content HIDDEN via onAuthStateChanged.');
-                            }
-                            if (logoutBtn) {
-                                logoutBtn.classList.add('hidden');
-                                console.log('Logout button HIDDEN via onAuthStateChanged.');
-                            }
-                            if (window.adminSettings) window.adminSettings.classList.add('hidden');
-                            console.log("Firebase: No user is signed in.");
+                        } catch (authError) {
+                            console.error("Error inside onAuthStateChanged callback:", authError);
+                            if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'خطأ في معالجة حالة المصادقة.';
+                            showApplicationMessage("حدث خطأ في المصادقة. يرجى التحقق من وحدة تحكم المتصفح.", 'error');
                         }
                     });
 
-                    // --- Auth Button Event Listeners ---
-                    if (loginBtn) {
-                        loginBtn.addEventListener('click', async () => {
-                            console.log("Login button clicked.");
-                            const email = authEmailInput.value;
-                            const password = authPasswordInput.value;
-                            hideAuthMessage();
-                            if (!email || !password) {
-                                showAuthMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور.', 'error');
-                                return;
-                            }
-                            try {
-                                await signInWithEmailAndPassword(auth, email, password);
-                                showAuthMessage('تم تسجيل الدخول بنجاح!', 'info');
-                                console.log("Sign-in successful. onAuthStateChanged should handle UI update.");
-                                authEmailInput.value = '';
-                                authPasswordInput.value = '';
-                            } catch (error) {
-                                console.error("Login failed:", error);
-                                let errorMessage = 'فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد.';
-                                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                                    errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
-                                } else if (error.code === 'auth/invalid-email') {
-                                    errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
-                                } else if (error.code === 'auth/network-request-failed') {
-                                    errorMessage = 'فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
-                                } else if (error.code === 'auth/operation-not-allowed') {
-                                    errorMessage = 'المصادقة بالبريد الإلكتروني/كلمة المرور غير مفعلة في إعدادات مشروع Firebase. يرجى تفعيلها.';
-                                }
-                                showAuthMessage(errorMessage, 'error');
-                            }
-                        });
-                    }
-
-                    if (registerBtn) {
-                        registerBtn.addEventListener('click', async () => {
-                            console.log("Register button clicked.");
-                            const email = authEmailInput.value;
-                            const password = authPasswordInput.value;
-                            hideAuthMessage();
-                            if (!email || !password) {
-                                showAuthMessage('الرجاء إدخال البريد الإلكتروني وكلمة المرور لإنشاء حساب.', 'error');
-                                return;
-                            }
-                            if (password.length < 6) {
-                                showAuthMessage('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.', 'error');
-                                return;
-                            }
-                            try {
-                                await createUserWithEmailAndPassword(auth, email, password);
-                                showAuthMessage('تم إنشاء الحساب وتسجيل الدخول بنجاح!', 'info');
-                                console.log("Account created. onAuthStateChanged should handle UI update.");
-                                authEmailInput.value = '';
-                                authPasswordInput.value = '';
-                            } catch (error) {
-                                console.error("Registration failed:", error);
-                                let errorMessage = 'فشل إنشاء الحساب.';
-                                if (error.code === 'auth/email-already-in-use') {
-                                    errorMessage = 'هذا البريد الإلكتروني مستخدم بالفعل. حاول تسجيل الدخول.';
-                                } else if (error.code === 'auth/weak-password') {
-                                    errorMessage = 'كلمة المرور ضعيفة جداً.';
-                                } else if (error.code === 'auth/invalid-email') {
-                                    errorMessage = 'صيغة البريد الإلكتروني غير صحيحة.';
-                                } else if (error.code === 'auth/network-request-failed') {
-                                    errorMessage = 'فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.';
-                                } else if (error.code === 'auth/operation-not-allowed') {
-                                    errorMessage = 'المصادقة بالبريد الإلكتروني/كلمة المرور غير مفعلة في إعدادات مشروع Firebase. يرجى تفعيلها.';
-                                }
-                                showAuthMessage(errorMessage, 'error');
-                            }
-                        });
-                    }
-
-                    if (logoutBtn) {
-                        logoutBtn.addEventListener('click', async () => {
-                            console.log("Logout button clicked.");
-                            try {
-                                await signOut(auth);
-                                window.showMessage('تم تسجيل الخروج بنجاح.', 'info');
-                                // UI will update via onAuthStateChanged listener
-                            } catch (error) {
-                                console.error("Logout failed:", error);
-                                window.showMessage('فشل تسجيل الخروج. يرجى المحاولة مرة أخرى.', 'error');
-                            }
-                        });
-                    }
-
                 } catch (initError) {
-                    console.error("Firebase initialization failed:", initError);
-                    if (window.firebaseStatusDisplay) {
-                        window.firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
-                    }
-                    window.showMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة.", 'error');
-                    if (authOverlay) { // Ensure overlay is shown if Firebase init fails completely
-                        authOverlay.classList.remove('hidden');
-                        authOverlay.style.display = 'flex';
-                    }
-                    if (mainAppContent) { // Ensure main content is hidden if Firebase init fails
-                        mainAppContent.classList.add('hidden');
-                    }
-                    return; 
+                    console.error("Firebase initialization failed during try-catch:", initError);
+                    if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'فشل تهيئة Firebase.';
+                    showApplicationMessage("فشل تهيئة Firebase. ميزة حفظ/تحميل ملفك الشخصي غير متوفرة. يرجى مراجعة وحدة تحكم المتصفح للمزيد من التفاصيل.", 'error'); 
+                    // Disable save/load buttons visually and functionally
+                    if (saveProfileBtn) saveProfileBtn.disabled = true;
+                    if (loadNamedProfileBtn) loadNamedProfileBtn.disabled = true;
+                    if (deleteProfileBtn) deleteProfileBtn.disabled = true;
+                    if (existingProfilesSelect) existingProfilesSelect.disabled = true;
                 }
-
             } else {
                 console.warn("Firebase config not found or incomplete. Save/Load profile functionality and Dashboard features will not be available.");
-                if (window.userIdDisplay) {
-                    window.userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
-                }
-                if (window.firebaseStatusDisplay) {
-                    window.firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود.';
-                }
-                if (window.adminSettings) window.adminSettings.classList.add('hidden'); 
-                window.showMessage("لم يتم توفير تكوين Firebase. ميزة حفظ/تحميل ملفك الشخصي ولوحة التحكم غير متوفرة.", 'error');
-                // If Firebase is not configured, allow access to app without auth
-                if (authOverlay) authOverlay.classList.add('hidden'); 
-                if (mainAppContent) mainAppContent.classList.remove('hidden'); // Show app content
-                if (logoutBtn) {
-                    logoutBtn.classList.add('hidden');
-                    console.log('Logout button hidden because Firebase is not configured.');
-                }
+                if (userIdDisplay) userIdDisplay.textContent = 'غير متوفر (لم يتم تهيئة Firebase)';
+                if (firebaseStatusDisplay) firebaseStatusDisplay.textContent = 'تكوين Firebase غير موجود أو غير مكتمل.';
+                showApplicationMessage("لم يتم توفير تكوين Firebase أو أنه غير مكتمل. ميزة حفظ/تحميل ملفك الشخصي ولوحة التحكم غير متوفرة.", 'error');
+                // Disable save/load buttons visually and functionally
+                if (saveProfileBtn) saveProfileBtn.disabled = true;
+                if (loadNamedProfileBtn) loadNamedProfileBtn.disabled = true;
+                if (deleteProfileBtn) deleteProfileBtn.disabled = true;
+                if (existingProfilesSelect) existingProfilesSelect.disabled = true;
+                if (adminSettings) adminSettings.classList.add('hidden');
             }
-        }); // End DOMContentLoaded for Firebase init
-
-        /**
-         * Firestore Rules for this app:
-         *
-         * // For user-specific profiles (private data)
-         * match /artifacts/{appId}/users/{userId}/profiles/{documentId} {
-         * allow read, write: if request.auth != null && request.auth.uid == userId;
-         * }
-         *
-         * // For public data like presence and global config
-         * match /artifacts/{appId}/public/presence/{userId} {
-         * allow read, write: if request.auth != null; // Anyone logged in can update their presence
-         * }
-         *
-         * match /artifacts/{appId}/public/config/appConfig {
-         * allow read: if request.auth != null; // Anyone logged in can read global config
-         * // For this Canvas demo, we allow write for any authenticated user for simplicity:
-         * allow write: if request.auth != null;
-         * }
-         */
-
+        }); 
 
         // --- Firestore Utility Functions (Presence and Global Config) ---
 
-        /**
-         * Updates the current user's presence timestamp in Firestore.
-         * This indicates the user is "active".
-         */
         async function updatePresence() {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                // console.log("Presence update skipped: Firebase not ready or user not authenticated or db not initialized.");
+            // Check if auth is ready and user is not null (anonymous or registered)
+            if (!isAuthReady || !currentUserId || !db) { 
+                console.warn("Update presence skipped: Firebase not ready or user not active.");
                 return;
             }
             try {
                 const presenceDocRef = doc(db, `artifacts/${appId}/public/presence/${currentUserId}`);
                 await setDoc(presenceDocRef, {
-                    lastActive: serverTimestamp(), // Use serverTimestamp for accuracy
-                    // You could add other user info here if needed, e.g., browser agent etc.
-                }, { merge: true }); // Use merge to avoid overwriting other fields if they exist
-                // console.log("Presence updated for user:", currentUserId);
+                    lastActive: serverTimestamp(), 
+                }, { merge: true }); 
+                console.log("Presence updated for:", currentUserId); // Log presence update
             } catch (error) {
-                console.error("Error updating presence:", error);
+                console.error("Error updating presence for", currentUserId, ":", error);
             }
         }
 
-        /**
-         * Listens for real-time updates on the presence collection
-         * and updates the active users count.
-         */
         function listenForActiveUsers() {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                console.warn("Skipping active users listener: Firebase not ready or user not authenticated or db not initialized.");
+            if (!isAuthReady || !currentUserId || !db) { 
+                console.warn("Skipping active users listener: Firebase not ready or user not active.");
                 return;
             }
             const presenceCollectionRef = collection(db, `artifacts/${appId}/public/presence`);
             
-            // Listen for changes
             onSnapshot(presenceCollectionRef, (snapshot) => {
                 let activeUsers = 0;
                 const now = Date.now();
-                const thirtySecondsAgo = now - (30 * 1000 * 2); // Consider active if updated in last 60 seconds (2x update interval)
+                const sixtySecondsAgo = now - (60 * 1000); // Consider active if updated in last 60 seconds (extended from 30s)
 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    // Check if lastActive exists and is recent
-                    if (data.lastActive && data.lastActive.toMillis() > thirtySecondsAgo) {
+                    if (data.lastActive && data.lastActive.toMillis() > sixtySecondsAgo) {
                         activeUsers++;
                     }
                 });
-                if (window.activeUsersCount) {
-                    window.activeUsersCount.textContent = activeUsers;
+                if (activeUsersCount) {
+                    activeUsersCount.textContent = activeUsers;
                 }
-                console.log("Active users count updated:", activeUsers);
+                console.log("Active users updated:", activeUsers); // Log active users count
             }, (error) => {
                 console.error("Error listening for active users:", error);
-                window.showMessage("فشل تحديث عدد المستخدمين النشطين.", 'error');
+                showApplicationMessage("فشل تحديث عدد المستخدمين النشطين.", 'error');
             });
         }
 
-        /**
-         * Listens for real-time updates on the global configuration document
-         * and updates the UI accordingly.
-         */
         function listenForGlobalConfig() {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                console.warn("Skipping global config listener: Firebase not ready or user not authenticated or db not initialized.");
+            if (!isAuthReady || !currentUserId || !db) { 
+                console.warn("Skipping global config listener: Firebase not ready or user not active.");
                 return;
             }
             const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
@@ -852,238 +646,91 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                 if (docSnap.exists()) {
                     const configData = docSnap.data();
                     const announcement = configData.globalAnnouncement || '';
-                    if (window.announcementText) {
-                        window.announcementText.textContent = announcement;
+                    if (announcementText) {
+                        announcementText.textContent = announcement;
                         if (announcement) {
-                            window.globalAnnouncement.classList.remove('hidden');
+                            globalAnnouncement.classList.remove('hidden');
                         } else {
-                            window.globalAnnouncement.classList.add('hidden');
+                            globalAnnouncement.classList.add('hidden');
                         }
                     }
-                    if (window.globalAnnouncementInput && isAdmin) { // Only update admin input if it's the admin
-                        window.globalAnnouncementInput.value = announcement;
+                    if (globalAnnouncementInput) { 
+                        globalAnnouncementInput.value = announcement;
                     }
-                    console.log("Global configuration updated:", configData);
+                    console.log("Global announcement updated:", announcement); // Log announcement update
                 } else {
-                    if (window.announcementText) {
-                        window.announcementText.textContent = '';
-                        window.globalAnnouncement.classList.add('hidden');
+                    if (announcementText) {
+                        announcementText.textContent = '';
+                        globalAnnouncement.classList.add('hidden');
                     }
-                    console.log("Global config document does not exist yet.");
+                    console.log("No global announcement found."); // Log no announcement
                 }
             }, (error) => {
                 console.error("Error listening for global config:", error);
-                window.showMessage("فشل تحديث الإعدادات العامة.", 'error');
+                showApplicationMessage("فشل تحديث الإعدادات العامة.", 'error');
             });
         }
 
-        /**
-         * Saves the global configuration (e.g., announcement message) to Firestore.
-         */
+        // Modified saveGlobalConfig to allow updates for admin
         window.saveGlobalConfig = async function() {
-            if (!isAuthReady || !currentUserId || !isAdmin || !db) { // Ensure user is authenticated and is admin, and db exists
-                window.showMessage("ليس لديك صلاحية لحفظ الإعدادات العامة.", 'error');
-                console.error("Save global config failed: Not authorized or db not initialized.");
+            if (!isAuthReady || !currentUserId || !db) {
+                showApplicationMessage("لا يمكن حفظ الإعدادات العامة. يرجى التأكد من اتصال Firebase.", 'error');
                 return;
             }
+            if (!isAdmin) { // Only allow admin to save
+                showApplicationMessage("ليس لديك صلاحيات لحفظ الإعدادات العامة. هذا القسم للمسؤولين فقط.", 'error');
+                return;
+            }
+
+            const announcement = globalAnnouncementInput.value.trim();
+            const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
+
             try {
-                const announcement = window.globalAnnouncementInput.value.trim();
-                const configDocRef = doc(db, `artifacts/${appId}/public/config/appConfig`);
-                await setDoc(configDocRef, { globalAnnouncement: announcement }, { merge: true });
-                window.showMessage("تم حفظ الإعدادات العامة بنجاح!", 'info');
-                console.log("Global config saved:", { globalAnnouncement: announcement });
+                await setDoc(configDocRef, {
+                    globalAnnouncement: announcement,
+                    lastUpdated: serverTimestamp()
+                }, { merge: true });
+                showApplicationMessage("تم حفظ الإعدادات العامة بنجاح!", 'info');
+                console.log("Global config saved by admin:", currentUserId);
             } catch (error) {
                 console.error("Error saving global config:", error);
-                if (error.code === 'permission-denied') {
-                    window.showMessage("حدث خطأ في الأذونات أثناء حفظ الإعدادات العامة. يرجى التحقق من قواعد أمان Firebase.", 'error');
-                } else {
-                    window.showMessage("حدث خطأ أثناء حفظ الإعدادات العامة. الرجاء المحاولة مرة أخرى.", 'error');
-                }
+                showApplicationMessage(`فشل حفظ الإعدادات العامة: ${error.message}. تأكد من تحديث قواعد أمان Firebase Firestore للسماح للمسؤول بالكتابة.`, 'error');
             }
         };
 
         // --- End Firestore Utility Functions ---
 
 
-        // Functions to save and load profile from Firestore
-        // هذه الوظائف تم تعريفها على الكائن 'window' لتكون متاحة للسكربت الرئيسي.
+        // Functions to save and load profile from Firestore (still disabled without proper login)
         window.saveProfile = async function(profileName) {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل الحفظ.", 'error');
-                console.error("Save profile failed: Firebase not ready or user not authenticated or db not initialized.");
-                return;
-            }
-            if (!profileName || profileName.trim() === '') {
-                window.showMessage("الرجاء إدخال اسم لملفك الشخصي لحفظه.", 'error');
-                return;
-            }
-            profileName = profileName.trim();
-
-            try {
-                const skinType = window.skinTypeSelect.value;
-                const skinConcerns = Array.from(window.skinConcernCheckboxes)
-                                           .filter(cb => cb.checked)
-                                           .map(cb => cb.value);
-                const userAge = parseInt(window.userAgeInput.value, 10); // Get age
-                const isPregnant = window.isPregnantCheckbox.checked; // Get pregnancy status
-                const medicalConditions = window.medicalConditionsInput.value.trim(); // Get medical conditions
-                
-                const profileData = {
-                    skinType: skinType,
-                    skinConcerns: skinConcerns,
-                    preferredIngredients: window.userPreferredIngredients,
-                    excludedIngredients: window.userExcludedIngredients,
-                    age: !isNaN(userAge) && userAge > 0 ? userAge : null, // Store age only if valid
-                    isPregnant: isPregnant,
-                    medicalConditions: medicalConditions,
-                    lastSaved: new Date().toISOString() // ISO string for better compatibility
-                };
-
-                // المسار لحفظ بيانات المستخدم في Firestore ضمن مجموعة 'profiles'
-                const profileDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
-                console.log(`Attempting to save profile "${profileName}" to path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
-                await setDoc(profileDocRef, profileData);
-                window.showMessage(`تم حفظ ملفك الشخصي "${profileName}" بنجاح!`, 'info');
-                console.log("Profile saved successfully:", profileData);
-                await populateProfileDropdown(); // Refresh dropdown after saving
-
-            } catch (error) {
-                console.error("Error saving profile:", error);
-                if (error.code === 'permission-denied') {
-                    window.showMessage("حدث خطأ في الأذونات أثناء حفظ ملفك الشخصي. يرجى التحقق من قواعد أمان Firebase.", 'error');
-                } else {
-                    window.showMessage("حدث خطأ أثناء حفظ ملفك الشخصي. الرجاء المحاولة مرة أخرى.", 'error');
-                }
-            }
+            showApplicationMessage("لحفظ ملفك الشخصي، يجب أن تكون مسجلاً بحساب. ميزة حفظ الملفات الشخصية معطلة حالياً.", 'error');
         };
 
         window.loadProfile = async function(profileName, silent = false) {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                if (!silent) window.showMessage("الرجاء انتظار تهيئة Firebase وتسجيل الدخول قبل التحميل.", 'error');
-                console.error("Load profile failed: Firebase not ready or user not authenticated or db not initialized.");
-                return;
-            }
-            if (!profileName || profileName.trim() === '') {
-                if (!silent) window.showMessage("الرجاء تحديد اسم ملف شخصي لتحميله.", 'error');
-                return;
-            }
-            profileName = profileName.trim();
+            if (!silent) showApplicationMessage("لتحميل ملفاتك الشخصية، يجب أن تكون مسجلاً بحساب. ميزة تحميل الملفات الشخصية معطلة حالياً.", 'error');
+        };
 
-            try {
-                // المسار لتحميل بيانات المستخدم من Firestore ضمن مجموعة 'profiles'
-                const profileDocRef = doc(db, `artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
-                console.log(`Attempting to load profile "${profileName}" from path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
-                const docSnap = await getDoc(profileDocRef);
-
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    window.skinTypeSelect.value = data.skinType || 'normal';
-                    
-                    // Reset all checkboxes first
-                    window.skinConcernCheckboxes.forEach(cb => cb.checked = false);
-                    // Set checked for loaded concerns
-                    (data.skinConcerns || []).forEach(concern => {
-                        const checkbox = document.querySelector(`.skin-concern-checkbox[value="${concern}"]`);
-                        if (checkbox) checkbox.checked = true;
-                    });
-
-                    // Load age, pregnancy, medical conditions
-                    window.userAgeInput.value = data.age || '';
-                    window.isPregnantCheckbox.checked = data.isPregnant || false;
-                    window.medicalConditionsInput.value = data.medicalConditions || '';
-
-                    // Clear existing tags and repopulate
-                    window.preferredIngredientsList.innerHTML = '';
-                    window.excludedIngredientsList.innerHTML = '';
-                    window.userPreferredIngredients = [];
-                    window.userExcludedIngredients = [];
-
-                    // Use `silent = true` to prevent repetitive messages during loading
-                    (data.preferredIngredients || []).forEach(ing => window.addTag(ing, 'preferred', true)); 
-                    (data.excludedIngredients || []).forEach(ing => window.addTag(ing, 'excluded', true)); 
-
-                    if (!silent) window.showMessage(`تم تحميل ملفك الشخصي "${profileName}" بنجاح!`, 'info');
-                    // Set the profile name input to the loaded profile name
-                    window.profileNameInput.value = profileName;
-                    // Select the loaded profile in the dropdown
-                    window.existingProfilesSelect.value = profileName;
-                    console.log("Profile loaded successfully:", data);
-                } else {
-                    if (!silent) window.showMessage(`لا يوجد ملف شخصي محفوظ بالاسم "${profileName}".`, 'info');
-                    console.log(`No saved profile found with name: ${profileName} at path: artifacts/${appId}/users/${currentUserId}/profiles/${profileName}`);
-                }
-            } catch (error) {
-                console.error("Error loading profile:", error);
-                if (error.code === 'permission-denied') {
-                    if (!silent) window.showMessage("حدث خطأ في الأذونات أثناء تحميل ملفك الشخصي. يرجى التحقق من قواعد أمان Firebase.", 'error');
-                } else {
-                    if (!silent) window.showMessage("حدث خطأ أثناء تحميل ملفك الشخصي. الرجاء المحاولة مرة أخرى.", 'error');
-                }
-            }
+        window.deleteProfile = async function(profileName) {
+            showApplicationMessage("لحذف ملفك الشخصي، يجب أن تكون مسجلاً بحساب. ميزة حذف الملفات الشخصية معطلة حالياً.", 'error');
         };
 
         async function populateProfileDropdown() {
-            if (!isAuthReady || !currentUserId || !db) { // Added check for db existence
-                console.warn("populateProfileDropdown: Skipping population because Firebase authentication is not ready or user ID is null or db not initialized.");
-                if (window.existingProfilesSelect) {
-                    window.existingProfilesSelect.innerHTML = '<option value="">الرجاء انتظار تحميل ملفك الشخصي</option>';
-                }
-                return; // Cannot populate if not authenticated
+            if (existingProfilesSelect) {
+                 existingProfilesSelect.innerHTML = '<option value="">يلزم تسجيل الدخول لحفظ الملفات الشخصية</option>'; 
             }
-
-            if (window.existingProfilesSelect) {
-                 window.existingProfilesSelect.innerHTML = '<option value="">اختر ملفاً شخصياً</option>'; // Clear existing options
-            }
-           
-            try {
-                const profilesCollectionRef = collection(db, `artifacts/${appId}/users/${currentUserId}/profiles`);
-                console.log(`Attempting to populate dropdown from path: artifacts/${appId}/users/${currentUserId}/profiles`);
-                const querySnapshot = await getDocs(profilesCollectionRef);
-                
-                console.log(`Found ${querySnapshot.size} profiles for user ${currentUserId}.`);
-
-                if (querySnapshot.empty) {
-                    const noProfilesOption = document.createElement('option');
-                    noProfilesOption.value = '';
-                    noProfilesOption.textContent = 'لا يوجد ملفات محفوظة';
-                    if (window.existingProfilesSelect) {
-                        window.existingProfilesSelect.appendChild(noProfilesOption);
-                    }
-                    console.log("No profiles found to populate dropdown.");
-                    return;
-                }
-
-                querySnapshot.forEach(doc => {
-                    const option = document.createElement('option');
-                    option.value = doc.id; // Document ID is the profile name
-                    option.textContent = doc.id;
-                    if (window.existingProfilesSelect) {
-                        window.existingProfilesSelect.appendChild(option);
-                        console.log(`Added profile option: ${doc.id}`);
-                    }
-                });
-                console.log(`Profile dropdown populated with ${querySnapshot.size} profiles.`);
-
-            } catch (error) {
-                console.error("Error populating profile dropdown:", error);
-                if (error.code === 'permission-denied') {
-                    window.showMessage("حدث خطأ في الأذونات أثناء تحميل قائمة الملفات الشخصية. يرجى التحقق من قواعد أمان Firebase.", 'error'); 
-                } else {
-                    window.showMessage("حدث خطأ أثناء تحميل قائمة الملفات الشخصية.", 'error');
-                }
-            }
+            // All profile management requires a registered user
+            showApplicationMessage("ميزة إدارة الملفات الشخصية تتطلب تسجيل الدخول بحساب لتخزين بياناتك بأمان.", 'info');
         }
     </script>
 
     <!-- Main application logic Script -->
-    <!-- Place this script at the end of the body to ensure DOM elements are loaded -->
     <script>
         // Global variables for DOM elements and data
         let skinTypeSelect;
         let skinConcernCheckboxes;
-        let userAgeInput; // New
-        let isPregnantCheckbox; // New
-        let medicalConditionsInput; // New
+        let userAgeInput; 
+        let isPregnantCheckbox; 
+        let medicalConditionsInput; 
         let preferredIngredientInput;
         let addPreferredIngredient;
         let preferredIngredientsList;
@@ -1105,13 +752,14 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
         let scanImageBtn;
         let scanButtonText;
         let scanLoadingSpinner;
+        let deleteProfileBtn; 
 
         // Autocomplete suggestion divs
         let preferredSuggestions;
         let excludedSuggestions;
         let mainSuggestions;
 
-        // Dashboard elements
+        // Dashboard elements (now managed directly in module script)
         let activeUsersCount;
         let adminSettings;
         let adminUserIdDisplay;
@@ -1161,7 +809,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             { name: ['Linalool', 'لينالول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، ولكنه قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
             { name: ['Geraniol', 'جيرانيول'], classification: 'تحذير: مهيج محتمل', description: 'مكون عطري طبيعي موجود في العديد من الزيوت الأساسية، قد يكون مسبباً للحساسية.', skin_notes: { sensitive: 'مسبب شائع للحساسية والتهيج للبشرة الحساسة.' } },
             // New Ingredients Added in "اليوم الأول"
-            { name: ['Salicylic Acid', 'حمض الساليسيليك'], classification: 'جيد للبشرة', description: 'حمض بيتا هيدروكسي (BHA) يعمل كمقشر داخل المسام، فعال في علاج حب الشباب والرؤوس السوداء.', skin_notes: { acne: 'ممتاز لتقليل البثور والرؤوس السوداء والبيضاء.', oily: 'يساعد على التحكم في إفراز الزيوت وتنقيع المسام.', sensitive: 'قد يسبب جفافاً أو تهيجاً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, // Added pregnancy note
+            { name: ['Salicylic Acid', 'حمض الساليسيليك'], classification: 'جيد للبشرة', description: 'حمض بيتا هيدروكسي (BHA) يعمل كمقشر داخل المسام، فعال في علاج حب الشباب والرؤوس السوداء.', skin_notes: { acne: 'ممتاز لتقليل البثور والرؤوس السوداء والبيضاء.', oily: 'يساعد على التحكم في إفراز الزيوت وتنقيع المسام.', sensitive: 'قد يسبب جفافاً أو تهيجاً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, 
             { name: ['Squalene', 'سكوالين'], classification: 'جيد للبشرة', description: 'دهن طبيعي موجود في زيوت البشرة، يُستخدم كمرطب ومطري ممتاز، مشتق عادةً من الزيتون أو قصب السكر. (يختلف عن السكوالان Squalane الذي هو شكل مستقر منه).', skin_notes: { dry: 'يرطب البشرة بعمق ويعزز حاجزها الطبيعي.', sensitive: 'لطيف للغاية ونادراً ما يسبب تهيجاً.', normal: 'يشبه الزيوت الطبيعية للبشرة، مما يجعله متوافقاً مع معظم الأنواع.' } },
             { name: ['Amber', 'عنبر'], classification: 'مكون عطري', description: 'في العطور، "العنبر" عادة ما يشير إلى اتفاق عطري دافئ وغني وحلو يذكرنا بالراتنجات، وغالباً ما يكون صناعياً. (لا يجب الخلط بينه وبين "العنبرية" أو "قيء الحوت" Ambergris وهو مكون حيواني مختلف).', skin_notes: { sensitive: 'قد تسبب المكونات العطرية بشكل عام تهيجاً للبشرة الحساسة.' } },
             // New Ingredients Added in "اليوم الثاني"
@@ -1169,14 +817,22 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             { name: ['Polysorbate 20', 'بولي سوربات 20'], classification: 'جيد للبشرة', description: 'مستحلب ومذيب غير أيوني يُستخدم للمساعدة في خلط الزيوت والعطور مع الماء في المستحضرات، كما يعمل كعامل ترطيب خفيف.', skin_notes: { normal: 'يعتبر آمناً بشكل عام وغير مهيج لمعظم أنواع البشرة في التركيزات المستخدمة في مستحضرات التجميل.' } },
             { name: ['BHT', 'Butylated Hydroxytoluene', 'بي إتش تي'], classification: 'تحذير: مكون مثير للجدل', description: 'مضاد أكسدة صناعي يُستخدم لمنع تزنخ الزيوت والمكونات الأخرى، ويُضاف كمادة حافظة في العديد من المنتجات. أثيرت حوله بعض المخاوف الصحية والبيئية.', skin_notes: { sensitive: 'قد يسبب تفاعلات تحسسية لدى بعض الأشخاص، ولكن هذا نادر الحدوث.' } },
 
-            // New Ingredients Added
+            // New Ingredients Added (from previous update)
             { name: ['Ceramides', 'سيراميدات', 'السيراميدات'], classification: 'جيد للبشرة', description: 'دهون طبيعية ضرورية تشكل حاجز البشرة، تساعد في الحفاظ على ترطيبها وحمايتها.', skin_notes: { dry: 'ضرورية لترميم حاجز البشرة الجافة ومنع فقدان الماء.', sensitive: 'تهدئ البشرة الحساسة وتقوي حاجزها الواقي.' } },
             { name: ['Peptides', 'ببتيدات', 'الببتيدات'], classification: 'جيد للبشرة', description: 'سلاسل قصيرة من الأحماض الأمينية التي يمكن أن تحفز إنتاج الكولاجين والإيلاستين لتحسين مرونة البشرة.', skin_notes: { aging: 'تساعد في تقليل ظهور الخطوط الدقيقة والتجاعيد وتعزز تماسك البشرة.' } },
             { name: ['Hyaluronic Acid', 'حمض الهيالورونيك'], classification: 'جيد للبشرة', description: 'مرطب قوي يجذب الرطوبة ويحتفظ بها في البشرة، مما يجعلها تبدو أكثر امتلاءً ونضارة.', skin_notes: { dry: 'يرطب البشرة بعمق ويحسن مرونتها.', dehydration: 'يعد أحد أفضل المكونات لمكافحة جفاف البشرة.' } },
-            { name: ['Retinol', 'ريتينول', 'الريتينول'], classification: 'جيد للبشرة', description: 'شكل من فيتامين A، يعزز تجديد الخلايا ويقلل من علامات الشيخوخة وحب الشباب. قد يسبب تهيجاً في البداية.', skin_notes: { aging: 'يقلل التجاعيد ويحسن ملمس البشرة.', acne: 'فعال في علاج حب الشباب بتقليل انسداد المسام.', sensitive: 'قد يسبب احمراراً أو تقشيراً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'يجب تجنبه تماماً أثناء الحمل والرضاعة.' }, // Added pregnancy note
-            { name: ['Glycolic Acid', 'حمض الجليكوليك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) يعمل كمقشر كيميائي لإزالة الخلايا الميتة من سطح البشرة وتحسين الإشراق.', skin_notes: { pigmentation: 'يساعد في تقليل التصبغات والبقع الداكنة.', sensitive: 'قد يسبب تهيجاً واحمراراً للبشرة الحساسة، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, // Added pregnancy note
-            { name: ['Tea Tree Oil', 'زيت شجرة الشاي'], classification: 'عضوي', description: 'زيت طبيعي له خصائص مضادة للبكتيريا والالتهابات، يستخدم في علاج حب الشباب.', skin_notes: { acne: 'فعال في تقليل حب الشباب وتقليل الالتهاب.', sensitive: 'قد يكون قوياً ومهيجاً للبشرة الحساسة، يجب تخفيفه قبل الاستخدام.' }, medical_notes: [{keyword: 'سكري', text: 'قد يؤثر على مستويات السكر في الدم عند تناوله عن طريق الفم، لكن الاستخدام الموضعي آمن بشكل عام.'}] }, // Added medical note
+            { name: ['Retinol', 'ريتينول', 'الريتينول'], classification: 'جيد للبشرة', description: 'شكل من فيتامين A، يعزز تجديد الخلايا ويقلل من علامات الشيخوخة وحب الشباب. قد يسبب تهيجاً في البداية.', skin_notes: { aging: 'يقلل التجاعيد ويحسن ملمس البشرة.', acne: 'فعال في علاج حب الشباب بتقليل انسداد المسام.', sensitive: 'قد يسبب احمراراً أو تقشيراً في البداية، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'يجب تجنبه تماماً أثناء الحمل والرضاعة.' }, 
+            { name: ['Glycolic Acid', 'حمض الجليكوليك'], classification: 'تحذير: مهيج محتمل', description: 'حمض ألفا هيدروكسي (AHA) يعمل كمقشر كيميائي لإزالة الخلايا الميتة من سطح البشرة وتحسين الإشراق.', skin_notes: { pigmentation: 'يساعد في تقليل التصبغات والبقع الداكنة.', sensitive: 'قد يسبب تهيجاً واحمراراً للبشرة الحساسة، ابدأ بتركيزات منخفضة.' }, pregnancy_notes: 'قد يسبب مشاكل في التركيزات العالية أثناء الحمل، يفضل استشارة الطبيب.' }, 
+            { name: ['Tea Tree Oil', 'زيت شجرة الشاي'], classification: 'عضوي', description: 'زيت طبيعي له خصائص مضادة للبكتيريا والالتهابات، يستخدم في علاج حب الشباب.', skin_notes: { acne: 'فعال في تقليل حب الشباب وتقليل الالتهاب.', sensitive: 'قد يكون قوياً ومهيجاً للبشرة الحساسة، يجب تخفيفه قبل الاستخدام.' }, medical_notes: [{keyword: 'سكري', text: 'قد يؤثر على مستويات السكر في الدم عند تناوله عن طريق الفم، لكن الاستخدام الموضعي آمن بشكل عام.'}] }, 
             { name: ['Colloidal Oatmeal', 'دقيق الشوفان الغروي'], classification: 'جيد للبشرة', description: 'مكون طبيعي مهدئ ومضاد للالتهابات، يساعد على تخفيف الحكة والاحمرار والجفاف.', skin_notes: { sensitive: 'ممتاز للبشرة الحساسة والمتهيجة والمعرضة للإكزيما.', dry: 'يساعد على تهدئة البشرة الجافة جداً والمتهيجة وترطيبها.' } },
+            // Newly Added Ingredients (current update)
+            { name: ['Bakuchiol', 'باكوتشيول'], classification: 'جيد للبشرة', description: 'مركب طبيعي مستخلص من نبات الباكوتشي، يعتبر بديلاً طبيعياً للريتينول بخصائص مضادة للشيخوخة دون تهيج كبير.', skin_notes: { aging: 'يساعد في تقليل ظهور الخطوط الدقيقة والتجاعيد.', sensitive: 'لطيف بشكل عام على البشرة الحساسة مقارنة بالريتينول.' } },
+            { name: ['Azelaic Acid', 'حمض الأزيليك'], classification: 'جيد للبشرة', description: 'حمض ثنائي الكربوكسيل يساعد في علاج حب الشباب والوردية عن طريق تقليل الالتهاب وقتل البكتيريا.', skin_notes: { acne: 'فعال في علاج حب الشباب وتقليل الاحمرار والالتهاب.', redness: 'يقلل الاحمرار المصاحب للوردية وحب الشباب.' } },
+            { name: ['Centella Asiatica', 'سنتيلا اسياتيكا', 'سيكا', 'Cica'], classification: 'جيد للبشرة', description: 'مستخلص عشبي معروف بخصائصه المهدئة والمضادة للالتهابات والمساعدة في التئام الجروح.', skin_notes: { sensitive: 'ممتاز لتهدئة البشرة المتهيجة والحساسة.', redness: 'يساعد في تقليل الاحمرار والتهدئة بعد التهيج.' } },
+            { name: ['Snail Mucin', 'مخاط الحلزون'], classification: 'جيد للبشرة', description: 'مكون مرطب ومجدد للبشرة، يساعد في الترطيب وتحسين نسيج البشرة وإصلاحها.', skin_notes: { dry: 'يرطب البشرة بعمق ويحسن مرونتها.', aging: 'يساعد في تجديد الخلايا وتقليل الخطوط الدقيقة.' } },
+            { name: ['Denatured Alcohol', 'كحول دناتوري'], classification: 'تحذير: مهيج محتمل', description: 'نوع من الكحول يستخدم كمذيب وعامل مطهر، ولكنه قد يكون مجففاً ومهيجاً للبشرة على المدى الطويل.', skin_notes: { dry: 'يسبب جفافاً شديداً للبشرة ويضر حاجزها.', oily: 'قد يؤدي إلى زيادة إفراز الزيوت كرد فعل على الجفاف.', sensitive: 'مهيج جداً للبشرة الحساسة.' } },
+            { name: ['Propylene Glycol', 'بروبيلين جلايكول'], classification: 'جيد للبشرة', description: 'مرطب ومذيب يساعد على جذب الرطوبة إلى البشرة ويحسن امتصاص المكونات الأخرى.', skin_notes: { normal: 'مرطب جيد لمعظم أنواع البشرة.', sensitive: 'نادراً ما يسبب تهيجاً، لكن قد يعاني البعض من حساسية خفيفة.' } },
+            { name: ['Essential Oils', 'زيوت أساسية'], classification: 'تحذير: مهيج محتمل', description: 'زيوت عطرية مركزة مستخلصة من النباتات، تستخدم للرائحة أو الفوائد العلاجية، ولكنها قد تسبب تهيجاً أو حساسية للبشرة الحساسة.', skin_notes: { sensitive: 'مسببات شائعة للحساسية والتهيج.', redness: 'قد تزيد من الاحمرار والالتهاب.' } },
 
 
             // Harmful/Controversial Ingredients
@@ -1213,18 +869,14 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
         let currentSuggestionsDiv = null;
 
         window.showSuggestions = function(inputElement, suggestionsDiv) {
-            console.log("showSuggestions called for:", inputElement.id);
             const inputValue = inputElement.tagName === 'TEXTAREA' ? 
-                               getLastWord(inputElement.value, inputElement.selectionStart).toLowerCase() : 
+                               window.getLastWord(inputElement.value, inputElement.selectionStart).toLowerCase() : 
                                inputElement.value.toLowerCase();
             
-            console.log("Input value for suggestions:", inputValue);
             suggestionsDiv.innerHTML = ''; 
             suggestionsDiv.classList.add('hidden'); 
 
-            // Only show suggestions if input value is not empty and not just spaces
             if (inputValue.trim().length < 1) { 
-                console.log("Input value too short or just spaces for suggestions.");
                 return;
             }
 
@@ -1232,18 +884,15 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             currentSuggestionsDiv = suggestionsDiv;
 
             const uniqueMatchedNames = new Set();
-            window.ingredientsDatabase.forEach(ingredient => { // Use window.ingredientsDatabase
+            window.ingredientsDatabase.forEach(ingredient => { 
                 ingredient.name.forEach(name => {
-                    // Match if the input value is a substring of the ingredient name
                     if (name.toLowerCase().includes(inputValue)) {
                         uniqueMatchedNames.add(name);
                     }
                 });
             });
-            console.log("Found unique matched names:", Array.from(uniqueMatchedNames));
 
             if (uniqueMatchedNames.size === 0) {
-                console.log("No unique matched names found.");
                 return;
             }
 
@@ -1254,7 +903,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                 suggestionItem.classList.add('autocomplete-suggestion-item');
                 suggestionItem.textContent = suggestion;
                 suggestionItem.addEventListener('click', () => {
-                    console.log("Suggestion clicked:", suggestion);
                     if (inputElement.tagName === 'TEXTAREA') {
                         const cursorPosition = inputElement.selectionStart;
                         const textBeforeCursor = inputElement.value.substring(0, cursorPosition);
@@ -1287,35 +935,29 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             });
 
             suggestionsDiv.classList.remove('hidden');
-            console.log("Suggestions div made visible for:", inputElement.id);
             const inputRect = inputElement.getBoundingClientRect();
             const parentRect = inputElement.parentElement.getBoundingClientRect();
             
-            // Adjust position for RTL: right should align to the right side of the input, and width should be input width
-            // Calculate 'right' from the parent's right edge
             const rightPosition = parentRect.width - (inputRect.left - parentRect.left) - inputRect.width;
             suggestionsDiv.style.right = `${rightPosition}px`;
-            suggestionsDiv.style.left = 'auto'; // Remove left positioning if it was set
+            suggestionsDiv.style.left = 'auto'; 
             suggestionsDiv.style.top = `${inputRect.bottom - parentRect.top + 5}px`;
             suggestionsDiv.style.width = `${inputRect.width}px`;
-            console.log("Suggestions div positioned:", suggestionsDiv.style.top, suggestionsDiv.style.right, suggestionsDiv.style.width);
         }
 
         window.getLastWord = function(text, cursorPosition) {
             const textBeforeCursor = text.substring(0, cursorPosition);
-            // Look for common delimiters: space, comma, newline, dot
             const lastDelimiterIndex = Math.max(
                 textBeforeCursor.lastIndexOf(' '), 
                 textBeforeCursor.lastIndexOf(','), 
                 textBeforeCursor.lastIndexOf('\n'), 
                 textBeforeCursor.lastIndexOf('.')
             );
-            return textBeforeCursor.substring(lastDelimiterIndex + 1).trim(); // Trim to get just the word
+            return textBeforeCursor.substring(lastDelimiterIndex + 1).trim(); 
         }
 
         document.addEventListener('click', (event) => {
             if (currentSuggestionsDiv && !currentSuggestionsDiv.contains(event.target) && activeInput && !activeInput.contains(event.target)) {
-                console.log("Hiding suggestions because clicked outside.");
                 currentSuggestionsDiv.classList.add('hidden');
             }
         });
@@ -1323,9 +965,8 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
         window.showMessage = function(message, type = 'info') {
             if (messageBox) { 
                 messageBox.textContent = message;
-                messageBox.className = `mt-3 p-1.5 text-xs rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
+                messageBox.className = `mt-4 p-2 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block`;
                 if (resultsContainer) resultsContainer.classList.add('hidden'); 
-                console.log("Message displayed:", message);
             } else {
                 console.warn("Message box element not found, showing message in console:", message);
             }
@@ -1334,7 +975,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
         window.hideMessage = function() {
             if (messageBox) { 
                 messageBox.classList.add('hidden');
-                console.log("Message box hidden.");
             }
         }
 
@@ -1350,14 +990,12 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                 return;
             }
 
-            // Check if the ingredient exists in the database
             const foundInDb = window.ingredientsDatabase.some(dbIng => 
                 dbIng.name.some(n => n.toLowerCase() === normalizedIngredient)
             );
 
             if (!foundInDb) {
                 if (!silent) window.showMessage(`المكون "${ingredient}" غير معروف في قاعدة بياناتنا. يرجى إدخال مكون تجميلي محدد من الاقتراحات.`, 'error');
-                console.warn(`Attempted to add unknown ingredient "${ingredient}" of type "${type}".`);
                 return;
             }
 
@@ -1371,10 +1009,8 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
 
             if (type === 'preferred') {
                 window.userPreferredIngredients.push(normalizedIngredient);
-                console.log("Preferred ingredients:", window.userPreferredIngredients);
             } else {
                 window.userExcludedIngredients.push(normalizedIngredient);
-                console.log("Excluded ingredients:", window.userExcludedIngredients);
             }
 
             if (!silent) window.showMessage(`تم إضافة "${ingredient}" إلى قائمة المكونات الـ ${type === 'preferred' ? 'مفضلة' : 'مستبعدة'}.`, 'info');
@@ -1395,7 +1031,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                 window.userExcludedIngredients = window.userExcludedIngredients.filter(item => item !== ingredient.toLowerCase());
             }
             window.showMessage(`تم حذف "${ingredient}" من القائمة.`, 'info');
-            console.log(`Removed "${ingredient}" from ${type} list.`);
         }
 
         // PWA: Register Service Worker
@@ -1417,9 +1052,9 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             // Assign DOM elements to global variables
             skinTypeSelect = document.getElementById('skinType');
             skinConcernCheckboxes = document.querySelectorAll('.skin-concern-checkbox');
-            userAgeInput = document.getElementById('userAge'); // New
-            isPregnantCheckbox = document.getElementById('isPregnant'); // New
-            medicalConditionsInput = document.getElementById('medicalConditionsInput'); // New
+            userAgeInput = document.getElementById('userAge'); 
+            isPregnantCheckbox = document.getElementById('isPregnant'); 
+            medicalConditionsInput = document.getElementById('medicalConditionsInput'); 
             preferredIngredientInput = document.getElementById('preferredIngredientInput');
             addPreferredIngredient = document.getElementById('addPreferredIngredient');
             preferredIngredientsList = document.getElementById('preferredIngredientsList');
@@ -1441,6 +1076,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             scanImageBtn = document.getElementById('scanImageBtn');
             scanButtonText = document.getElementById('scanButtonText');
             scanLoadingSpinner = document.getElementById('scanLoadingSpinner');
+            deleteProfileBtn = document.getElementById('deleteProfileBtn');
 
             preferredSuggestions = document.getElementById('preferredSuggestions');
             excludedSuggestions = document.getElementById('excludedSuggestions');
@@ -1457,64 +1093,49 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
 
 
             // Help Modal elements
-            const showHelpBtn = document.getElementById('showHelpBtn');
             const helpModal = document.getElementById('helpModal');
             const closeHelpBtn = document.getElementById('closeHelpBtn');
             const helpContent = document.getElementById('helpContent');
-            const howToUseSection = document.getElementById('howToUseSection');
-
-
-            // Copy content from howToUseSection to helpContent and then hide original
-            if (howToUseSection && helpContent) {
-                helpContent.innerHTML = howToUseSection.innerHTML;
-                howToUseSection.remove(); // Remove the original section from main display
-            }
 
             // Event listeners for help modal
             if (showHelpBtn) {
                 showHelpBtn.addEventListener('click', () => {
                     if (helpModal) helpModal.classList.remove('hidden');
-                    console.log('Help button clicked, modal shown.');
                 });
             }
             if (closeHelpBtn) {
                 closeHelpBtn.addEventListener('click', () => {
                     if (helpModal) helpModal.classList.add('hidden');
-                    console.log('Close Help button clicked, modal hidden.');
                 });
             }
             if (helpModal) {
                 helpModal.addEventListener('click', (e) => {
-                    // Close modal if clicking outside the modal content area
                     if (e.target === helpModal) {
                         helpModal.classList.add('hidden');
-                        console.log('Help modal clicked outside, modal hidden.');
                     }
                 });
             }
 
-
-            // Re-attach event listeners here to ensure DOM elements are ready
+            // Profile management buttons (disabled in HTML, but adding listeners for messaging)
             if (document.getElementById('saveProfileBtn')) {
                 document.getElementById('saveProfileBtn').addEventListener('click', async () => { 
-                    const profileName = profileNameInput.value.trim();
-                    await window.saveProfile(profileName); 
-                    profileNameInput.value = ''; 
+                    window.saveProfile(''); // Call the disabled function
                 });
             }
 
             if (document.getElementById('loadNamedProfileBtn')) {
                 document.getElementById('loadNamedProfileBtn').addEventListener('click', () => {
-                    const selectedProfileName = existingProfilesSelect.value;
-                    if (selectedProfileName) {
-                        window.loadProfile(selectedProfileName); 
-                    } else {
-                        window.showMessage("الرجاء اختيار ملف شخصي من القائمة لتحميله.", 'error');
-                    }
+                    window.loadProfile('', false); // Call the disabled function
                 });
             }
 
-            // Event listener for updating global settings
+            if (deleteProfileBtn) {
+                deleteProfileBtn.addEventListener('click', () => {
+                    window.deleteProfile(''); // Call the disabled function
+                });
+            }
+
+            // Event listener for updating global settings (admin, now enabled)
             if (updateGlobalSettingsBtn) {
                 updateGlobalSettingsBtn.addEventListener('click', window.saveGlobalConfig);
             }
@@ -1522,22 +1143,21 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
             // Autocomplete event listeners
             if (preferredIngredientInput && preferredSuggestions) {
                 preferredIngredientInput.addEventListener('input', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions));
-                preferredIngredientInput.addEventListener('focus', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions)); // Show on focus too
+                preferredIngredientInput.addEventListener('focus', () => window.showSuggestions(preferredIngredientInput, preferredSuggestions)); 
                 preferredIngredientInput.addEventListener('blur', () => {
-                    // Give a small delay to allow click on suggestion before hiding
                     setTimeout(() => preferredSuggestions.classList.add('hidden'), 150); 
                 });
             }
             if (excludedIngredientInput && excludedSuggestions) {
                 excludedIngredientInput.addEventListener('input', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions));
-                excludedIngredientInput.addEventListener('focus', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions)); // Show on focus too
+                excludedIngredientInput.addEventListener('focus', () => window.showSuggestions(excludedIngredientInput, excludedSuggestions)); 
                 excludedIngredientInput.addEventListener('blur', () => {
                     setTimeout(() => excludedSuggestions.classList.add('hidden'), 150); 
                 });
             }
             if (ingredientsInput && mainSuggestions) {
                 ingredientsInput.addEventListener('input', () => window.showSuggestions(ingredientsInput, mainSuggestions));
-                ingredientsInput.addEventListener('focus', () => window.showSuggestions(ingredientsInput, mainSuggestions)); // Show on focus too
+                ingredientsInput.addEventListener('focus', () => window.showSuggestions(ingredientsInput, mainSuggestions)); 
                 ingredientsInput.addEventListener('blur', () => {
                     setTimeout(() => mainSuggestions.classList.add('hidden'), 150); 
                 });
@@ -1605,13 +1225,11 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                     // Show loading indicator
                     scanButtonText.textContent = 'جاري المسح والتحليل...';
                     scanLoadingSpinner.classList.remove('hidden');
-                    scanImageBtn.disabled = true; // Disable button during scan
-                    console.log("Scanning image: Loading indicator shown.");
+                    scanImageBtn.disabled = true; 
 
                     const reader = new FileReader();
                     reader.onloadend = async () => {
-                        const base64ImageData = reader.result.split(',')[1]; // Get base64 string without data:image/jpeg;base64, prefix
-                        console.log("Image read as base64. Calling LLM...");
+                        const base64ImageData = reader.result.split(',')[1]; 
 
                         try {
                             const prompt = "من فضلك، قم باستخراج جميع المكونات التجميلية المذكورة في هذه الصورة. قم بفصل كل مكون بفاصلة. لا تقم بتضمين أي معلومات أخرى غير قائمة المكونات.";
@@ -1626,7 +1244,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                             { text: prompt },
                                             {
                                                 inlineData: {
-                                                    mimeType: file.type, // Use the actual mime type of the uploaded file
+                                                    mimeType: file.type, 
                                                     data: base64ImageData
                                                 }
                                             }
@@ -1649,13 +1267,11 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                             }
 
                             const result = await response.json();
-                            console.log("LLM response received:", result);
                             
                             if (result.candidates && result.candidates.length > 0 &&
                                 result.candidates[0].content && result.candidates[0].content.parts &&
                                 result.candidates[0].content.parts.length > 0) {
                                 const extractedText = result.candidates[0].content.parts[0].text;
-                                console.log("Extracted text from LLM:", extractedText);
                                 
                                 // Populate the ingredients input and trigger analysis
                                 ingredientsInput.value = extractedText;
@@ -1663,7 +1279,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                 analyzeButton.click(); // Trigger existing analysis
                             } else {
                                 window.showMessage('لم يتم العثور على مكونات في الصورة أو تنسيق الاستجابة غير متوقع.', 'error');
-                                console.error("LLM response structure unexpected:", result);
                             }
 
                         } catch (error) {
@@ -1673,18 +1288,16 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                             // Hide loading indicator
                             scanButtonText.textContent = 'مسح وتحليل المكونات من الصورة';
                             scanLoadingSpinner.classList.add('hidden');
-                            scanImageBtn.disabled = false; // Re-enable button
-                            console.log("Scanning image: Loading indicator hidden, button re-enabled.");
+                            scanImageBtn.disabled = false; 
                         }
                     };
-                    reader.readAsDataURL(file); // Start reading the file
+                    reader.readAsDataURL(file); 
                 });
             }
 
 
             if (analyzeButton) {
                 analyzeButton.addEventListener('click', () => {
-                    console.log("Analyze button clicked.");
                     try { 
                         window.hideMessage(); 
                         ingredientList.innerHTML = ''; 
@@ -1692,7 +1305,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                         resultsContainer.classList.add('hidden'); 
 
                         const rawInput = ingredientsInput.value.trim();
-                        console.log("Raw input for analysis:", rawInput); 
                         if (!rawInput) {
                             window.showMessage('الرجاء إدخال قائمة المكونات لتحليلها.');
                             return;
@@ -1707,11 +1319,9 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                         const medicalConditionsText = medicalConditionsInput.value.toLowerCase(); 
 
                         const inputIngredients = rawInput.split(/[,;\n.]/).map(item => item.trim()).filter(item => item.length > 0);
-                        console.log("Parsed input ingredients:", inputIngredients); 
 
                         if (inputIngredients.length === 0) {
                             window.showMessage('لم يتم العثور على مكونات صالحة في الإدخال.');
-                            console.log("No valid ingredients found after parsing.");
                             return;
                         }
 
@@ -1729,18 +1339,16 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                             if (isExcluded) {
                                 hasExcludedIngredient = true;
                                 skinSuitabilityScore -= 5;
-                                console.log(`Ingredient "${inputIng}" is excluded.`);
                             }
 
                             const foundIngredient = window.ingredientsDatabase.find(dbIng => 
                                 dbIng.name.some(n => n.toLowerCase() === inputIng.toLowerCase())
                             );
-                            console.log(`Analyzing "${inputIng}": Found in DB?`, !!foundIngredient); 
 
                             const ingredientItem = document.createElement('div');
-                            ingredientItem.className = 'flex items-start gap-2'; /* Reduced gap */
+                            ingredientItem.className = 'flex items-start gap-3';
 
-                            let iconSvg = `<svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                            let iconSvg = `<svg class="w-6 h-6 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; 
                             let textColorClass = 'text-gray-800';
                             let classificationText = 'غير معروف';
                             let descriptionText = 'لا تتوفر معلومات لهذا المكون في قاعدة بياناتنا الحالية.';
@@ -1753,9 +1361,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                 analyzedCount++;
                                 classificationText = foundIngredient.classification;
                                 descriptionText = foundIngredient.description;
-                                console.log(`Ingredient "${inputIng}" classification: ${classificationText}, description: ${descriptionText}`);
 
-                                // Add skin type and concern notes
                                 if (foundIngredient.skin_notes) {
                                     if (foundIngredient.skin_notes[selectedSkinType]) {
                                         const note = foundIngredient.skin_notes[selectedSkinType];
@@ -1771,17 +1377,14 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                     });
                                 }
 
-                                // Add age notes
                                 if (!isNaN(userAge) && userAge > 0 && foundIngredient.age_notes) {
                                     relevantNotes.push({ text: `ملاحظة للعمر: ${foundIngredient.age_notes}`, type: 'age', negative: true });
                                 }
                                 
-                                // Add pregnancy notes
                                 if (isPregnant && foundIngredient.pregnancy_notes) {
                                     relevantNotes.push({ text: `ملاحظة للحمل: ${foundIngredient.pregnancy_notes}`, type: 'pregnancy', negative: true });
                                 }
 
-                                // Add medical condition notes (simple keyword match for demo)
                                 if (medicalConditionsText && foundIngredient.medical_notes) {
                                     foundIngredient.medical_notes.forEach(note => {
                                         if (medicalConditionsText.includes(note.keyword.toLowerCase())) {
@@ -1790,7 +1393,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                     });
                                 }
 
-                                // Process all collected relevant notes
                                 relevantNotes.forEach(noteObj => {
                                     const noteText = noteObj.text;
                                     let noteColorClass = 'text-fuchsia-600'; 
@@ -1798,54 +1400,52 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                     if (noteText.includes('يسد المسام') || noteText.includes('يزيد من حب الشباب') || noteText.includes('مهيج') || noteText.includes('يزيد الجفاف') || noteText.includes('تفاقم') || noteText.includes('تجنبه تماماً') || noteText.includes('لا يفضل') || noteObj.negative) {
                                         noteColorClass = 'text-red-600'; 
                                         skinSuitabilityScore -= (noteObj.type === 'pregnancy' || noteObj.type === 'age' || noteObj.type === 'medical') ? 4 : 2; 
-                                        console.log(`Negative note for "${inputIng}": ${noteText}. Score adjusted to ${skinSuitabilityScore}`);
                                     } else if (noteText.includes('ممتاز') || noteText.includes('يساعد') || noteText.includes('يقلل') || noteText.includes('مهدئ') || noteText.includes('يعزز') || noteText.includes('مفيد') || noteText.includes('لطيف') || noteText.includes('توازن')) {
                                         noteColorClass = 'text-green-600'; 
-                                        console.log(`Positive note for "${inputIng}": ${noteText}.`);
                                     }
 
-                                    skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-0.5">${noteText}</span>`; /* Reduced margin-top, font size */
+                                    skinSpecificNoteHtml += `<span class="block text-xs ${noteColorClass} font-medium mt-1">${noteText}</span>`;
                                     personalizedSkinNotes.push(`- ${inputIng} (${noteObj.type === 'normal' ? 'عادية' : noteObj.type === 'oily' ? 'دهنية' : noteObj.type === 'dry' ? 'جافة' : noteObj.type === 'combination' ? 'مختلطة' : noteObj.type === 'sensitive' ? 'حساسة' : noteObj.type === 'acne' ? 'حب الشباب' : noteObj.type === 'aging' ? 'الشيخوخة' : noteObj.type === 'pigmentation' ? 'التصبغات' : noteObj.type === 'redness' ? 'الاحمرار' : noteObj.type === 'dehydration' ? 'الجفاف' : noteObj.type === 'age' ? 'العمر' : noteObj.type === 'pregnancy' ? 'الحمل' : noteObj.type === 'medical' ? 'الحالة الصحية' : ''}): ${noteText}`);
                                 });
 
 
                                 if (foundIngredient.classification.includes('جيد للبشرة')) {
-                                    iconSvg = `<svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                    iconSvg = `<svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
                                     textColorClass = 'text-emerald-700';
                                     goodCount++;
                                     skinSuitabilityScore += 1; 
                                 } else if (foundIngredient.classification.includes('تحذير: مكون ضار جداً')) {
-                                    iconSvg = `<svg class="w-5 h-5 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                    iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
                                     textColorClass = 'text-red-900';
                                     veryHarmfulCount++;
                                     warningCount++;
                                     skinSuitabilityScore -= 3; 
                                 } else if (foundIngredient.classification.includes('تحذير: مهيج محتمل') || foundIngredient.classification.includes('مثير للجدل') || foundIngredient.classification.includes('انسداد المسام') || foundIngredient.classification.includes('قد يحتوي على شوائب')) {
-                                    iconSvg = `<svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                    iconSvg = `<svg class="w-6 h-6 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.487 0L14.82 10.5c.765 1.36-.217 3-1.743 3H6.923c-1.526 0-2.508-1.64-1.743-3L8.257 3.099zM10 16a1 1 0 100-2 1 1 0 000 2zm0-5a1 1 0 00-1 1v1a1 1 0 102 0v-1a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`;
                                     textColorClass = 'text-amber-700';
                                     warningCount++;
                                     skinSuitabilityScore -= 1; 
                                 } else if (foundIngredient.classification.includes('عضوي')) {
-                                    iconSvg = `<svg class="w-5 h-5 text-lime-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>`; /* Reduced icon size */
+                                    iconSvg = `<svg class="w-6 h-6 text-lime-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9V7h2v6zm4 0h-2V7h2v6z"/></svg>`;
                                     textColorClass = 'text-lime-800';
                                     organicCount++;
                                     goodCount++;
                                     skinSuitabilityScore += 1; 
                                 } else if (foundIngredient.classification.includes('نوع منتج') || foundIngredient.classification.includes('نوع مكون')) {
-                                    iconSvg = `<svg class="w-5 h-5 text-sky-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm3 1a1 1 0 10-2 0v3a1 1 0 102 0V8z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                    iconSvg = `<svg class="w-6 h-6 text-sky-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm3 1a1 1 0 10-2 0v3a1 1 0 102 0V8z" clip-rule="evenodd"></path></svg>`;
                                     textColorClass = 'text-sky-700';
                                 }
                             }
 
                             let personalizedNote = '';
                             if (isExcluded) {
-                                iconSvg = `<svg class="w-5 h-5 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                iconSvg = `<svg class="w-6 h-6 text-red-700 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>`;
                                 textColorClass = 'text-red-900 font-bold';
-                                personalizedNote = '<span class="text-xs text-red-600 mr-1.5">(مستبعد في تفضيلاتك!)</span>'; /* Reduced margin */
+                                personalizedNote = '<span class="text-xs text-red-600 mr-2">(مستبعد في تفضيلاتك!)</span>';
                             } else if (isPreferred) {
-                                iconSvg = `<svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`; /* Reduced icon size */
+                                iconSvg = `<svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>`;
                                 textColorClass = 'text-blue-800 font-bold';
-                                personalizedNote = '<span class="text-xs text-blue-600 mr-1.5">(مكون مفضل لك!)</span>'; /* Reduced margin */
+                                personalizedNote = '<span class="text-xs text-blue-600 mr-2">(مكون مفضل لك!)</span>';
                                 skinSuitabilityScore += 1; 
                             }
 
@@ -1854,8 +1454,8 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                                     ${iconSvg}
                                 </div>
                                 <div class="flex-1">
-                                    <p class="font-semibold text-sm ${textColorClass}">${inputIng} ${personalizedNote} <span class="text-xs font-normal text-gray-500">(${classificationText})</span></p> /* Reduced font size */
-                                    <p class="text-xs text-gray-600">${descriptionText} ${skinSpecificNoteHtml}</p> /* Reduced font size */
+                                    <p class="font-semibold text-base ${textColorClass}">${inputIng} ${personalizedNote} <span class="text-xs font-normal text-gray-500">(${classificationText})</span></p>
+                                    <p class="text-sm text-gray-600">${descriptionText} ${skinSpecificNoteHtml}</p>
                                 </div>
                             `;
                             ingredientList.appendChild(ingredientItem);
@@ -1864,7 +1464,6 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                         let recommendationTitle = '';
                         let recommendationMessage = '';
                         let recommendationClass = '';
-                        console.log("Final skin suitability score:", skinSuitabilityScore);
 
                         if (skinSuitabilityScore < -5 || veryHarmfulCount > 0 || hasExcludedIngredient) {
                             recommendationTitle = 'قد لا يكون هذا المنتج الأفضل لبشرتك.';
@@ -1887,7 +1486,7 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                         if (analyzedCount > 0) {
                             let topMessage = '';
                             if (hasExcludedIngredient || veryHarmfulCount > 0 || personalizedSkinNotes.some(note => note.includes('تجنبه تماماً') || note.includes('لا يفضل') || note.includes('غير آمن للحمل') || note.includes('ملاحظة للعمر'))) {
-                                topMessage = `<div class="p-2.5 mb-2.5 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-sm"> /* Reduced padding, margins, font size */
+                                topMessage = `<div class="p-3 mb-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold text-base">
                                                 تنبيه: قد يحتوي هذا المنتج على مكونات غير مناسبة بناءً على ملفك الشخصي أو تفضيلاتك!
                                             </div>`;
                             }
@@ -1895,8 +1494,8 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
                             let skinProfileSummary = '';
                             if (personalizedSkinNotes.length > 0) {
                                 skinProfileSummary = `
-                                    <h3 class="text-base font-bold text-fuchsia-700 mt-3 mb-1.5 text-center">ملاحظات شخصية لبشرتك:</h3> /* Reduced font size, margins */
-                                    <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-0.5 text-xs"> /* Reduced space-y, font size */
+                                    <h3 class="text-lg font-bold text-fuchsia-700 mt-4 mb-2 text-center">ملاحظات شخصية لبشرتك:</h3>
+                                    <ul class="list-disc list-inside text-gray-700 text-right mx-auto max-w-md space-y-0.5 text-sm">
                                         ${personalizedSkinNotes.map(note => `<li>${note}</li>`).join('')}
                                     </ul>
                                 `;
@@ -1904,23 +1503,21 @@ Parfum, Phthalates, Toluene"></textarea> <!-- Reduced rows, padding, font size -
 
                             summary.innerHTML = `
                                 ${topMessage}
-                                <div class="p-2.5 rounded-lg ${recommendationClass} mb-2.5 text-center"> /* Reduced padding, margins */
-                                    <h3 class="font-bold text-sm">${recommendationTitle}</h3> /* Reduced font size */
-                                    <p class="text-xs">${recommendationMessage}</p> /* Reduced font size */
+                                <div class="p-3 rounded-lg ${recommendationClass} mb-3 text-center">
+                                    <h3 class="font-bold text-base">${recommendationTitle}</h3>
+                                    <p class="text-xs">${recommendationMessage}</p>
                                 </div>
-                                <p class="text-sm">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p> /* Reduced font size */
-                                <p class="text-sm">المكونات الجيدة: <strong class="text-emerald-700">${goodCount}</strong></p> /* Reduced font size */
-                                <p class="text-sm">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p> /* Reduced font size */
-                                <p class="text-sm">المكونات التي تحتاج إلى انتباه: <strong class="text-amber-700">${warningCount}</strong></p> /* Reduced font size */
-                                <p class="text-sm ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p> /* Reduced font size */
+                                <p class="text-base">تم تحليل <strong>${analyzedCount}</strong> مكونًا من إجمالي <strong>${inputIngredients.length}</strong> مكونات تم إدخالها.</p>
+                                <p class="text-base">المكونات الجيدة: <strong class="text-emerald-700">${goodCount}</strong></p>
+                                <p class="text-base">المكونات العضوية/الطبيعية: <strong class="text-lime-800">${organicCount}</strong></p>
+                                <p class="text-base">المكونات التي تحتاج إلى انتباه: <strong class="text-amber-700">${warningCount}</strong></p>
+                                <p class="text-base ${veryHarmfulCount > 0 ? 'font-bold text-red-900' : 'text-gray-700'}">المكونات الضارة جداً: <strong>${veryHarmfulCount}</strong></p>
                                 ${skinProfileSummary}
                             `;
                             resultsContainer.classList.remove('hidden'); 
-                            console.log("Results container should be visible now."); 
                         } else {
                             window.showMessage('لم يتم العثور على أي مكونات معروفة في قاعدة البيانات الحالية.');
                             resultsContainer.classList.add('hidden'); 
-                            console.log("No known ingredients found, results container remains hidden.");
                         }
                     } catch (error) {
                         console.error("An error occurred during analysis:", error);
