@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أداة مقارنة المكونات الذكي</title>
+    <title>أداة مقارنة المكونات الذكي (نسخة المسؤول)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
@@ -161,9 +161,50 @@
         #quickSearchResult p {
             margin-bottom: 0.25rem;
         }
+
+        /* Custom Confirmation Modal Styles */
+        #confirmationModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Higher than messageBox */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+        #confirmationModal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        #confirmationModalContent {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        #confirmationModal.show #confirmationModalContent {
+            transform: translateY(0);
+        }
+        #confirmationModalButtons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
     </style>
-    <!-- PWA: Link to manifest.json -->
-    <link rel="manifest" href="/manifest.json">
+    <!-- PWA: Link to manifest.json (removed for local file system CORS issue) -->
+    <!-- <link rel="manifest" href="/manifest.json"> -->
     <!-- PWA: Add Apple touch icon for iOS -->
     <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
     <!-- PWA: Set theme color for browser UI -->
@@ -172,13 +213,13 @@
     <!-- Google AdSense - Main Script (Place this in the <head> section) -->
     <!-- REPLACE 'ca-pub-YOUR_ADSENSE_PUBLISHER_ID' with your actual AdSense Publisher ID -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6230858794160580"
-         crossorigin="anonymous"></script>
+          crossorigin="anonymous"></script>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-emerald-100">
     <!-- Help Button - Always visible -->
     <button id="showHelpBtn" class="absolute top-4 left-4 bg-blue-600 text-white py-2 px-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-300 z-50 flex items-center gap-1 text-sm">
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 9a1 1 0 100-2 1 1 0 000 2zm1-5a1 1 0 10-2 0V9a1 1 0 102 0v1z" clip-rule="evenodd"></path>
+            <path fill-rule="evenodd" d="M18 10a8 8_0 11-16 0 8 8_0 0116 0zm-7-4a1 1_0 11-2 0 1 1_0 012 0zm-1 9a1 1_0 100-2 1 1_0 000 2zm1-5a1 1_0 10-2 0V9a1 1_0 102 0v1z" clip-rule="evenodd"></path>
         </svg>
         <span class="font-semibold">مساعدة</span>
     </button>
@@ -206,8 +247,8 @@
                 <p id="announcementText" class="italic"></p>
             </div>
             
-            <!-- Admin settings are now hidden by default and shown conditionally by JS -->
-            <div id="adminSettings" class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300 hidden">
+            <!-- Admin settings are now always visible in this admin version -->
+            <div id="adminSettings" class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300">
                 <h3 class="text-lg font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول (تحديد إعلان عام)</h3>
                 <p class="text-xs text-gray-700 mb-3 text-center">
                     معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
@@ -233,9 +274,7 @@
                  data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_1"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
         <!-- Section: Save/Load Profile -->
@@ -324,9 +363,7 @@
                  data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_2"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
         <!-- Section: Skin Profile -->
@@ -366,7 +403,7 @@
                             <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
                             <span>الجفاف</span>
                         </label>
-                    </div ط>
+                    </div>
                 </div>
                 <!-- Existing fields for age, pregnancy, and medical conditions -->
                 <div>
@@ -408,6 +445,11 @@
                 <div class="md:col-span-2"> <!-- Span full width for the date input -->
                     <label for="measurementDate" class="block text-gray-700 text-sm font-semibold mb-1">تاريخ القياس:</label>
                     <input type="date" id="measurementDate" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
+                </div>
+                <!-- New textarea for Skin Care Notes -->
+                <div class="md:col-span-2">
+                    <label for="skinCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالبشرة:</label>
+                    <textarea id="skinCareNotes" rows="5" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالبشرة أو الملاحظات هنا..."></textarea>
                 </div>
             </div>
         </div>
@@ -454,6 +496,11 @@
                             <span>حساسية فروة الرأس</span>
                         </label>
                     </div>
+                </div>
+                <!-- New textarea for Hair Care Notes -->
+                <div class="md:col-span-2">
+                    <label for="hairCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالشعر:</label>
+                    <textarea id="hairCareNotes" rows="5" class="w-full p-2 text-sm border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالشعر أو الملاحظات هنا..."></textarea>
                 </div>
             </div>
         </div>
@@ -502,16 +549,44 @@
                 الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
             </label>
             <div class="relative"> <!-- Added 'relative' here for autocomplete positioning -->
-                <textarea id="ingredientsInput" rows="8" class="w-full p-2 text-sm border border-emerald-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:
-Aqua, Glycerin, Niacinamide
-ماء, جليسرين, نياسيناميد
-Parfum, Phthalates, Toluene"></textarea>
-                <!-- حاوية الاقتراحات للإكمال التلقائي لحقل المكونات الرئيسي -->
-                <div id="mainSuggestions" class="autocomplete-suggestions hidden"></div>
+                <textarea id="ingredientsInput" rows="8" class="w-full p-2 text-sm border border-emerald-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:&#10;Water, Glycerin, Niacinamide, Butylene Glycol, Caprylic/Capric Triglyceride, Squalane, Cetearyl Alcohol, ..."></textarea>
+                <div id="mainIngredientSuggestions" class="autocomplete-suggestions hidden"></div>
             </div>
+            <button id="analyzeIngredientsBtn" class="mt-4 w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                <span id="analyzeButtonText">تحليل المكونات</span>
+                <span id="analyzeLoadingSpinner" class="loader hidden"></span>
+            </button>
         </div>
 
-        <!-- Google AdSense - Example Ad Unit 3 (Before Analyze Button) -->
+        <!-- Analysis Results Section -->
+        <div id="analysisResults" class="hidden mt-8 p-6 bg-emerald-50 rounded-2xl shadow-inner border border-emerald-300">
+            <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
+            <div class="space-y-4 text-sm text-gray-800">
+                <div id="ingredientSummary" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                    <h3 class="font-semibold text-emerald-600 mb-2">ملخص المكونات:</h3>
+                    <p id="summaryText">سيظهر الملخص هنا.</p>
+                </div>
+                <div id="ingredientBreakdown" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                    <h3 class="font-semibold text-emerald-600 mb-2">تفصيل المكونات:</h3>
+                    <ul id="breakdownList" class="list-disc pr-5"></ul>
+                </div>
+                <div id="preferredMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                    <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المفضلة:</h3>
+                    <ul id="preferredMatchList" class="list-disc pr-5"></ul>
+                </div>
+                <div id="excludedMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                    <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المستبعدة:</h3>
+                    <ul id="excludedMatchList" class="list-disc pr-5"></ul>
+                </div>
+                <div id="recommendations" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                    <h3 class="font-semibold text-emerald-600 mb-2">توصيات مخصصة:</h3>
+                    <p id="recommendationsText">ستظهر التوصيات هنا.</p>
+                </div>
+            </div>
+        </div>
+        <!-- End Analysis Results Section -->
+
+        <!-- Google AdSense - Example Ad Unit 3 (Bottom) -->
         <!-- REPLACE 'YOUR_ADSENSE_AD_UNIT_SLOT_3' with your actual AdSense Ad Unit ID -->
         <div class="my-6 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-sm text-gray-600 mb-2">إعلان (من Google AdSense)</p>
@@ -521,1604 +596,1290 @@ Parfum, Phthalates, Toluene"></textarea>
                  data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_3"
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
+            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
-        <button id="analyzeButton" class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg text-lg">
-            تحليل المكونات
+    </div>
+    <!-- Custom Message Box -->
+    <div id="messageBox" class="bg-white rounded-lg p-4 shadow-xl flex items-center justify-between text-gray-800 border border-gray-200" style="max-width: 400px;">
+        <span id="messageText" class="text-sm font-medium"></span>
+        <button id="closeMessageBox" class="text-gray-500 hover:text-gray-700 focus:outline-none ml-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
-
-        <div id="resultsContainer" class="mt-6 p-4 bg-emerald-50 rounded-xl shadow-sm border border-emerald-200 hidden">
-            <h2 class="text-xl font-bold text-emerald-700 mb-3 text-center">نتائج التحليل</h2>
-            <div id="ingredientList" class="space-y-3 text-sm">
-                </div>
-            <div id="summary" class="mt-4 pt-3 border-t border-emerald-300 text-center text-gray-700 font-medium text-sm">
-                </div>
-        </div>
-
-        <!-- Google AdSense - Example Ad Unit 4 (At the very bottom, after results) -->
-        <!-- REPLACE 'YOUR_ADSENSE_AD_UNIT_SLOT_4' with your actual AdSense Ad Unit ID -->
-        <div class="my-6 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center">
-            <p class="text-sm text-gray-600 mb-2">إعلان (من Google AdSense)</p>
-            <ins class="adsbygoogle"
-                 style="display:block"
-                 data-ad-client="ca-pub-6230858794160580"
-                 data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_4"
-                 data-ad-format="auto"
-                 data-full-width-responsive="true"></ins>
-            <script>
-                 (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-        </div>
-
-        <!-- Credit Section - Moved to bottom -->
-        <div class="mt-6 p-3 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center text-xs text-gray-600 italic">
-            <p>هذه الأداة من تصميم وفكرة: <span class="font-semibold text-gray-800 not-italic">جورج جريج</span></p>
-        </div>
-        <!-- End Credit Section -->
-
-        <!-- Message Box - Adjusted padding and text size -->
-        <div id="messageBox" class="p-2 text-sm bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg hidden" role="alert">
-            </div>
     </div>
 
-    <!-- Confirmation Modal HTML (New) -->
-    <div id="confirmationModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm mx-4 text-center">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4" id="confirmationMessage">هل أنت متأكد؟</h3>
-            <div class="flex justify-center gap-4">
-                <button id="confirmYesBtn" class="bg-red-600 text-white py-2 px-5 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300">نعم</button>
-                <button id="confirmNoBtn" class="bg-gray-300 text-gray-800 py-2 px-5 rounded-lg font-semibold hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition duration-300">إلغاء</button>
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmationModal" class="hidden">
+        <div id="confirmationModalContent" class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p id="confirmationMessage" class="text-lg font-semibold text-gray-800 mb-4"></p>
+            <div id="confirmationModalButtons">
+                <button id="confirmYesBtn" class="bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300">
+                    نعم
+                </button>
+                <button id="confirmNoBtn" class="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-semibold hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-300">
+                    إلغاء
+                </button>
             </div>
         </div>
     </div>
-</body>
-</html>
-<script type="module">
-    // Add these lines right at the top of your script block
-    console.log("Script loaded.");
-    console.log("Raw __app_id:", typeof __app_id !== 'undefined' ? __app_id : "undefined");
-    console.log("Raw __firebase_config:", typeof __firebase_config !== 'undefined' ? __firebase_config : "undefined");
-    console.log("Raw __initial_auth_token:", typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : "undefined");
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, onSnapshot, query, where, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"; 
 
-    // Global variables for Firebase (MUST be defined even if empty string)
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    console.log("App ID from variable:", appId); // Log appId
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, collection, query, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
-    // Use __firebase_config if available, otherwise ensure it's not empty/placeholder
-    let firebaseConfig = null; // Initialize as null
-    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-        try {
-            firebaseConfig = JSON.parse(__firebase_config);
-        } catch (e) {
-            console.error("Error parsing __firebase_config:", e);
-            firebaseConfig = null; // Ensure it's null if parsing fails
-        }
-    }
-    
-    // Flag to indicate if Firebase is properly configured
-    window.isFirebaseConfigured = !(!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY");
+        // Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        // Firebase Configuration - يرجى استبدال هذه القيم ببيانات مشروعك الحقيقية من Firebase Console
+        // كيفية الحصول على هذه البيانات:
+        // 1. اذهب إلى Firebase Console (console.firebase.google.com).
+        // 2. اختر مشروعك.
+        // 3. في لوحة التحكم، انقر على أيقونة الإعدادات (الترس) بجوار "Project overview" ثم "Project settings".
+        // 4. في قسم "Your apps"، انقر على "</>" (تطبيق ويب). إذا لم يكن لديك تطبيق ويب، قم بإنشاء واحد.
+        // 5. ستظهر لك بيانات التهيئة في كائن JavaScript، انسخها والصقها هنا.
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                // **************************************************************************************************
+                // *** تم تحديث هذه القيم بناءً على معلومات مشروعك الفعلية من Firebase Console.                 ***
+                // **************************************************************************************************
+                apiKey: "AIzaSyBiTnYz0fuR3J3Dgcc6BEpyOfF4FjF1C5I",
+                authDomain: "skin-99c39.firebaseapp.com",
+                databaseURL: "https://skin-99c39-default-rtdb.firebaseio.com",
+                projectId: "skin-99c39",
+                storageBucket: "skin-99c39.firebasestorage.app",
+                messagingSenderId: "111983738514",
+                appId: "1:111983738514:web:27712c903e739cebb3304b",
+                measurementId: "G-GQ34RLMGS0"
+                // **************************************************************************************************
+                // *** توقف عن التغيير هنا.                                                  ***
+                // **************************************************************************************************
+            };
 
-    if (!window.isFirebaseConfigured) {
-        console.error("Critical: Firebase config is missing or invalid. Dashboard and profile features will not work.");
-    }
-    console.log("Firebase Config (parsed):", firebaseConfig); // Log Firebase Config
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-    let app;
-    let db;
-    let auth;
-    let currentUserId = null; 
-    let isAuthReady = false; 
-    let isAdmin = false; // Flag to determine if the current user is an admin
+        // Firebase Initialization
+        let app;
+        let db;
+        let auth;
+        let userId = 'anonymous'; // Default to anonymous
+        let userProfileRef;
+        let globalSettingsRef;
+        let activeUsersCollectionRef;
+        let isFirebaseInitialized = false; // Flag to track Firebase initialization status
 
-    // DOM elements for Firebase status and buttons - Declared globally for easier access
-    let userIdDisplay;
-    let firebaseStatusDisplay;
-    let saveProfileBtn;
-    let loadNamedProfileBtn;
-    let deleteProfileBtn;
-    let existingProfilesSelect;
-    let adminSettings;
-    let adminUserIdDisplay;
-    let globalAnnouncementInput;
-    let updateGlobalSettingsBtn;
-    let activeUsersCount;
-    let globalAnnouncement;
-    let announcementText;
-    let userHeightCmInput; // Declare globally
-    let idealWeightDisplay; // Declare globally
-    let currentWeightKgInput; // NEW: Declare globally
-    let weightToIdealDisplay; // NEW: Declare globally
-    let measurementDateInput; // NEW: Declare globally
-    
-    // Confirmation Modal elements (newly added) - Declared globally
-    let confirmationModal;
-    let confirmationMessage;
-    let confirmYesBtn;
-    let confirmNoBtn;
+        /**
+         * Displays a custom message box with a given message and optional type.
+         * @param {string} message - The message to display.
+         * @param {string} [type='info'] - The type of message ('info', 'success', 'error', 'warning').
+         */
+        function showMessage(message, type = 'info') {
+            const messageBox = document.getElementById('messageBox');
+            const messageText = document.getElementById('messageText');
+            messageText.textContent = message;
 
-    /*
-     * توجيهات مهمة لقواعد أمان Firebase Firestore:
-     * --------------------------------------------------
-     * إذا كنت تواجه أخطاء مثل "Missing or insufficient permissions"
-     * (أذونات مفقودة أو غير كافية) أو "Document not found" (المستند غير موجود)
-     * حتى بعد التأكد من صحة مسارات المستندات في الكود، فغالباً ما تكون المشكلة
-     * في قواعد أمان Firebase Firestore الخاصة بمشروعك.
-     *
-     * يجب عليك تحديث قواعد أمان Firestore في Firebase Console للسماح
-     * بالعمليات التالية:
-     *
-     * 1.  **لبيانات المستخدمين الخاصة (ملفات التعريف):**
-     * المسار: `artifacts/{appId}/users/{userId}/skinProfiles/{profileName}`
-     * القاعدة المطلوبة: السماح بالقراءة والكتابة فقط إذا كان المستخدم مصادقاً
-     * و `request.auth.uid` يطابق `userId` في المسار.
-     * مثال (في قواعد Firebase):
-     * `match /artifacts/{appId}/users/{userId}/{document=**}`
-     * `allow read, write: if request.auth != null && request.auth.uid == userId;`
-     *
-     * 2.  **للبيانات العامة (إعدادات التطبيق، قائمة المستخدمين النشطين):**
-     * المسار: `artifacts/{appId}/public/data/app_settings/global_config`
-     * المسار: `artifacts/{appId}/public/data/active_users/{userId}`
-     * المسار: `artifacts/${appId}/public/data/admin_roles/{userId}`
-     * القاعدة المطلوبة: السماح بالقراءة والكتابة إذا كان المستخدم مصادقاً (`request.auth != null`).
-     * ملاحظة: لـ `admin_roles` و `app_settings`، يمكنك جعل الكتابة مقتصرة على المسؤولين فقط.
-     * مثال (في قواعد Firebase):
-     * `match /artifacts/{appId}/public/data/{collection}/{document}`
-     * `{`
-     * `  allow read: if request.auth != null;`
-     * `  // للسماح للمسؤولين فقط بتعديل الإعدادات العامة أو أدوار المسؤول`
-     * `  allow write: if request.auth != null && exists(/databases/$(database)/documents/artifacts/$(appId)/public/data/admin_roles/$(request.auth.uid));`
-     * `}`
-     * (أو allow write: if request.auth != null; إذا كنت تريد أن يكتب الجميع في active_users)
-     *
-     * تأكد من أن قواعدك تعكس هذه الصلاحيات لتمكين وظائف الحفظ والتحميل ولوحة التحكم.
-     */
+            // Reset classes
+            messageBox.className = 'bg-white rounded-lg p-4 shadow-xl flex items-center justify-between text-gray-800 border border-gray-200';
+            messageBox.classList.add('show'); // Always show on new message
 
-    // Function to show application-wide messages
-    function showApplicationMessage(message, type = 'info') {
-        const msgBox = document.getElementById('messageBox');
-        if (msgBox) { 
-            msgBox.textContent = message;
-            msgBox.className = `p-2 text-sm rounded-lg ${type === 'error' ? 'bg-red-100 border-red-300 text-red-800' : 'bg-yellow-100 border-yellow-300 text-yellow-800'} block show`; // Added 'show' class
-            const resultsCont = document.getElementById('resultsContainer');
-            if (resultsCont) resultsCont.classList.add('hidden'); 
-            
-            // Automatically hide message after 5 seconds
+            // Apply type-specific styles
+            switch (type) {
+                case 'success':
+                    messageBox.classList.add('bg-green-100', 'border-green-400', 'text-green-700');
+                    break;
+                case 'error':
+                    messageBox.classList.add('bg-red-100', 'border-red-400', 'text-red-700');
+                    break;
+                case 'warning':
+                    messageBox.classList.add('bg-yellow-100', 'border-yellow-400', 'text-yellow-700');
+                    break;
+                case 'info':
+                default:
+                    messageBox.classList.add('bg-blue-100', 'border-blue-400', 'text-blue-700');
+                    break;
+            }
+
+            // Hide after 5 seconds
             setTimeout(() => {
-                hideMessage();
-            }, 5000); // 5 seconds
-        } else {
-            console.warn("Message box element not found, showing message in console:", message);
+                messageBox.classList.remove('show');
+            }, 5000);
         }
-    }
-    window.showMessage = showApplicationMessage; 
 
-    // Function to hide messages
-    function hideMessage() {
-        const msgBox = document.getElementById('messageBox');
-        if (msgBox) {
-            msgBox.classList.remove('show'); // Remove 'show' class
-            // Optionally, hide completely after transition
-            setTimeout(() => {
-                msgBox.classList.add('hidden');
-            }, 300); // Match transition duration
-        }
-    }
-    window.hideMessage = hideMessage; 
+        // Close message box button listener
+        document.getElementById('closeMessageBox').addEventListener('click', () => {
+            document.getElementById('messageBox').classList.remove('show');
+        });
 
+        /**
+         * Shows a custom confirmation modal.
+         * @param {string} message The message to display in the confirmation modal.
+         * @returns {Promise<boolean>} A promise that resolves to true if confirmed, false otherwise.
+         */
+        function showConfirmationModal(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmationModal');
+                const modalMessage = document.getElementById('confirmationMessage');
+                const confirmYesBtn = document.getElementById('confirmYesBtn');
+                const confirmNoBtn = document.getElementById('confirmNoBtn');
 
-    // Function to show custom confirmation modal (replaces window.confirm)
-    function showConfirmationModal(message) {
-        return new Promise((resolve) => {
-            if (confirmationModal && confirmationMessage && confirmYesBtn && confirmNoBtn) {
-                confirmationMessage.textContent = message;
-                confirmationModal.classList.remove('hidden');
+                modalMessage.textContent = message;
+                modal.classList.add('show');
 
-                const onYes = () => {
-                    confirmationModal.classList.add('hidden');
-                    confirmYesBtn.removeEventListener('click', onYes);
-                    confirmNoBtn.removeEventListener('click', onNo);
+                const handleConfirm = () => {
+                    modal.classList.remove('show');
+                    confirmYesBtn.removeEventListener('click', handleConfirm);
+                    confirmNoBtn.removeEventListener('click', handleCancel);
                     resolve(true);
                 };
 
-                const onNo = () => {
-                    confirmationModal.classList.add('hidden');
-                    confirmYesBtn.removeEventListener('click', onYes);
-                    confirmNoBtn.removeEventListener('click', onNo);
+                const handleCancel = () => {
+                    modal.classList.remove('show');
+                    confirmYesBtn.removeEventListener('click', handleConfirm);
+                    confirmNoBtn.removeEventListener('click', handleCancel);
                     resolve(false);
                 };
 
-                confirmYesBtn.addEventListener('click', onYes);
-                confirmNoBtn.addEventListener('click', onNo);
-            } else {
-                console.warn("Confirmation modal elements not found, falling back to console confirmation.");
-                resolve(true); 
-            }
-        });
-    }
-    window.showConfirmationModal = showConfirmationModal; 
-
-
-    // Define the hardcoded ingredients database for MVP
-    // Each ingredient now has a 'name' property which is an array of names (English and Arabic)
-    // - classification: A simplified category (good, warning, organic, very harmful, product type, ingredient category).
-    // - description: A brief explanation of the ingredient.
-    // - skin_notes: Optional notes about how the ingredient might affect different skin types/concerns.
-    // - hair_notes: New optional notes about how the ingredient might affect different hair types/concerns.
-    // - medical_conditions_notes: Optional notes about how the ingredient might affect specific medical conditions.
-    window.ingredientsDatabase = [
-        // Basic Ingredients & General Skincare/Haircare
-        { name: ['Aqua', 'ماء'], classification: 'جيد', description: 'الماء هو المذيب الأساسي في العديد من مستحضرات التجميل والعناية.' },
-        { name: ['Glycerin', 'جليسرين', 'الجليسرين'], classification: 'جيد', description: 'مرطب ممتاز يجذب الرطوبة ويحبسها في البشرة والشعر.', 
-          skin_notes: { dry: 'ممتاز للبشرة الجافة والمجففة لأنه يرطب بعمق.', dehydration: 'يساعد بشكل كبير في ترطيب البشرة المجففة ويحبس الرطوبة.' },
-          hair_notes: { dryness: 'مرطب فعال للشعر الجاف، يساعد على الاحتفاظ بالرطوبة.', frizz: 'يقلل من التجعد عن طريق جذب الرطوبة من الجو.' }
-        },
-        { name: ['Niacinamide', 'نياسيناميد'], classification: 'جيد', description: 'فيتامين B3، يحسن وظيفة حاجز البشرة ويقلل الالتهاب ويوازن إفراز الزيوت.', 
-          skin_notes: { acne: 'يساعد في تقليل حب الشباب والتحكم في الإفرازات الدهنية.', redness: 'يقلل الاحمرار والالتهاب بفعالية.', aging: 'يحسن مظهر الخطوط الدقيقة والتصبغات ويقوي حاجز البشرة.', oily: 'يساعد في تنظيم إفراز الزهم وتقليل حجم المسام.', sensitive: 'مكون مهدئ ومناسب للبشرة الحساسة.' },
-          hair_notes: { scalp_sensitivity: 'يمكن أن يهدئ فروة الرأس المتهيجة ويقلل الالتهاب.', hair_loss: 'قد يدعم صحة فروة الرأس لتقليل التساقط.' }
-        },
-        { name: ['Sodium Hyaluronate', 'هيالورونات الصوديوم', 'حمض الهيالورونيك'], classification: 'جيد', description: 'شكل من حمض الهيالورونيك، مرطب قوي يجذب ويحتفظ بالماء في البشرة والشعر.', 
-          skin_notes: { dry: 'مرطب فعال للغاية للبشرة الجافة، يساعد على استعادة الرطوبة.', dehydration: 'يعزز ترطيب البشرة ويجعلها أكثر امتلاءً ونعومة.', normal: 'يحافظ على ترطيب البشرة الطبيعي ويمنحها نضارة.' },
-          hair_notes: { dryness: 'يساعد في ترطيب الشعر الجاف ويمنحه نعومة ولمعاناً.' }
-        },
-        { name: ['Tocopherol', 'فيتامين E', 'توكوفيرول'], classification: 'جيد', description: 'فيتامين E، مضاد للأكسدة يحمي البشرة والشعر من أضرار الجذور الحرة.', 
-          skin_notes: { aging: 'يساعد في حماية البشرة من أضرار الجذور الحرة التي ت contributes في الشيخوخة المبكرة.', dry: 'يوفر ترطيبًا إضافيًا ويساعد في ترميم حاجز البشرة.' },
-          hair_notes: { damage: 'يحمي الشعر من التلف البيئي ويساعد في تحسين صحة الأطراف.' }
-        },
-        { name: ['Aloe Barbadensis Leaf Juice', 'عصير أوراق الألوفيرا', 'صبار'], classification: 'عضوي', description: 'مستخلص من نبات الصبار، معروف بخصائصه المهدئة والمرطبة والمضادة للالتهاب للبشرة وفروة الرأس.', 
-          skin_notes: { sensitive: 'مهدئ ممتاز للبشرة المتهيجة والحساسة.', dry: 'يساعد في ترطيب البشرة وتلطيفها بعد التعرض للشمس.', acne: 'قد يساعد في تقليل الالتهاب المرتبط بحب الشباب.' },
-          hair_notes: { scalp_sensitivity: 'يهدئ فروة الرأس المتهيجة ويقلل الحكة.', dryness: 'يرطب فروة الرأس والشعر.' }
-        },
-        { name: ['Ascorbic Acid', 'فيتامين C', 'حمض الأسكوربيك'], classification: 'جيد', description: 'فيتامين C، مضاد للأكسدة قوي ومفتح للبشرة، يحفز إنتاج الكولاجين.', 
-          skin_notes: { aging: 'يقلل من ظهور التجاعيد والخطوط الدقيقة ويعزز مرونة البشرة.', pigmentation: 'يساعد في تفتيح البقع الداكنة وتوحيد لون البشرة.', normal: 'يعطي البشرة إشراقًا ويحميها من التلف البيئي.' },
-          hair_notes: { hair_loss: 'يدعم صحة فروة الرأس ونمو الشعر عن طريق حماية الكولاجين.' }
-        },
-        { name: ['Ceramide NP', 'Ceramide AP', 'Ceramide EOP', 'سيراميد', 'سيراميدات'], classification: 'جيد', description: 'دهون طبيعية أساسية لحاجز البشرة الصحي، تمنع فقدان الماء وتحمي البشرة والشعر.', 
-          skin_notes: { dry: 'أساسي لترميم حاجز البشرة الجافة وتوفير ترطيب عميق.', sensitive: 'يعزز حاجز البشرة الواقي ويقلل الحساسية والتهيج.', dehydration: 'يساعد في الحفاظ على الماء داخل البشرة ويمنع الجفاف.' },
-          hair_notes: { damage: 'يقوي الطبقة الخارجية للشعر ويمنع فقدان البروتين والرطوبة، مما يقلل التلف.' }
-        },
-        { name: ['Squalane', 'سكوالين'], classification: 'جيد', description: 'مرطب خفيف الوزن يحاكي الزيوت الطبيعية للبشرة والشعر، يوفر ترطيبًا دون انسداد المسام أو تثقيل الشعر.', 
-          skin_notes: { dry: 'مرطب فعال للبشرة الجافة.', normal: 'يحافظ على توازن رطوبة البشرة.', oily: 'غير كوميدوجينيك، يرطب البشرة الدهنية دون التسبب في حب الشباب.' },
-          hair_notes: { dryness: 'يرطب الشعر دون أن يجعله دهنياً، ويضيف لمعاناً.' }
-        },
-        { name: ['Gallic Acid', 'حمض الغاليك'], classification: 'مضاد أكسدة', description: 'مضاد أكسدة طبيعي، له خصائص مضادة للالتهابات ومفتحة للبشرة.', 
-          skin_notes: { pigmentation: 'يساعد في تفتيح البقع الداكنة وتقليل فرط التصبغ.', redness: 'يقلل الالتهاب والاحمرار.' }
-        },
-        { name: ['Panthenol', 'بانثينول', 'فيتامين B5'], classification: 'جيد', description: 'مرطب وملطف للبشرة والشعر، يساعد على تهدئة البشرة وتعزيز إصلاحها، ويحسن مرونة الشعر.', 
-          skin_notes: { sensitive: 'مكون مهدئ ممتاز للبشرة الحساسة والمتهيجة.', dry: 'يعزز ترطيب البشرة ويساعد في شفاء الجلد.' },
-          hair_notes: { dryness: 'يرطب الشعر بعمق ويحسن مرونته ولمعانه.', damage: 'يساعد في تقوية الشعر الت harmed وتقليل التقصف.' }
-        },
-        { name: ['Allantoin', 'ألانتوين'], classification: 'جيد', description: 'مكون مهدئ ومرطب، يساعد على شفاء البشرة وتجديد الخلايا.', 
-          skin_notes: { sensitive: 'يلطف البشرة المتهيجة ويقلل الاحمرار.', normal: 'يعزز صحة البشرة العامة.' },
-          hair_notes: { scalp_sensitivity: 'يهدئ فروة الرأس المتهيجة ويقلل الحكة.' }
-        },
-
-        // Exfoliants & Acids
-        { name: ['Salicylic Acid', 'حمض الساليسيليك', 'BHA'], classification: 'جيد (مقشر)', description: 'حمض بيتا هيدروكسي (BHA)، مقشر يخترق المسام ويذيب الزهم، فعال لحب الشباب وتنظيف فروة الرأس.', 
-          skin_notes: { acne: 'ممتاز لعلاج حب الشباب والرؤوس السوداء بفضل قدرته على اختراق المسام.', oily: 'يساعد في التحكم في إفراز الزهم وتقليل لمعان البشرة الدهنية.' }, 
-          hair_notes: { oiliness: 'يساعد في تنظيم إفراز الزهم في فروة الرأس وتقليل الدهون.', scalp_sensitivity: 'يمكن استخدامه لتقليل القشرة والالتهابات في فروة الرأس الدهنية.' },
-          pregnancy: 'تجنب استخدامه أثناء الحمل.', medical_conditions_notes: { 'أمراض الكلى': 'استشر الطبيب، خاصة في حالة أمراض الكلى الشديدة، قبل استخدام المنتجات التي تحتوي على حمض الساليسيليك.' } 
-        },
-        { name: ['Glycolic Acid', 'حمض الجليكوليك', 'AHA'], classification: 'جيد (مقشر)', description: 'حمض ألفا هيدروكسي (AHA)، مقشر كيميائي يزيل خلايا الجلد الميتة من السطح، يكشف عن بشرة أكثر إشراقاً.', 
-          skin_notes: { aging: 'يحسن مظهر الخطوط الدقيقة والتجاعيد عن طريق تجديد خلايا الجلد.', pigmentation: 'يساعد في تفتيح البقع الداكنة وتوحيد لون البشرة.', normal: 'يعزز إشراق البشرة ويحسن نسيجها.' },
-          hair_notes: { scalp_sensitivity: 'يمكن استخدامه لتقشير فروة الرأس وإزالة التراكمات لتحسين صحة فروة الرأس.' }
-        },
-        { name: ['Lactic Acid', 'حمض اللاكتيك', 'AHA'], classification: 'جيد (مقشر)', description: 'حمض ألفا هيدروكسي (AHA) لطيف، يقشر ويرطب البشرة.', 
-          skin_notes: { dry: 'مقشر لطيف يرطب البشرة الجافة ويحسن ملمسها.', sensitive: 'أقل تهييجًا من حمض الجليكوليك، مناسب للبشرة الحساسة.' }
-        },
-        { name: ['Azelaic Acid', 'حمض الأزيليك'], classification: 'جيد', description: 'يقلل الاحمرار، الالتهاب، وحب الشباب، ويساعد في تفتيح التصبغات.', 
-          skin_notes: { acne: 'فعال في علاج حب الشباب وتقليل البثور.', pigmentation: 'يساعد في تفتيح بقع ما بعد حب الشباب وفرط التصبغ.', sensitive: 'لطيف نسبيًا ومناسب للبشرة المعرضة للوردية.' }
-        },
-        { name: ['Mandelic Acid', 'حمض الماندليك'], classification: 'جيد (مقشر)', description: 'حمض ألفا هيدروكسي (AHA) أكبر جزيئياً، مما يجعله ألطف على البشرة الحساسة ومعرضة لحب الشباب.',
-          skin_notes: { acne: 'مفيد لحب الشباب الالتهابي والتصبغات الناتجة عنه.', sensitive: 'مناسب للبشرة الحساسة التي لا تتحمل أحماض AHA الأخرى.', pigmentation: 'يساعد في تحسين التصبغات ببطء.' }
-        },
-        { name: ['Gluconolactone', 'جلوكونولاكتون', 'PHA'], classification: 'جيد (مقشر)', description: 'حمض بولي هيدروكسي (PHA) لطيف، يقشر ويرطب وله خصائص مضادة للأكسدة.',
-          skin_notes: { sensitive: 'لطيف للغاية ومناسب للبشرة شديدة الحساسية أو التي تعاني من الوردية.', dry: 'يساهم في ترطيب البشرة بفضل خصائصه المرطبة.' }
-        },
-        { name: ['Lactobionic Acid', 'حمض اللاكتوبيونيك', 'PHA'], classification: 'جيد (مقشر)', description: 'حمض بولي هيدروكسي (PHA) آخر، يقشر ويرطب ويحمي من الأكسدة.',
-          skin_notes: { sensitive: 'مناسب للبشرة الحساسة والوردية، يوفر تقشيرًا خفيفًا وترطيبًا.', aging: 'له خصائص مضادة للأكسدة قد تساعد في مكافحة علامات الشيخوخة.' }
-        },
-
-        // Retinoids (Considered strong)
-        { name: ['Retinol', 'ريتينول', 'Retinoids', 'ريتينويدات'], classification: 'تحذير (قوي)', description: 'شكل من أشكال فيتامين A، يحفز تجديد الخلايا وإنتاج الكولاجين، فعال جداً لمكافحة الشيخوخة وحب الشباب.', 
-          skin_notes: { aging: 'الأكثر فعالية في تقليل التجاعيد وتحسين نسيج البشرة.', acne: 'يقلل من انسداد المسام ويدعم علاج حب الشباب.', sensitive: 'قد يسبب تهيجًا مبدئيًا، استخدم بتركيز منخفض وتدريجيًا.', dry: 'قد يزيد من الجفاف والتهيج في البداية، استخدم معه مرطب جيد.' }, 
-          pregnancy: 'تجنب استخدامه أثناء الحمل إطلاقاً.', medical_conditions_notes: { 'سكري': 'استشر الطبيب، قد يؤثر الريتينول على حساسية الجلد، خاصة لمرضى السكري.', 'أمراض الكلى': 'استشر الطبيب قبل الاستخدام، خاصة في حالة العلاج الموضعي بكميات كبيرة.' } 
-        },
-        { name: ['Retinal', 'ريتينال', 'Retinaldehyde', 'ريتينالديهايد'], classification: 'تحذير (قوي)', description: 'مشتق من فيتامين A أقوى من الريتينول وأقل تهييجاً من حمض الريتينويك، فعال لمكافحة الشيخوخة وحب الشباب.',
-          skin_notes: { aging: 'نتائج أسرع من الريتينول في تحسين التجاعيد وتجديد البشرة.', acne: 'فعال في تقليل حب الشباب بخصائصه المضادة للبكتيريا.', sensitive: 'أقل تهييجاً من الريتينول لبعض أنواع البشرة الحساسة، لكن يجب البدء ببطء.' },
-          pregnancy: 'تجنب استخدامه أثناء الحمل إطلاقاً.'
-        },
-
-        // UV Filters
-        { name: ['Titanium Dioxide', 'ثاني أكسيد التيتانيوم'], classification: 'واقي شمسي (معدني)', description: 'مرشح للأشعة فوق البنفسجية يحمي البشرة من أشعة الشمس عن طريق عكسها وتشتيتها.', 
-          skin_notes: { sensitive: 'واقي شمسي معدني جيد للبشرة الحساسة.' }
-        },
-        { name: ['Zinc Oxide', 'أكسيد الزنك'], classification: 'واقي شمسي (معدني)', description: 'مرشح للأشعة فوق البنفسجية واسع الطيف، يحمي البشرة من أشعة الشمس وله خصائص مهدئة.', 
-          skin_notes: { sensitive: 'ممتاز للبشرة الحساسة والمعرضة لحب الشباب لخصائصه المهدئة.' }
-        },
-        { name: ['Octinoxate', 'اوكتينوكسات'], classification: 'واقي شمسي (كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية B.', 
-          pregnancy: 'يجب استشارة الطبيب قبل الاستخدام أثناء الحمل.' 
-        },
-        { name: ['Avobenzone', 'أفوبنزون'], classification: 'واقي شمسي (كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية A.', pregnancy: 'يجب استشارة الطبيب قبل الاستخدام أثناء الحمل.' },
-        { name: ['Octisalate', 'اوكتيسالات'], classification: 'واقي شمسي (كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية B.' },
-        { name: ['Homosalate', 'هوموسالات'], classification: 'واقي شمسي (كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية B.' },
-        { name: ['Oxybenzone', 'أوكسي بنزون'], classification: 'تحذير (واقي شمسي كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية، قد يسبب الحساسية ويثير مخاوف بيئية وصحية.', skin_notes: { sensitive: 'قد يسبب تهيجًا أو حساسية للبشرة الحساسة.' }, pregnancy: 'يفضل تجنبه أو استشارة الطبيب أثناء الحمل.' },
-        { name: ['Octocrylene', 'اوكتوكريلين'], classification: 'واقي شمسي (كيميائي)', description: 'مرشح كيميائي للأشعة فوق البنفسجية، قد يسبب الحساسية لبعض الأفراد.', pregnancy: 'يفضل استشارة الطبيب أثناء الحمل.' },
-
-        // Emollients/Occlusives
-        { name: ['Petrolatum', 'فازلين', 'بترولاتوم'], classification: 'جيد (للحماية)', description: 'مطري قوي وشكل من الفازلين، يخلق حاجزاً على البشرة لمنع فقدان الرطوبة.', 
-          skin_notes: { dry: 'ممتاز للبشرة الجافة والجافة جداً لحبس الرطوبة.', sensitive: 'مكون خامل وآمن للبشرة الحساسة.', oily: 'قد يكون ثقيلًا جدًا ويسبب انسداد المسام لبعض أنواع البشرة الدهنية.' },
-          hair_notes: { dryness: 'يحبس الرطوبة في الشعر، فعال جداً للشعر الجاف جداً.', coily: 'يساعد الشعر الأفرو على الاحتفاظ بالترطيب ومنع التجفيف.' }
-        },
-        { name: ['Mineral Oil', 'زيت معدني'], classification: 'مطري/مرطب', description: 'زيت عديم الرائحة واللون، يساعد على ترطيب البشرة والشعر ومنع فقدان الماء.', 
-          skin_notes: { dry: 'فعال في ترطيب البشرة الجافة.', oily: 'قد يكون كوميدوجينيك (يسبب انسداد المسام) لبعض أنواع البشرة الدهنية، خاصة إذا كانت عرضة لحب الشباب.' },
-          hair_notes: { dryness: 'يساعد على حبس الرطوبة في الشعر الجاف.' }
-        },
-        { name: ['Dimethicone', 'دايميثيكون', 'Silicones', 'سيليكونات'], classification: 'مطري/محسن قوام', description: 'سيليكون يوفر ملمسًا ناعمًا للبشرة ويخلق حاجزًا خفيفًا يحبس الرطوبة ويمنح الشعر نعومة ولمعاناً.', 
-          skin_notes: { normal: 'يمنح البشرة ملمسًا ناعمًا ومطفيًا.', oily: 'غير كوميدوجينيك بشكل عام، ويمكن استخدامه للبشرة الدهنية.' },
-          hair_notes: { frizz: 'يقلل التجعد بشكل فعال ويضيف لمعاناً.', damage: 'يشكل طبقة واقية حول الشعر لتقليل التلف.', oily: 'الاستخدام المفرط قد يسبب تراكمات على فروة الرأس الدهنية والشعر.' }
-        },
-        { name: ['Butyrospermum Parkii Butter', 'زبدة الشيا'], classification: 'عضوي', description: 'زبدة طبيعية غنية بالدهون والفيتامينات، مرطب ومطري ممتاز للبشرة والشعر.', 
-          skin_notes: { dry: 'غنية ومرطبة للغاية للبشرة الجافة وشديدة الجفاف.', sensitive: 'تهدئ البشرة وتقلل الالتهاب.' },
-          hair_notes: { dryness: 'ترطب الشعر الجاف جداً بعمق وتغذي الأطراف المتقصفة.', curly: 'ممتازة للشعر الكيرلي والأفرو لترطيب وتغذية اللفات.' }
-        },
-        { name: ['Cocos Nucifera Oil', 'زيت جوز الهند'], classification: 'مطري', description: 'زيت طبيعي مرطب، ولكنه قد يكون كوميدوجينيك لبعض أنواع البشرة وقد يكون ثقيلاً على بعض أنواع الشعر.', 
-          skin_notes: { dry: 'مرطب فعال للبشرة الجافة.', oily: 'قد يسبب انسداد المسام وظهور حب الشباب لبعض أنواع البشرة الدهنية والمعرضة لحب الشباب.' },
-          hair_notes: { dryness: 'يساعد على حبس الرطوبة في الشعر الجاف.' }
-        },
-        { name: ['Persea Gratissima Oil', 'زيت الأفوكادو'], classification: 'عضوي', description: 'زيت غني بالمغذيات ومرطب عميق، ممتاز للبشرة والشعر الجاف.', 
-          skin_notes: { dry: 'يوفر تغذية وترطيبًا عميقًا للبشرة الجافة وشديدة الجفاف.' },
-          hair_notes: { dryness: 'يرطب ويغذي الشعر الجاف جداً، يضيف لمعاناً وليونة.' }
-        },
-        { name: ['Simmondsia Chinensis Seed Oil', 'زيت الجوجوبا'], classification: 'عضوي', description: 'زيت يشبه الزهم الطبيعي للبشرة وفروة الرأس، مرطب ومتوازن.', 
-          skin_notes: { oily: 'يساعد في توازن إفراز الزهم، مناسب للبشرة الدهنية.', normal: 'يرطب البشرة دون ترك شعور دهني.' },
-          hair_notes: { oily: 'يساعد على توازن إفراز الزيوت في فروة الرأس الدهنية.', dryness: 'يرطب الشعر دون أن يثقله.' }
-        },
-        { name: ['Argania Spinosa Kernel Oil', 'زيت الأرغان'], classification: 'عضوي', description: 'زيت غني بفيتامين E والأحماض الدهنية، مغذي ومرطب للبشرة والشعر، يضيف لمعاناً ونعومة.',
-          skin_notes: { dry: 'يرطب البشرة الجافة ويحسن مرونتها.' },
-          hair_notes: { dryness: 'يغذي الشعر الجاف ويقلل التجعد ويضيف لمعاناً.', damage: 'يساعد في إصلاح الشعر التالف.' }
-        },
-        { name: ['Rosmarinus Officinalis Leaf Oil', 'زيت الروزماري'], classification: 'عضوي', description: 'زيت أساسي يعتقد أنه يحفز نمو الشعر ويحسن صحة فروة الرأس.',
-          hair_notes: { hair_loss: 'تشير الدراسات إلى أنه قد يساعد في تحفيز نمو الشعر وتقليل التساقط.', scalp_sensitivity: 'له خصائص مضادة للالتهاب قد تهدئ فروة الرأس.' }
-        },
-        { name: ['Melaleuca Alternifolia Leaf Oil', 'زيت شجرة الشاي'], classification: 'عضوي', description: 'زيت أساسي معروف بخصائصه المضادة للبكتيريا والفطريات، مفيد لفروة الرأس الدهنية أو التي تعاني من القشرة.',
-          hair_notes: { oiliness: 'يساعد في التحكم في دهنية فروة الرأس.', scalp_sensitivity: 'فعال في علاج القشرة وتهدئة فروة الرأس المتهيجة.' }
-        },
-        { name: ['Urea', 'يوريا'], classification: 'جيد', description: 'مركب طبيعي يرطب البشرة بعمق، ويستخدم أيضاً كمقشر لطيف بتركيزات أعلى.',
-          skin_notes: { dry: 'مرطب فعال جداً للبشرة الجافة وشديدة الجفاف.', dehydration: 'يعزز قدرة البشرة على الاحتفاظ بالماء.', 'خشونة الجلد': 'بتركيزات أعلى، يساعد على تنعيم البشرة الخشنة.' }
-        },
-        { name: ['Caprylic/Capric Triglyceride', 'كابريليك/كابريك ثلاثي الجليسريد'], classification: 'مطري', description: 'مطري خفيف الوزن مشتق من زيت جوز الهند والجلسرين، يرطب البشرة دون الشعور بالثقل.', skin_notes: { oily: 'مطري خفيف ومناسب للبشرة الدهنية، لا يسد المسام بشكل عام.' } },
-
-
-        // Hair-specific Proteins/Vitamins
-        { name: ['Hydrolyzed Keratin', 'كيراتين مهدرج', 'Keratin', 'كيراتين'], classification: 'جيد للشعر', description: 'بروتين الكيراتين المتحلل، يساعد على تقوية الشعر التالف وملء الفراغات فيه.',
-          hair_notes: { damage: 'يقوي الشعر التالف ويحسن مرونته ويقلل التقصف.', frizz: 'يساعد على تنعيم سطح الشعر وتقليل التجعد.' }
-        },
-        { name: ['Hydrolyzed Wheat Protein', 'بروتين القمح المهدرج'], classification: 'جيد للشعر', description: 'بروتين نباتي يعمل على تقوية وترطيب الشعر، ويزيد من حجمه.',
-          hair_notes: { damage: 'يقوي الشعر ويحميه من التلف.', dryness: 'يوفر ترطيبًا خفيفًا للشعر.' }
-        },
-        { name: ['Hydrolyzed Soy Protein', 'بروتين الصويا المهدرج'], classification: 'جيد للشعر', description: 'بروتين نباتي يساعد على تقوية الشعر التالف ومنحه لمعاناً.',
-          hair_notes: { damage: 'يقوي الشعر ويحميه من التلف، ويساعد على استعادة مرونته.' }
-        },
-        { name: ['Biotin', 'بيوتين', 'فيتامين H'], classification: 'جيد (فيتامين)', description: 'فيتامين B7، يلعب دوراً في صحة الشعر والأظافر والبشرة، ويعتقد أنه يدعم نمو الشعر الصحي.',
-          hair_notes: { hair_loss: 'يُعتقد أنه يقوي بصيلات الشعر ويقلل من تساقط الشعر، خاصة في حالات نقص البيوتين.' }
-        },
-        { name: ['Hydrolyzed Collagen', 'كولاجين مهدرج'], classification: 'جيد للشعر', description: 'بروتين يساعد على تحسين مرونة الشعر وتقويته.',
-          hair_notes: { damage: 'يقوي الشعر ويحسن مرونته ويقلل من التقصف.', dryness: 'يضيف ترطيباً ولمعاناً للشعر الباهت والجاف.' }
-        },
-        { name: ['Silk Amino Acids', 'أحماض الحرير الأمينية'], classification: 'جيد للشعر', description: 'أحماض أمينية مستخرجة من الحرير، تساعد على ترطيب الشعر وإضفاء النعومة واللمعان.',
-          hair_notes: { dryness: 'ترطب الشعر وتضيف لمعاناً وتنعيمًا.', frizz: 'تساعد على تقليل التجعد.' }
-        },
-        { name: ['Keratin Amino Acids', 'أحماض الكيراتين الأمينية'], classification: 'جيد للشعر', description: 'أحماض أمينية مشتقة من الكيراتين، تخترق الشعر لتقويته من الداخل وتساعد على ترميم التلف.',
-          hair_notes: { damage: 'تساعد على إصلاح الشعر التالف وزيادة قوته ومرونته.' }
-        },
-        { name: ['Rice Protein', 'بروتين الأرز'], classification: 'جيد للشعر', description: 'بروتين نباتي خفيف الوزن يعزز حجم الشعر ويقويه.',
-          hair_notes: { damage: 'يقوي الشعر ويحميه دون أن يثقله.', fine_hair: 'يضيف حجماً للشعر الخفيف.' } // Example of concern specific to hair type
-        },
-        { name: ['Hydrolyzed Vegetable Protein', 'بروتين نباتي مهدرج'], classification: 'جيد للشعر', description: 'مزيج من البروتينات النباتية المتحللة التي تغذي وتقوي الشعر.',
-          hair_notes: { damage: 'يساعد على ترميم الشعر التالف وتقويته لتقليل التقصف.', dryness: 'يوفر ترطيبًا ويحسن الملمس.' }
-        },
-        { name: ['Caffeine', 'كافيين'], classification: 'جيد للشعر', description: 'منشط، يعتقد أنه يحفز بصيلات الشعر ويقلل تساقط الشعر.',
-          hair_notes: { hair_loss: 'قد يساعد في تحفيز نمو الشعر وتقليل التساقط عن طريق تنشيط بصيلات الشعر.', oily: 'قد يساعد في تقليل دهنية فروة الرأس.' }
-        },
-        { name: ['Polyquaternium-7', 'بولي كواتيرنيوم-7'], classification: 'جيد للشعر', description: 'بوليمر كاتيونيك يستخدم كعامل تكييف ممتاز للشعر، يقلل التشابك ويحسن الانزلاق.',
-          hair_notes: { frizz: 'يقلل التجعد ويجعل الشعر أكثر قابلية للتحكم.', dryness: 'يوفر تكييفًا فعالًا للشعر الجاف والمتشابك.' }
-        },
-        { name: ['Polyquaternium-10', 'بولي كواتيرنيوم-10'], classification: 'جيد للشعر', description: 'بوليمر كاتيونيك يستخدم لفك تشابك الشعر وتقويته، شائع في الشامبو والبلسم.',
-          hair_notes: { damage: 'يعمل على تقوية الشعر التالف ويحميه.', frizz: 'يقلل التجعد ويحسن ملمس الشعر.' }
-        },
-        { name: ['Guar Hydroxypropyltrimonium Chloride', 'كلوريد الغوار هيدروكسي بروبيل تريمونيوم'], classification: 'جيد للشعر', description: 'مكثف وعامل تكييف للشعر مشتق من صمغ الغوار، يقلل الكهرباء الساكنة ويحسن فك التشابك.',
-          hair_notes: { frizz: 'يقلل الكهرباء الساكنة والتجعد بشكل فعال.', dryness: 'يعزز تكييف الشعر ويجعله أكثر نعومة وسهولة في التصفيف.' }
-        },
-        { name: ['Behentrimonium Chloride', 'بيهينتريمونيوم كلوريد'], classification: 'جيد للشعر', description: 'عامل تكييف كاتيونيك قوي يستخدم في البلسم والأقنعة، يساعد على فك التشابك ويمنح الشعر نعومة.',
-          hair_notes: { dryness: 'يوفر ترطيبًا عميقًا للشعر الجاف.', frizz: 'يقلل التجعد بشكل فعال ويجعل الشعر أملس.' }
-        },
-        { name: ['Cetrimonium Chloride', 'سيتريمونيوم كلوريد'], classification: 'جيد للشعر', description: 'عامل تكييف كاتيونيك يستخدم في البلسم، يقلل الكهرباء الساكنة ويحسن فك التشابك ويضيف لمعاناً.',
-          hair_notes: { frizz: 'يقلل التجعد ويزيد من لمعان الشعر.', damage: 'يساعد في حماية الشعر وتسهيل تصفيفه.' }
-        },
-        { name: ['Cetearyl Alcohol', 'كحول سيتريل'], classification: 'جيد (كحول دهني)', description: 'كحول دهني (ليس مجففاً)، يعمل كمطري ومثبت استحلاب، يمنح الشعر نعومة وترطيباً.',
-          hair_notes: { dryness: 'يرطب الشعر ويقلل الجفاف.', frizz: 'يساعد في تنعيم الشعر وتقليل التجعد.' }
-        },
-        { name: ['Stearyl Alcohol', 'كحول ستياريلي'], classification: 'جيد (كحول دهني)', description: 'كحول دهني آخر، يعمل كمثبت استحلاب ومطري ومثخن في منتجات الشعر، يمنح الشعر ملمساً ناعماً.',
-          hair_notes: { dryness: 'يساعد في ترطيب الشعر وتوفير ملمس ناعم.', frizz: 'يقلل التجعد ويحسن قابلية التصفيف.' }
-        },
-        { name: ['Sodium PCA', 'صوديوم PCA'], classification: 'جيد (مرطب)', description: 'مرطب طبيعي موجود في الجلد، يجذب ويحتفظ بالرطوبة في الشعر والبشرة.',
-          hair_notes: { dryness: 'مرطب ممتاز للشعر الجاف ويساعد على الاحتفاظ بالماء داخل خصلات الشعر.' }
-        },
-        { name: ['Piroctone Olamine', 'بيروكتون أولامين'], classification: 'مضاد للفطريات (فروة الرأس)', description: 'مكون فعال مضاد للفطريات يستخدم لعلاج القشرة والتهاب الجلد الدهني في فروة الرأس.',
-          hair_notes: { scalp_sensitivity: 'فعال جداً في علاج القشرة وتهدئة فروة الرأس المتهيجة أو الدهنية.', oiliness: 'يساعد في السيطرة على نمو الكائنات الدقيقة التي تسبب الدهنية والقشرة.' }
-        },
-        { name: ['Zinc Pyrithione', 'زنك بيريثيون'], classification: 'مضاد للفطريات (فروة الرأس)', description: 'مضاد للفطريات والبكتيريا، شائع في الشامبو المضاد للقشرة لعلاج القشرة والتهاب الجلد الدهني.',
-          hair_notes: { scalp_sensitivity: 'مكون رئيسي في شامبوهات القشرة، فعال في تقليل الحكة والتقشر المرتبطين بفروة الرأس الدهنية والمتهيجة.', oiliness: 'يساعد في تنظيم صحة فروة الرأس وتقليل الإفرازات الدهنية.' }
-        },
-
-        // Potentially Irritating/Problematic (for both skin & hair)
-        { name: ['Parfum', 'Fragrance', 'عطر', 'عطور'], classification: 'ضار محتمل', description: 'مركبات كيميائية أو طبيعية تضاف لإعطاء المنتج رائحة، قد تسبب تهيجاً وحساسية للبشرة وفروة الرأس.', 
-          skin_notes: { sensitive: 'السبب الأكثر شيوعًا للحساسية والتهيج في البشرة الحساسة.', normal: 'يمكن أن يسبب تهيجًا على المدى الطويل حتى للبشرة غير الحساسة.' },
-          hair_notes: { scalp_sensitivity: 'قد تسبب تهيجاً أو حكة في فروة الرأس الحساسة.' }
-        },
-        { name: ['Alcohol Denat.', 'Alcohol', 'كحول', 'كحول دينات'], classification: 'ضار محتمل', description: 'نوع من الكحوليات المجففة، قد يجفف البشرة والشعر ويهيجهما.', 
-          skin_notes: { dry: 'يزيد من جفاف البشرة ويضر حاجزها الواقي.', sensitive: 'قد يسبب تهيجًا وحرقًا للبشرة الحساسة.', oily: 'قد يؤدي إلى زيادة إنتاج الزهم على المدى الطويل.' },
-          hair_notes: { dryness: 'يجرد الشعر وفروة الرأس من زيوتهما الطبيعية، مما يؤدي إلى الجفاف والتلف.', damage: 'يزيد من هشاشة الشعر ويجعله أكثر عرضة للتلف.' }
-        },
-        { name: ['Sodium Lauryl Sulfate', 'SLS', 'كبريتات لوريل الصوديوم'], classification: 'تحذير', description: 'عامل رغوي ومنظف قوي، قد يسبب تهيجاً وجفافاً للبشرة وفروة الرأس الحساسة أو الجافة.', 
-          skin_notes: { dry: 'يجرد البشرة من زيوتها الطبيعية، مما يزيد الجفاف.', sensitive: 'مهيج محتمل للبشرة الحساسة.' },
-          hair_notes: { dryness: 'يجرد الشعر وفروة الرأس من الزيوت الطبيعية، مما يؤدي إلى الجفاف.', scalp_sensitivity: 'قد يسبب تهيجاً وحكة في فروة الرأس الحساسة.' }
-        },
-        { name: ['Sodium Laureth Sulfate', 'SLES', 'كبريتات لوريث الصوديوم'], classification: 'تحذير', description: 'عامل رغوي ومنظف، ألطف قليلاً من SLS ولكنه قد يسبب تهيجاً للبشرة وفروة الرأس الحساسة.', 
-          skin_notes: { dry: 'قد يسبب جفافاً للبشرة الحساسة.', sensitive: 'مهيج محتمل للبشرة الحساسة.' },
-          hair_notes: { dryness: 'يجرد الشعر وفروة الرأس من الزيوت الطبيعية، مما يؤدي إلى الجفاف.', scalp_sensitivity: 'قد يسبب تهيجاً وحكة.' }
-        },
-        { name: ['Phthalates', 'فثالات'], classification: 'مادة كيميائية يجب تجنبها', description: 'مواد كيميائية تستخدم كمذيبات أو لزيادة مرونة البلاستيك، قد تكون لها آثار صحية ضارة.', pregnancy: 'يجب تجنبه تمامًا أثناء الحمل.' },
-        { name: ['Parabens', 'بارابين', 'Methylparaben', 'Propylparaben', 'Butylparaben', 'Ethylparaben'], classification: 'مادة كيميائية يجب تجنبها', description: 'مواد حافظة تستخدم لمنع نمو البكتيريا والفطريات، أثيرت مخاوف بشأن تأثيرها المحتمل على الهرمونات واضطرابات الغدد الصماء.', pregnancy: 'يجب تجنبه أثناء الحمل، استشر الطبيب.' },
-        { name: ['Formaldehyde', 'فورمالديهايد', 'Formaldehyde-releasers', 'DMDM Hydantoin', 'Imidazolidinyl Urea', 'Diazolidinyl Urea', 'Quaternium-15'], classification: 'مادة كيميائية يجب تجنبها', description: 'مادة حافظة تطلق الفورمالديهايد، قد تسبب الحساسية والتهيج، وتعتبر مادة مسرطنة محتملة.', skin_notes: { sensitive: 'مهيج قوي ومسبب للحساسية للبشرة الحساسة.' } },
-        { name: ['Synthetic Dyes', 'أصباغ صناعية', 'CI 77491', 'CI 77492'], classification: 'ضار محتمل', description: 'أصباغ كيميائية تستخدم لإعطاء المنتجات لوناً، قد تسبب الحساسية أو تسد المسام لبعض الأفراد.', skin_notes: { sensitive: 'قد تسبب تهيجًا أو حساسية.' } },
-        { name: ['Polyethylene Glycol', 'PEG', 'بولي إيثيلين جلايكول'], classification: 'تحذير', description: 'مركبات بترولية تستخدم كمذيبات أو محسّنات اختراق، قد تكون ملوثة بمواد ضارة وقد تسبب تهيجاً للبشرة المتضررة.', skin_notes: { 'متضررة': 'قد تزيد من اختراق المواد الضارة للبشرة المتضررة.' } },
-        { name: ['Triclosan', 'ترايكلوسان'], classification: 'مادة كيميائية يجب تجنبها', description: 'مضاد للبكتيريا ومادة حافظة، أثيرت مخاوف بشأن مقاومة البكتيريا وتأثيره على الغدد الصماء.', pregnancy: 'تجنبه أثناء الحمل.' },
-        { name: ['BHT', 'BHA'], classification: 'تحذير', description: 'مضادات أكسدة صناعية، أثيرت مخاوف بشأن تأثيرها المحتمل على الهرمونات وتسبب الحساسية.', skin_notes: { sensitive: 'قد يسبب تهيجًا.' } },
-        { name: ['Methylisothiazolinone', 'MIT', 'ميثيل أيزوثيازولينون'], classification: 'تحذير (حافظة)', description: 'مادة حافظة قد تسبب حساسية قوية للبشرة والشعر.',
-          skin_notes: { sensitive: 'مسبب معروف للحساسية والتهاب الجلد التماسي، يجب تجنبه للبشرة الحساسة.' },
-          hair_notes: { scalp_sensitivity: 'يمكن أن يسبب تهيج فروة الرأس وحساسية.' }
-        },
-        { name: ['Methylchloroisothiazolinone', 'MCI', 'ميثيل كلورو أيزوثيازولينون'], classification: 'تحذير (حافظة)', description: 'مادة حافظة غالباً ما تستخدم مع MIT، قد تسبب حساسية.',
-          skin_notes: { sensitive: 'مركب شديد التسبب في الحساسية، يجب تجنبه للبشرة الحساسة.' },
-          hair_notes: { scalp_sensitivity: 'يمكن أن يسبب تهيج فروة الرأس وحساسية.' }
-        },
-
-
-        // Natural Extracts / Oils (with Hair notes)
-        { name: ['Camellia Sinensis Leaf Extract', 'مستخلص أوراق الشاي الأخضر'], classification: 'عضوي', description: 'مضاد أكسدة قوي، له خصائص مضادة للالتهاب ومهدئة.', 
-          skin_notes: { acne: 'يساعد في تقليل الالتهاب والتحكم في الزيوت.', redness: 'يهدئ البشرة ويقلل الاحمرار.', oily: 'يساعد في تنظيم إفراز الزيوت.' },
-          hair_notes: { hair_loss: 'قد يساعد في تقليل تساقط الشعر وتعزيز نمو الشعر الصحي.', scalp_sensitivity: 'يهدئ فروة الرأس المتهيجة.' }
-        },
-        { name: ['Chamomilla Recutita Flower Extract', 'مستخلص زهرة البابونج'], classification: 'عضوي', description: 'مكون مهدئ ومضاد للالتهاب، ممتاز للبشرة الحساسة وفروة الرأس المتهيجة.', 
-          skin_notes: { sensitive: 'يلطف البشرة المتهيجة والحساسة ويقلل الاحمرار.', redness: 'يساعد على تهدئة الاحمرار والالتهاب.' },
-          hair_notes: { scalp_sensitivity: 'يهدئ فروة الرأس الحساسة والمتهيجة.', dryness: 'يضيف ترطيبًا خفيفًا للشعر.' }
-        },
-        { name: ['Centella Asiatica Extract', 'مستخلص سرة الأرض', 'سيكا'], classification: 'عضوي', description: 'مكون مهدئ ومرمم للبشرة، يساعد في شفاء الجروح وتقليل الالتهاب.', 
-          skin_notes: { sensitive: 'ممتاز لتهدئة البشرة المتهيجة والحساسة.', acne: 'يساعد في شفاء البثور وتقليل ندوب حب الشباب.', redness: 'يقلل الاحمرار ويعزز إصلاح حاجز البشرة.' },
-          hair_notes: { scalp_sensitivity: 'يهدئ فروة الرأس ويساعد في إصلاح حاجز الجلد.', hair_loss: 'قد يدعم صحة بصيلات الشعر.' }
-        },
-        { name: ['Curcuma Longa Root Extract', 'مستخلص جذور الكركم'], classification: 'عضوي', description: 'مضاد أكسدة ومضاد للالتهاب، يساعد في تفتيح البشرة وتقليل التصبغات، وله فوائد لفروة الرأس.', 
-          skin_notes: { pigmentation: 'يساعد في تفتيح البقع الداكنة وتوحيد لون البشرة.', acne: 'يقلل الالتهاب المرتبط بحب الشباب.' },
-          hair_notes: { scalp_sensitivity: 'قد يساعد في تقليل الالتهاب وتحسين صحة فروة الرأس.' }
-        },
-        { name: ['Rosa Canina Fruit Oil', 'زيت ثمر الورد'], classification: 'عضوي', description: 'غني بفيتامين A وC والأحماض الدهنية الأساسية، يساعد في تجديد البشرة وتقليل التصبغات، ويفيد الشعر.', 
-          skin_notes: { aging: 'يساعد في تحسين مظهر الخطوط الدقيقة وتجديد البشرة.', pigmentation: 'يقلل من ظهور بقع التصبغ.' },
-          hair_notes: { dryness: 'يغذي الشعر الجاف ويضيف لمعاناً.', damage: 'يساعد في ترميم الشعر التالف.' }
-        },
-        { name: ['Mentha Piperita Oil', 'زيت النعناع'], classification: 'عضوي', description: 'زيت أساسي يعطي إحساساً منعشاً، وقد يساعد في تحفيز الدورة الدموية في فروة الرأس.',
-          hair_notes: { hair_loss: 'قد يحفز بصيلات الشعر ويدعم نمو الشعر.', scalp_sensitivity: 'يمكن أن يكون منعشاً ولكنه قد يسبب تهيجاً لفروة الرأس الحساسة جداً.' }
-        },
-        { name: ['Lavandula Angustifolia Oil', 'زيت اللافندر'], classification: 'عضوي', description: 'زيت أساسي مهدئ، قد يساعد في نمو الشعر وتقليل الالتهاب في فروة الرأس.',
-          hair_notes: { hair_loss: 'يعتقد أنه يدعم نمو الشعر الصحي.', scalp_sensitivity: 'له خصائص مهدئة قد تقلل من تهيج فروة الرأس.' }
-        },
-        { name: ['Ricinus Communis Seed Oil', 'زيت الخروع'], classification: 'مطري', description: 'زيت سميك ومرطب، يستخدم لتعزيز نمو الشعر وتقويته.',
-          hair_notes: { hair_loss: 'يعتقد أنه يقوي بصيلات الشعر ويحفز النمو.', dryness: 'مرطب كثيف للشعر الجاف جداً.', damage: 'يساعد في تغذية الشعر التالف.' }
-        },
-        { name: ['Vitis Vinifera Seed Oil', 'زيت بذور العنب'], classification: 'عضوي', description: 'زيت خفيف الوزن، غني بمضادات الأكسدة، يرطب الشعر دون أن يثقله.',
-          hair_notes: { dryness: 'يرطب الشعر الخفيف إلى المتوسط دون ترك بقايا دهنية.', oily: 'خفيف ولا يسد المسام، مناسب لفروة الرأس الدهنية.' }
-        },
-        { name: ['Glycyrrhiza Glabra Root Extract', 'مستخلص جذر عرق السوس'], classification: 'عضوي', description: 'مضاد للأكسدة ومضاد للالتهاب، معروف بخصائصه المفتحة للبشرة ومهدئة للاحمرار.',
-          skin_notes: { pigmentation: 'فعال في تفتيح التصبغات والبقع الداكنة.', redness: 'يساعد على تهدئة البشرة وتقليل الاحمرار.' }
-        },
-        { name: ['Arctostaphylos Uva Ursi Leaf Extract', 'مستخلص أوراق عنب الدب', 'أربوتين'], classification: 'عضوي', description: 'يحتوي على الأربوتين، مكون طبيعي لتفتيح البشرة وتقليل التصبغات.',
-          skin_notes: { pigmentation: 'يساعد في تقليل فرط التصبغ والبقع الداكنة بشكل طبيعي.' }
-        },
-        { name: ['Morus Alba Root Extract', 'مستخلص جذر التوت الأبيض'], classification: 'عضوي', description: 'مضاد للأكسدة ويساعد على تفتيح لون البشرة وتوحيدها.',
-          skin_notes: { pigmentation: 'يعمل على تفتيح البقع الداكنة وتحسين إشراق البشرة.' }
-        },
-        { name: ['Punica Granatum Extract', 'مستخلص الرمان'], classification: 'عضوي', description: 'مضاد أكسدة قوي يحمي البشرة من التلف، وله خصائص مضادة للالتهاب.',
-          skin_notes: { aging: 'يحمي البشرة من التلف التأكسدي ويساعد في تجديد الخلايا.' }
-        },
-
-        // Other common ingredients
-        { name: ['Phenoxyethanol', 'فيتوكسييثانول'], classification: 'مادة حافظة', description: 'مادة حافظة شائعة في مستحضرات التجميل.' },
-        { name: ['Ethylhexylglycerin', 'إيثيل هكسيل جليسرين'], classification: 'مادة حافظة', description: 'مادة حافظة وعامل تكييف للبشرة.' },
-        { name: ['Carbomer', 'كربومير'], classification: 'عامل تثبيت', description: 'مادة مكثفة ومثبتة تستخدم في تركيبات الجل والكريمات.' },
-        { name: ['Disodium EDTA', 'ثنائي صوديوم EDTA'], classification: 'عامل مخلب', description: 'يستخدم لتحسين استقرار المنتج وفعاليته.' },
-        { name: ['Citric Acid', 'حمض الستريك'], classification: 'معدل حموضة', description: 'حمض ألفا هيدروكسي (AHA) يستخدم لتعديل درجة حموضة المنتج، وله خصائص تقشير خفيفة.', skin_notes: { normal: 'يساعد في الحفاظ على توازن pH البشرة.', pigmentation: 'قد يساعد في التقشير الخفيف للبقع الداكنة.' } },
-        { name: ['Xanthan Gum', 'صمغ الزانثان'], classification: 'مثبت', description: 'عامل تكثيف ومثبت طبيعي يعطي ملمساً سلساً للمنتجات.' },
-        { name: ['Sodium Benzoate', 'بنزوات الصوديوم'], classification: 'مادة حافظة', description: 'مادة حافظة شائعة الاستخدام في مستحضرات التجميل والأطعمة والمشروبات.' },
-        { name: ['Potassium Sorbate', 'سوربات البوتاسيوم'], classification: 'مادة حافظة', description: 'مادة حافظة تستخدم لمنع نمو الفطريات والعفن.' },
-        { name: ['Gellan Gum', 'صمغ الجيلان'], classification: 'مثبت', description: 'عامل تكثيف وتثبيت نباتي الأصل، يستخدم في المنتجات ذات القوام الهلامي.' },
-        { name: ['Tocopheryl Acetate', 'أسيتات التوكوفيرول'], classification: 'جيد', description: 'شكل مستقر من فيتامين E، مضاد للأكسدة يساعد في حماية البشرة والشعر.' },
-        { name: ['Ascorbyl Glucoside', 'أسكوربيل جلوكوسيد'], classification: 'جيد', description: 'مشتق مستقر من فيتامين C، يتم تحويله إلى حمض الأسكوربيك داخل الجلد، يعمل كمضاد للأكسدة ومفتح للبشرة.',
-          skin_notes: { pigmentation: 'يساعد في تفتيح التصبغات وتوحيد لون البشرة.', aging: 'يحفز إنتاج الكولاجين ويحمي من التلف.' }
-        },
-        { name: ['Sodium Ascorbyl Phosphate', 'فوسفات أسكوربيل الصوديوم'], classification: 'جيد', description: 'شكل مستقر وماء الذوبان من فيتامين C، فعال لحب الشباب والتصبغات، وأقل تهييجاً.',
-          skin_notes: { acne: 'له خصائص مضادة للبكتيريا تقلل من حب الشباب.', pigmentation: 'يساعد على تفتيح التصبغات بعد حب الشباب.' }
-        },
-        { name: ['Tetrahexyldecyl Ascorbate', 'رباعي هيكسيل ديسيل أسكوربات'], classification: 'جيد', description: 'شكل مستقر وذائب في الزيت من فيتامين C، يخترق البشرة بعمق، فعال لمكافحة الشيخوخة والتصبغات.',
-          skin_notes: { aging: 'يحفز الكولاجين ويقلل الخطوط الدقيقة.', pigmentation: 'يساعد على تفتيح البقع الداكنة.' }
-        },
-        { name: ['Peptides', 'الببتيدات'], classification: 'جيد', description: 'سلاسل قصيرة من الأحماض الأمينية تعمل كإشارات للخلايا، تعزز إنتاج الكولاجين وتحسين مرونة البشرة.',
-          skin_notes: { aging: 'تساعد في تقليل التجاعيد وتحسين تماسك البشرة.', normal: 'تدعم صحة البشرة العامة وتجديد الخلايا.' }
-        },
-        { name: ['Tranexamic Acid', 'حمض الترانيكساميك'], classification: 'جيد', description: 'مكون فعال لتقليل التصبغات والبقع الداكنة، بما في ذلك الكلف وبقع ما بعد الالتهاب.',
-          skin_notes: { pigmentation: 'فعال جداً في علاج الكلف وأنواع أخرى من فرط التصبغ.' }
-        },
-        { name: ['Alpha Arbutin', 'ألفا أربوتين'], classification: 'جيد', description: 'مكون طبيعي لتفتيح البشرة، يعمل على تثبيط إنزيم التيروزيناز لتقليل إنتاج الميلانين.',
-          skin_notes: { pigmentation: 'يساعد في تفتيح البقع الداكنة وتوحيد لون البشرة بشكل آمن.' }
+                confirmYesBtn.addEventListener('click', handleConfirm);
+                confirmNoBtn.addEventListener('click', handleCancel);
+            });
         }
-    ];
 
-    // Autocomplete suggestion function
-    function setupAutocomplete(inputElement, suggestionsContainer, isPreferredOrExcluded = false) {
-        let currentSuggestions = [];
-        let activeSuggestionIndex = -1;
 
-        const renderSuggestions = () => {
-            suggestionsContainer.innerHTML = '';
-            if (currentSuggestions.length === 0 || inputElement.value.trim() === '') {
-                suggestionsContainer.classList.add('hidden');
+        // Initialize Firebase
+        // Only attempt to initialize if firebaseConfig has actual project ID
+        // التحقق من أن بيانات التهيئة ليست قيمًا افتراضية (YOUR_PROJECT_ID) قبل التهيئة
+        function initFirebase() {
+            if (firebaseConfig && firebaseConfig.projectId && firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
+                try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    isFirebaseInitialized = true; // Set flag to true on successful initialization
+
+                    // Firestore references
+                    // Path: artifacts/{appId}/public/data/globalSettings/currentSettings (even number of segments)
+                    globalSettingsRef = doc(collection(db, `artifacts/${appId}/public/data/globalSettings`), 'currentSettings');
+                    activeUsersCollectionRef = collection(db, `artifacts/${appId}/public/data/activeUsers`);
+
+                    document.getElementById('firebaseStatusDisplay').textContent = 'متصل';
+                    console.log("Firebase initialized successfully.");
+
+                    // *** Moved onAuthStateChanged listener here, after auth is initialized ***
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                            document.getElementById('userIdDisplay').textContent = userId;
+                            document.getElementById('adminUserIdDisplay').textContent = userId;
+                            console.log("معرف المستخدم الحالي (user.uid):", userId); // Log the user ID
+                            
+                            // Only proceed with Firestore operations if 'db' is successfully initialized
+                            if (db) {
+                                // userProfileRef must be set AFTER userId is confirmed
+                                userProfileRef = doc(db, `artifacts/${appId}/users/${userId}/profiles/myProfile`);
+
+                                // Enable profile buttons after authentication
+                                document.getElementById('saveProfileBtn').disabled = false;
+                                document.getElementById('loadNamedProfileBtn').disabled = false;
+                                document.getElementById('deleteProfileBtn').disabled = false;
+                                document.getElementById('existingProfilesSelect').disabled = false;
+                                document.getElementById('updateGlobalSettingsBtn').disabled = false;
+
+                                await recordActiveUser();
+                                await loadUserProfile();
+                                await loadExistingProfiles(); // Load existing profiles for the dropdown
+                                await loadGlobalSettings();
+                                listenToActiveUsers();
+                            } else {
+                                // This case means auth succeeded but db failed to initialize (e.g., config missing)
+                                showMessage("Firebase Firestore غير مهيأ. بعض الميزات قد لا تعمل.", 'warning');
+                            }
+                        } else {
+                            userId = 'anonymous'; // Reset userId if signed out
+                            document.getElementById('userIdDisplay').textContent = 'غير مصادق';
+                            document.getElementById('adminUserIdDisplay').textContent = 'غير مصادق';
+                            console.log("حالة المصادقة: غير مصادق (anonymous).");
+                            showMessage("غير مصادق. بعض الميزات التي تتطلب تسجيل الدخول لن تعمل.", 'warning');
+
+                            // Disable profile buttons
+                            document.getElementById('saveProfileBtn').disabled = true;
+                            document.getElementById('loadNamedProfileBtn').disabled = true;
+                            document.getElementById('deleteProfileBtn').disabled = true;
+                            document.getElementById('existingProfilesSelect').disabled = true;
+                            document.getElementById('updateGlobalSettingsBtn').disabled = true;
+                        }
+                    });
+
+                } catch (e) {
+                    console.error("Error initializing Firebase:", e);
+                    showMessage(`خطأ في تهيئة Firebase: ${e.message}. يرجى التحقق من إعدادات Firebase الخاصة بك.`, 'error');
+                    document.getElementById('firebaseStatusDisplay').textContent = 'خطأ في الاتصال';
+                }
+            } else {
+                console.warn("Firebase configuration is missing or empty or still using placeholder. Firestore functionality will be limited.");
+                showMessage("لم يتم تهيئة Firebase. قد لا تعمل بعض الميزات أو حفظ البيانات. لتشغيل كامل، يرجى إضافة تهيئة Firebase الخاصة بك في الكود.", 'warning');
+                document.getElementById('firebaseStatusDisplay').textContent = 'غير متاح (لا يوجد تهيئة)';
+            }
+        }
+
+        // --- Firebase Authentication and User Management ---
+        async function authenticateUser() {
+            // Ensure Firebase is initialized before attempting authentication
+            if (!isFirebaseInitialized || !auth) {
+                console.warn("Firebase Auth is not initialized. Cannot authenticate.");
                 return;
             }
 
-            suggestionsContainer.classList.remove('hidden');
-            currentSuggestions.forEach((suggestion, index) => {
-                const div = document.createElement('div');
-                div.classList.add('autocomplete-suggestion-item', 'py-2', 'px-3', 'cursor-pointer', 'hover:bg-gray-100', 'text-sm', 'text-gray-700');
-                if (index === activeSuggestionIndex) {
-                    div.classList.add('active');
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("تم تسجيل الدخول باستخدام الرمز المميز المخصص.");
+                } else {
+                    await signInAnonymously(auth);
+                    console.log("تم تسجيل الدخول كمجهول.");
                 }
-                // Display both English and Arabic names
-                div.textContent = suggestion.name.join(' / '); 
-                div.addEventListener('click', () => {
-                    // When a suggestion is clicked, use the primary (English) name for consistency
-                    inputElement.value = suggestion.name[0];
-                    suggestionsContainer.classList.add('hidden');
-                    if (isPreferredOrExcluded) {
-                        if (inputElement.id === 'preferredIngredientInput') {
-                            addPreferredIngredientManually(suggestion.name[0]);
-                        } else if (inputElement.id === 'excludedIngredientInput') {
-                            addExcludedIngredientManually(suggestion.name[0]);
-                        }
-                    } else if (inputElement.id === 'quickIngredientSearchInput') { // For quick search
-                        performQuickIngredientSearch(suggestion.name[0]);
-                    }
-                });
-                suggestionsContainer.appendChild(div);
-            });
-        };
-
-        inputElement.addEventListener('input', () => {
-            const query = inputElement.value.trim().toLowerCase();
-            console.log(`Autocomplete input for ${inputElement.id}: "${query}"`); // Added log
-            if (query.length > 1) {
-                currentSuggestions = window.ingredientsDatabase.filter(ingredient =>
-                    // Match against any name in the array (English or Arabic)
-                    ingredient.name.some(n => n.toLowerCase().includes(query))
-                ).slice(0, 5); // Limit to top 5 suggestions
-                activeSuggestionIndex = -1;
-                console.log(`Filtered suggestions for ${inputElement.id}:`, currentSuggestions); // Added log
-                renderSuggestions();
-            } else {
-                currentSuggestions = [];
-                suggestionsContainer.classList.add('hidden');
+            } catch (error) {
+                console.error("Authentication error:", error);
+                showMessage(`فشل المصادقة: ${error.message}`, 'error');
             }
-        });
-
-        inputElement.addEventListener('keydown', (e) => {
-            if (currentSuggestions.length === 0) return;
-
-            if (e.key === 'ArrowDown') {
-                activeSuggestionIndex = (activeSuggestionIndex + 1) % currentSuggestions.length;
-                renderSuggestions();
-                e.preventDefault();
-            } else if (e.key === 'ArrowUp') {
-                activeSuggestionIndex = (activeSuggestionIndex - 1 + currentSuggestions.length) % currentSuggestions.length;
-                renderSuggestions();
-                e.preventDefault();
-            } else if (e.key === 'Enter') {
-                if (activeSuggestionIndex > -1) {
-                    // On Enter, use the primary (English) name
-                    inputElement.value = currentSuggestions[activeSuggestionIndex].name[0];
-                    suggestionsContainer.classList.add('hidden');
-                    if (isPreferredOrExcluded) {
-                        if (inputElement.id === 'preferredIngredientInput') {
-                            addPreferredIngredientManually(inputElement.value);
-                        } else if (inputElement.id === 'excludedIngredientInput') {
-                            addExcludedIngredientManually(inputElement.value);
-                        }
-                    } else if (inputElement.id === 'quickIngredientSearchInput') { // For quick search
-                        performQuickIngredientSearch(inputElement.value);
-                    }
-                } else if (inputElement.value.trim() !== '') { // If Enter is pressed without selecting a suggestion but input has value
-                    // This is the "auto-writing" part if the user presses enter directly
-                    if (isPreferredOrExcluded) {
-                        if (inputElement.id === 'preferredIngredientInput') {
-                            addPreferredIngredientManually(inputElement.value);
-                        } else if (inputElement.id === 'excludedIngredientInput') {
-                            addExcludedIngredientManually(inputElement.value);
-                        }
-                    } else if (inputElement.id === 'quickIngredientSearchInput') { // For quick search
-                        performQuickIngredientSearch(inputElement.value);
-                    }
-                }
-                e.preventDefault();
-            } else if (e.key === 'Escape') {
-                currentSuggestions = [];
-                suggestionsContainer.classList.add('hidden');
-            }
-        });
-
-        inputElement.addEventListener('blur', () => {
-            // Delay hiding to allow click on suggestions
-            setTimeout(() => {
-                suggestionsContainer.classList.add('hidden');
-            }, 100);
-        });
-    }
-
-
-    // Function to process raw ingredients input
-    function parseIngredients(rawInput) {
-        // Split by new line, comma, or semi-colon
-        const ingredientsArray = rawInput.split(/[\n,;]+/).map(item => item.trim()).filter(item => item !== '');
-        console.log("Parsed ingredients from input:", ingredientsArray); // Added log
-        return ingredientsArray;
-    }
-
-    // Function to analyze ingredients based on the database and user profile
-    async function analyzeIngredients() {
-        showApplicationMessage("جاري تحليل المكونات...", 'info');
-        const ingredientsInput = document.getElementById('ingredientsInput').value;
-        const parsedIngredients = parseIngredients(ingredientsInput);
-        const resultsContainer = document.getElementById('resultsContainer');
-        const ingredientListDiv = document.getElementById('ingredientList');
-        const summaryDiv = document.getElementById('summary');
-
-        ingredientListDiv.innerHTML = '';
-        summaryDiv.innerHTML = '';
-        resultsContainer.classList.remove('hidden');
-
-        if (parsedIngredients.length === 0) {
-            showApplicationMessage("الرجاء إدخال قائمة المكونات لتحليلها.", 'error');
-            return;
         }
 
-        // Get user skin profile
-        const skinType = document.getElementById('skinType').value;
-        const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
-        const isPregnant = document.getElementById('isPregnant').checked;
-        const userAge = parseInt(document.getElementById('userAge').value, 10);
-        const medicalConditions = document.getElementById('medicalConditionsInput').value.split(/[\n,;]+/).map(cond => cond.trim()).filter(cond => cond !== '');
-
-        // Get user hair profile (NEW)
-        const hairType = document.getElementById('hairType').value;
-        const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
+        // Removed global onAuthStateChanged listener as it's now inside initFirebase
+        // if (auth) { 
+        //     onAuthStateChanged(auth, async (user) => { /* ... */ });
+        // } else {
+        //     console.error("Firebase auth object is not available for onAuthStateChanged listener.");
+        // }
 
 
-        let goodIngredientsCount = 0;
-        let warningIngredientsCount = 0;
-        let harmfulIngredientsCount = 0;
-        let preferredMatchCount = 0;
-        let excludedMatchCount = 0;
+        // Record active users in Firestore (Public Data)
+        async function recordActiveUser() {
+            if (!db || !userId || userId === 'anonymous') return; // Ensure db is available
+            const userDocRef = doc(activeUsersCollectionRef, userId);
+            try {
+                await setDoc(userDocRef, {
+                    lastActive: new Date().toISOString(),
+                    // Optionally, add more user info if available and public
+                }, { merge: true });
+                console.log(`User ${userId} active status updated.`);
+            } catch (e) {
+                console.error("Error recording active user:", e);
+            }
+        }
 
-        const preferredIngredients = Array.from(document.querySelectorAll('#preferredIngredientsList .tag:not(.tag-excluded)')).map(tag => tag.dataset.value.toLowerCase());
-        const excludedIngredients = Array.from(document.querySelectorAll('#excludedIngredientsList .tag.tag-excluded')).map(tag => tag.dataset.value.toLowerCase());
-        console.log("User Preferred Ingredients:", preferredIngredients); // Added log
-        console.log("User Excluded Ingredients:", excludedIngredients); // Added log
+        // Listen to active users count (Public Data)
+        function listenToActiveUsers() {
+            if (!db) return; // Ensure db is available
+            onSnapshot(activeUsersCollectionRef, (snapshot) => {
+                const activeUsers = [];
+                snapshot.forEach(doc => {
+                    activeUsers.push(doc.id);
+                });
+                document.getElementById('activeUsersCount').textContent = activeUsers.length;
+                console.log("Active users:", activeUsers.length);
+            }, (error) => {
+                console.error("Error listening to active users:", error);
+            });
+        }
 
+        // --- Profile Management Functions ---
+        async function saveUserProfile(profileName) {
+            if (!db || !userId || userId === 'anonymous' || !userProfileRef) {
+                showMessage("يرجى تسجيل الدخول أو الاتصال بالإنترنت لحفظ ملفك الشخصي.", 'error');
+                return;
+            }
 
-        for (const inputIng of parsedIngredients) {
-            const ingredientHtml = document.createElement('div');
-            ingredientHtml.classList.add('p-3', 'rounded-lg', 'shadow-sm', 'border');
+            if (!profileName) {
+                showMessage("الرجاء إدخال اسم لملفك الشخصي للحفظ.", 'warning');
+                return;
+            }
 
-            const foundIngredient = window.ingredientsDatabase.find(dbIng =>
-                dbIng.name.some(n => inputIng.toLowerCase().includes(n.toLowerCase()))
-            );
+            const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
+            const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
+            const preferredIngredients = Array.from(document.querySelectorAll('#preferredIngredientsList .tag span:first-child')).map(span => span.textContent);
+            const excludedIngredients = Array.from(document.querySelectorAll('#excludedIngredientsList .tag span:first-child')).map(span => span.textContent);
 
-            let classificationText = 'غير معروف';
-            let descriptionText = 'لم يتم العثور على معلومات لهذا المكون.';
-            let textColorClass = 'text-gray-700';
-            let bgColorClass = 'bg-gray-100';
-            let borderColorClass = 'border-gray-200';
-            let personalizedNotes = [];
-            let isExcludedByProfile = false;
+            const profileData = {
+                profileName: profileName,
+                skinType: document.getElementById('skinType').value,
+                skinConcerns: skinConcerns,
+                userAge: parseInt(document.getElementById('userAge').value) || null,
+                isPregnant: document.getElementById('isPregnant').checked,
+                medicalConditions: document.getElementById('medicalConditionsInput').value,
+                userHeightCm: parseInt(document.getElementById('userHeightCm').value) || null,
+                currentWeightKg: parseFloat(document.getElementById('currentWeightKg').value) || null,
+                measurementDate: document.getElementById('measurementDate').value,
+                hairType: document.getElementById('hairType').value,
+                hairConcerns: hairConcerns,
+                preferredIngredients: preferredIngredients,
+                excludedIngredients: excludedIngredients,
+                skinCareNotes: document.getElementById('skinCareNotes').value, // New field
+                hairCareNotes: document.getElementById('hairCareNotes').value, // New field
+                lastSaved: new Date().toISOString()
+            };
 
-            console.log(`Analyzing "${inputIng}": Found in DB?`, !!foundIngredient); // Added log
+            try {
+                // Ensure the docRef points to a document under the user's profiles collection
+                const docRef = doc(collection(db, `artifacts/${appId}/users/${userId}/profiles`), profileName);
+                await setDoc(docRef, profileData, { merge: true });
+                showMessage(`تم حفظ الملف الشخصي "${profileName}" بنجاح!`, 'success');
+                await loadExistingProfiles(); // Refresh the dropdown
+            } catch (e) {
+                console.error("Error saving profile:", e);
+                showMessage(`خطأ في حفظ الملف الشخصي: ${e.message}`, 'error');
+            }
+        }
 
-            if (foundIngredient) {
-                classificationText = foundIngredient.classification;
-                descriptionText = foundIngredient.description;
+        async function loadUserProfile(profileName = null) {
+            if (!db || !userId || userId === 'anonymous') {
+                // This might be called before auth is ready, which is fine for initial setup
+                return;
+            }
 
-                // Check for general classification colors
-                if (foundIngredient.classification.includes('جيد')) {
-                    textColorClass = 'text-green-800';
-                    bgColorClass = 'bg-green-50';
-                    borderColorClass = 'border-green-200';
-                    goodIngredientsCount++;
-                } else if (foundIngredient.classification.includes('تحذير') || foundIngredient.classification.includes('ضار محتمل')) {
-                    textColorClass = 'text-yellow-800';
-                    bgColorClass = 'bg-yellow-50';
-                    borderColorClass = 'border-yellow-200';
-                    warningIngredientsCount++;
-                } else if (foundIngredient.classification.includes('يجب تجنبها')) {
-                    textColorClass = 'text-red-800';
-                    bgColorClass = 'bg-red-50';
-                    borderColorClass = 'border-red-200';
-                    harmfulIngredientsCount++;
-                } else if (foundIngredient.classification.includes('عضوي')) {
-                    textColorClass = 'text-blue-800';
-                    bgColorClass = 'bg-blue-50';
-                    borderColorClass = 'border-blue-200';
-                    goodIngredientsCount++; // Organic often implies good
-                }
+            let docToLoadRef;
+            if (profileName) {
+                docToLoadRef = doc(collection(db, `artifacts/${appId}/users/${userId}/profiles`), profileName);
+            } else {
+                // Default to 'myProfile' if no specific profileName is provided
+                docToLoadRef = doc(db, `artifacts/${appId}/users/${userId}/profiles/myProfile`);
+            }
 
-                // Apply specific skin_notes based on user skin profile
-                if (foundIngredient.skin_notes) {
-                    if (foundIngredient.skin_notes[skinType]) {
-                        personalizedNotes.push(`**للبشرة (${skinTypeDict[skinType]}):** ${foundIngredient.skin_notes[skinType]}`);
-                    }
-                    skinConcerns.forEach(concern => {
-                        if (foundIngredient.skin_notes[concern]) {
-                            personalizedNotes.push(`**لمشكلة البشرة (${skinConcernsDict[concern]}):** ${foundIngredient.skin_notes[concern]}`);
-                        }
+            try {
+                const docSnap = await getDoc(docToLoadRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('profileNameInput').value = data.profileName || '';
+                    document.getElementById('skinType').value = data.skinType || 'normal';
+                    document.getElementById('userAge').value = data.userAge || '';
+                    document.getElementById('isPregnant').checked = data.isPregnant || false;
+                    document.getElementById('medicalConditionsInput').value = data.medicalConditions || '';
+                    document.getElementById('userHeightCm').value = data.userHeightCm || '';
+                    document.getElementById('currentWeightKg').value = data.currentWeightKg || '';
+                    document.getElementById('measurementDate').value = data.measurementDate || '';
+                    document.getElementById('hairType').value = data.hairType || 'straight';
+                    document.getElementById('skinCareNotes').value = data.skinCareNotes || 'أضف منتجات العناية بالبشرة أو الملاحظات هنا...'; // Load new field
+                    document.getElementById('hairCareNotes').value = data.hairCareNotes || 'أضف منتجات العناية بالشعر أو الملاحظات هنا...'; // Load new field
+
+                    // Set skin concerns checkboxes
+                    document.querySelectorAll('.skin-concern-checkbox').forEach(cb => {
+                        cb.checked = data.skinConcerns && data.skinConcerns.includes(cb.value);
                     });
-                }
-
-                // Apply specific hair_notes based on user hair profile (NEW)
-                if (foundIngredient.hair_notes) {
-                    if (foundIngredient.hair_notes[hairType]) {
-                        personalizedNotes.push(`**للشعر (${hairTypeDict[hairType]}):** ${foundIngredient.hair_notes[hairType]}`);
-                    }
-                    hairConcerns.forEach(concern => {
-                        if (foundIngredient.hair_notes[concern]) {
-                            personalizedNotes.push(`**لمشكلة الشعر (${hairConcernsDict[concern]}):** ${foundIngredient.hair_notes[concern]}`);
-                        }
+                    // Set hair concerns checkboxes
+                    document.querySelectorAll('.hair-concern-checkbox').forEach(cb => {
+                        cb.checked = data.hairConcerns && data.hairConcerns.includes(cb.value);
                     });
-                }
 
-                // Check for pregnancy warnings
-                if (isPregnant && foundIngredient.pregnancy) {
-                    personalizedNotes.push(`<span class="text-red-600 font-semibold">تحذير الحمل: ${foundIngredient.pregnancy}</span>`);
-                    isExcludedByProfile = true; // Mark as problematic due to pregnancy
-                }
-
-                // Check against user's medical conditions (simplified check)
-                // Convert entered medical conditions to lowercase for matching
-                const lowerCaseMedicalConditions = medicalConditions.map(cond => cond.toLowerCase());
-                if (foundIngredient.medical_conditions_notes) {
-                    const relevantConditions = lowerCaseMedicalConditions.filter(cond => foundIngredient.medical_conditions_notes[cond]);
-                    if (relevantConditions.length > 0) {
-                        relevantConditions.forEach(cond => {
-                            personalizedNotes.push(`<span class="text-red-600 font-semibold">ملاحظة للحالة الصحية (${cond}):</span> ${foundIngredient.medical_conditions_notes[cond]}`);
-                            isExcludedByProfile = true;
+                    // Clear and re-add preferred ingredients
+                    document.getElementById('preferredIngredientsList').innerHTML = '';
+                    if (data.preferredIngredients) {
+                        data.preferredIngredients.forEach(ingredient => {
+                            addTag('preferredIngredientsList', ingredient);
                         });
                     }
-                }
-            }
-
-            // Check against user's preferred and excluded lists
-            if (preferredIngredients.includes(inputIng.toLowerCase())) {
-                personalizedNotes.push('<span class="text-green-600 font-semibold">مكون مفضل لديك.</span>');
-                preferredMatchCount++;
-            }
-            if (excludedIngredients.includes(inputIng.toLowerCase())) {
-                personalizedNotes.push('<span class="text-red-600 font-semibold">مكون مستبعد لديك!</span>');
-                isExcludedByProfile = true; // Mark as problematic
-                excludedMatchCount++;
-            }
-
-            // If an ingredient is marked as excluded by profile, override its classification color to red
-            if (isExcludedByProfile) {
-                textColorClass = 'text-red-800';
-                bgColorClass = 'bg-red-50';
-                borderColorClass = 'border-red-200';
-            }
-
-
-            ingredientHtml.classList.add(textColorClass, bgColorClass, borderColorClass);
-            ingredientHtml.innerHTML = `
-                <h3 class="font-semibold text-lg mb-1">${inputIng} <span class="text-base font-normal">(${classificationText})</span></h3>
-                <p>${descriptionText}</p>
-                ${personalizedNotes.length > 0 ? `<div class="mt-2 pt-2 border-t border-current/30 space-y-1">${personalizedNotes.map(note => `<p class="text-xs">${note}</p>`).join('')}</div>` : ''}
-            `;
-            ingredientListDiv.appendChild(ingredientHtml);
-        }
-
-        summaryDiv.innerHTML = `
-            <p>تم تحليل ${parsedIngredients.length} مكونًا.</p>
-            <p>مكونات جيدة: ${goodIngredientsCount}</p>
-            <p>مكونات تحذير/ضارة محتملة: ${warningIngredientsCount}</p>
-            <p>مكونات يجب تجنبها: ${harmfulIngredientsCount}</p>
-            <p>مكونات مطابقة لتفضيلاتك: ${preferredMatchCount}</p>
-            <p>مكونات مطابقة للمستبعدات: ${excludedMatchCount}</p>
-        `;
-        hideMessage(); // Hide loading message
-    }
-
-    // New Function: Perform Quick Ingredient Search
-    async function performQuickIngredientSearch(ingredientName = null) {
-        const inputElement = document.getElementById('quickIngredientSearchInput');
-        const searchIngredient = (ingredientName || inputElement.value).trim();
-        const resultContainer = document.getElementById('quickSearchResult');
-        resultContainer.innerHTML = '';
-        resultContainer.classList.remove('hidden', 'found', 'not-found');
-
-        if (!searchIngredient) {
-            resultContainer.classList.add('hidden');
-            return;
-        }
-
-        showApplicationMessage("جاري البحث عن المكون...", 'info');
-
-        // Get user skin profile
-        const skinType = document.getElementById('skinType').value;
-        const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
-        const isPregnant = document.getElementById('isPregnant').checked;
-        const userAge = parseInt(document.getElementById('userAge').value, 10);
-        const medicalConditions = document.getElementById('medicalConditionsInput').value.split(/[\n,;]+/).map(cond => cond.trim()).filter(cond => cond !== '');
-
-        // Get user hair profile
-        const hairType = document.getElementById('hairType').value;
-        const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
-
-        const preferredIngredients = Array.from(document.querySelectorAll('#preferredIngredientsList .tag:not(.tag-excluded)')).map(tag => tag.dataset.value.toLowerCase());
-        const excludedIngredients = Array.from(document.querySelectorAll('#excludedIngredientsList .tag.tag-excluded')).map(tag => tag.dataset.value.toLowerCase());
-
-        const foundIngredient = window.ingredientsDatabase.find(dbIng =>
-            dbIng.name.some(n => searchIngredient.toLowerCase().includes(n.toLowerCase()))
-        );
-        console.log(`Quick search for "${searchIngredient}": Found in DB?`, !!foundIngredient); // Added log
-
-        let classificationText = 'غير معروف';
-        let descriptionText = 'لم يتم العثور على معلومات لهذا المكون في قاعدة البيانات.';
-        let personalizedNotes = [];
-        let isExcludedByProfile = false;
-
-        if (foundIngredient) {
-            classificationText = foundIngredient.classification;
-            descriptionText = foundIngredient.description;
-
-            // Apply specific skin_notes based on user skin profile
-            if (foundIngredient.skin_notes) {
-                if (foundIngredient.skin_notes[skinType]) {
-                    personalizedNotes.push(`**للبشرة (${skinTypeDict[skinType]}):** ${foundIngredient.skin_notes[skinType]}`);
-                }
-                skinConcerns.forEach(concern => {
-                    if (foundIngredient.skin_notes[concern]) {
-                        personalizedNotes.push(`**لمشكلة البشرة (${skinConcernsDict[concern]}):** ${foundIngredient.skin_notes[concern]}`);
+                    // Clear and re-add excluded ingredients
+                    document.getElementById('excludedIngredientsList').innerHTML = '';
+                    if (data.excludedIngredients) {
+                        data.excludedIngredients.forEach(ingredient => {
+                            addTag('excludedIngredientsList', ingredient, 'excluded');
+                        });
                     }
-                });
-            }
+                    calculateIdealWeight(); // Recalculate after loading height
+                    calculateWeightToIdeal(); // Recalculate after loading weights
 
-            // Apply specific hair_notes based on user hair profile
-            if (foundIngredient.hair_notes) {
-                if (foundIngredient.hair_notes[hairType]) {
-                    personalizedNotes.push(`**للشعر (${hairTypeDict[hairType]}):** ${foundIngredient.hair_notes[hairType]}`);
-                }
-                hairConcerns.forEach(concern => {
-                    if (foundIngredient.hair_notes[concern]) {
-                        personalizedNotes.push(`**لمشكلة الشعر (${hairConcernsDict[concern]}):** ${foundIngredient.hair_notes[concern]}`);
-                    }
-                });
-            }
-
-            // Check for pregnancy warnings
-            if (isPregnant && foundIngredient.pregnancy) {
-                personalizedNotes.push(`<span class="text-red-600 font-semibold">تحذير الحمل: ${foundIngredient.pregnancy}</span>`);
-                isExcludedByProfile = true;
-            }
-
-            // Check against user's medical conditions
-            const lowerCaseMedicalConditions = medicalConditions.map(cond => cond.toLowerCase());
-            if (foundIngredient.medical_conditions_notes) {
-                const relevantConditions = lowerCaseMedicalConditions.filter(cond => foundIngredient.medical_conditions_notes[cond]);
-                if (relevantConditions.length > 0) {
-                    relevantConditions.forEach(cond => {
-                        personalizedNotes.push(`<span class="text-red-600 font-semibold">ملاحظة للحالة الصحية (${cond}):</span> ${foundIngredient.medical_conditions_notes[cond]}`);
-                        isExcludedByProfile = true;
-                    });
-                }
-            }
-
-            // Check against user's preferred and excluded lists
-            if (preferredIngredients.includes(searchIngredient.toLowerCase())) {
-                personalizedNotes.push('<span class="text-green-600 font-semibold">مكون مفضل لديك.</span>');
-            }
-            if (excludedIngredients.includes(searchIngredient.toLowerCase())) {
-                personalizedNotes.push('<span class="text-red-600 font-semibold">مكون مستبعد لديك!</span>');
-                isExcludedByProfile = true;
-            }
-
-            resultContainer.classList.add('found');
-            if (isExcludedByProfile || foundIngredient.classification.includes('تحذير') || foundIngredient.classification.includes('ضار محتمل') || foundIngredient.classification.includes('يجب تجنبها')) {
-                resultContainer.classList.remove('found');
-                resultContainer.classList.add('not-found'); // Using not-found for problematic ones
-            }
-
-            resultContainer.innerHTML = `
-                <h3 class="font-semibold text-lg mb-1">${searchIngredient} <span class="text-base font-normal">(${classificationText})</span></h3>
-                <p>${descriptionText}</p>
-                ${personalizedNotes.length > 0 ? `<div class="mt-2 pt-2 border-t border-current/30 space-y-1">${personalizedNotes.map(note => `<p class="text-xs">${note}</p>`).join('')}</div>` : ''}
-            `;
-        } else {
-            resultContainer.classList.add('not-found');
-            resultContainer.innerHTML = `
-                <h3 class="font-semibold text-lg mb-1">${searchIngredient}</h3>
-                <p>عذراً، لم يتم العثور على معلومات لهذا المكون في قاعدة البيانات.</p>
-                <p class="text-xs mt-2">قد يكون المكون غير شائع أو غير موجود في قائمة المكونات لدينا.</p>
-            `;
-        }
-        resultContainer.classList.remove('hidden');
-        hideMessage();
-    }
-
-
-    // Dictionaries for display
-    const skinTypeDict = {
-        normal: 'عادية',
-        oily: 'دهنية',
-        dry: 'جافة',
-        combination: 'مختلطة',
-        sensitive: 'حساسة'
-    };
-
-    const skinConcernsDict = {
-        acne: 'حب الشباب',
-        aging: 'الشيخوخة/التجاعيد',
-        pigmentation: 'التصبغات',
-        redness: 'الاحمرار',
-        dehydration: 'الجفاف'
-    };
-
-    // New Dictionaries for Hair Display
-    const hairTypeDict = {
-        straight: 'أملس',
-        wavy: 'متموج',
-        curly: 'كيرلي',
-        coily: 'أفرو / مجعد جداً'
-    };
-
-    const hairConcernsDict = {
-        dryness: 'جفاف',
-        oiliness: 'دهنية',
-        frizz: 'تجعد (Frizz)',
-        damage: 'تلف',
-        hair_loss: 'تساقط',
-        scalp_sensitivity: 'حساسية فروة الرأس'
-    };
-
-
-    // Function to add preferred ingredient tag
-    function addPreferredIngredientManually(value = null) {
-        const input = document.getElementById('preferredIngredientInput');
-        const ingredientText = value || input.value.trim();
-        if (ingredientText) {
-            const list = document.getElementById('preferredIngredientsList');
-            const newTag = document.createElement('span');
-            newTag.classList.add('tag');
-            newTag.dataset.value = ingredientText;
-            newTag.innerHTML = `
-                ${ingredientText} <span class="tag-remove" data-target="preferred">&times;</span>
-            `;
-            list.appendChild(newTag);
-            input.value = ''; // Clear input
-        }
-    }
-
-    // Function to add excluded ingredient tag
-    function addExcludedIngredientManually(value = null) {
-        const input = document.getElementById('excludedIngredientInput');
-        const ingredientText = value || input.value.trim();
-        if (ingredientText) {
-            const list = document.getElementById('excludedIngredientsList');
-            const newTag = document.createElement('span');
-            newTag.classList.add('tag', 'tag-excluded');
-            newTag.dataset.value = ingredientText;
-            newTag.innerHTML = `
-                ${ingredientText} <span class="tag-remove" data-target="excluded">&times;</span>
-            `;
-            list.appendChild(newTag);
-            input.value = ''; // Clear input
-        }
-    }
-
-    // Event listener for removing tags (delegated)
-    document.addEventListener('click', function(event) {
-        if (event.target.classList.contains('tag-remove')) {
-            event.target.closest('.tag').remove();
-        }
-    });
-
-    // Handle Image Upload and Scan (uses LLM)
-    const scanImageBtn = document.getElementById('scanImageBtn');
-    const imageUpload = document.getElementById('imageUpload');
-    const imagePreview = document.getElementById('imagePreview');
-    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
-    const scanLoadingSpinner = document.getElementById('scanLoadingSpinner');
-    const scanButtonText = document.getElementById('scanButtonText');
-    const ingredientsInputTextarea = document.getElementById('ingredientsInput');
-
-    let uploadedImageBase64 = null;
-    let uploadedImageMimeType = null; // New variable to store MIME type
-
-    imageUpload.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                uploadedImageBase64 = e.target.result.split(',')[1]; // Get base64 data
-                uploadedImageMimeType = file.type; // Store the actual MIME type
-                imagePreviewContainer.classList.remove('hidden');
-                scanImageBtn.disabled = false; // Enable scan button once image is loaded
-            };
-            reader.readAsDataURL(file);
-        } else {
-            imagePreview.src = '#';
-            uploadedImageBase64 = null;
-            uploadedImageMimeType = null; // Clear MIME type
-            imagePreviewContainer.classList.add('hidden');
-            scanImageBtn.disabled = true; // Disable scan button if no image
-        }
-    });
-
-    scanImageBtn.addEventListener('click', async () => {
-        if (!uploadedImageBase64 || !uploadedImageMimeType) { // Check for MIME type too
-            showApplicationMessage("الرجاء تحميل صورة لعبوة المنتج أولاً.", 'error');
-            return;
-        }
-
-        scanImageBtn.disabled = true;
-        scanButtonText.textContent = "جاري المسح...";
-        scanLoadingSpinner.classList.remove('hidden');
-        showApplicationMessage("جاري مسح المكونات من الصورة، قد يستغرق الأمر بعض الوقت...", 'info');
-
-        try {
-            const prompt = "استخرج قائمة المكونات من هذه الصورة. افصل كل مكون بفاصلة أو سطر جديد. قم بترجمة المكونات إلى اللغة العربية إذا كانت بلغة أخرى، مع الاحتفاظ بالاسم الأصلي إن أمكن. إذا لم تتمكن من تحديد المكونات، أعد رسالة خطأ واضحة.";
-            const apiKey = ""; // Canvas will provide this automatically if empty
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            { text: prompt },
-                            {
-                                inlineData: {
-                                    mimeType: uploadedImageMimeType, // Use the actual MIME type
-                                    data: uploadedImageBase64
-                                }
-                            }
-                        ]
-                    }
-                ],
-            };
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const result = await response.json();
-            console.log("LLM Image Scan Result:", result);
-
-            if (result.candidates && result.candidates.length > 0 &&
-                result.candidates[0].content && result.candidates[0].content.parts &&
-                result.candidates[0].content.parts.length > 0) {
-                const extractedText = result.candidates[0].content.parts[0].text;
-                ingredientsInputTextarea.value = extractedText;
-                showApplicationMessage("تم استخراج المكونات بنجاح من الصورة. يمكنك الآن تحليلها.", 'info');
-            } else {
-                showApplicationMessage("عذراً، لم نتمكن من استخراج المكونات من الصورة. يرجى التأكد من أن النص واضح ومقروء.", 'error');
-                console.error("LLM did not return expected content structure:", result);
-            }
-
-        } catch (error) {
-            console.error("Error scanning image with LLM:", error);
-            showApplicationMessage("حدث خطأ أثناء معالجة الصورة. يرجى المحاولة مرة أخرى.", 'error');
-        } finally {
-            scanImageBtn.disabled = false;
-            scanButtonText.textContent = "مسح وتحليل المكونات من الصورة";
-            scanLoadingSpinner.classList.add('hidden');
-        }
-    });
-
-    // Function to calculate and display ideal weight based on height and current weight
-    function calculateIdealWeight() {
-        const heightCm = parseFloat(userHeightCmInput.value);
-        const currentWeightKg = parseFloat(currentWeightKgInput.value);
-
-        if (isNaN(heightCm) || heightCm <= 0) {
-            idealWeightDisplay.textContent = 'أدخل طولك للحساب';
-            weightToIdealDisplay.textContent = 'أدخل طولك ووزنك للحساب';
-            return;
-        }
-
-        const heightMeters = heightCm / 100;
-        // Using BMI range for ideal weight (18.5 to 24.9)
-        const minIdealWeightKg = 18.5 * (heightMeters * heightMeters);
-        const maxIdealWeightKg = 24.9 * (heightMeters * heightMeters);
-
-        idealWeightDisplay.textContent = `يتراوح وزنك المثالي بين ${minIdealWeightKg.toFixed(1)} كجم و ${maxIdealWeightKg.toFixed(1)} كجم.`;
-
-        if (!isNaN(currentWeightKg) && currentWeightKg > 0) {
-            let weightDifferenceMessage = '';
-            if (currentWeightKg < minIdealWeightKg) {
-                const needed = (minIdealWeightKg - currentWeightKg).toFixed(1);
-                weightDifferenceMessage = `تحتاج لزيادة حوالي ${needed} كجم للوصول للحد الأدنى من الوزن المثالي.`;
-            } else if (currentWeightKg > maxIdealWeightKg) {
-                const needed = (currentWeightKg - maxIdealWeightKg).toFixed(1);
-                weightDifferenceMessage = `تحتاج لإنقاص حوالي ${needed} كجم للوصول للحد الأقصى من الوزن المثالي.`;
-            } else {
-                weightDifferenceMessage = 'وزنك الحالي ضمن النطاق الصحي للوزن المثالي! تهانينا.';
-            }
-            weightToIdealDisplay.textContent = weightDifferenceMessage;
-        } else {
-            weightToIdealDisplay.textContent = 'أدخل وزنك الحالي للحساب.';
-        }
-    }
-
-
-    // Firebase Initialization and Authentication
-    window.onload = async () => {
-        // Get DOM elements after the document is fully loaded
-        userIdDisplay = document.getElementById('userIdDisplay');
-        firebaseStatusDisplay = document.getElementById('firebaseStatusDisplay');
-        saveProfileBtn = document.getElementById('saveProfileBtn');
-        loadNamedProfileBtn = document.getElementById('loadNamedProfileBtn');
-        deleteProfileBtn = document.getElementById('deleteProfileBtn');
-        existingProfilesSelect = document.getElementById('existingProfilesSelect');
-        adminSettings = document.getElementById('adminSettings');
-        adminUserIdDisplay = document.getElementById('adminUserIdDisplay');
-        globalAnnouncementInput = document.getElementById('globalAnnouncementInput');
-        updateGlobalSettingsBtn = document.getElementById('updateGlobalSettingsBtn');
-        activeUsersCount = document.getElementById('activeUsersCount');
-        globalAnnouncement = document.getElementById('globalAnnouncement');
-        announcementText = document.getElementById('announcementText');
-        userHeightCmInput = document.getElementById('userHeightCm'); // Get reference
-        idealWeightDisplay = document.getElementById('idealWeightDisplay'); // Get reference
-        currentWeightKgInput = document.getElementById('currentWeightKg'); // NEW: Get reference
-        weightToIdealDisplay = document.getElementById('weightToIdealDisplay'); // NEW: Get reference
-        measurementDateInput = document.getElementById('measurementDate'); // NEW: Get reference
-
-        // Confirmation Modal elements
-        confirmationModal = document.getElementById('confirmationModal');
-        confirmationMessage = document.getElementById('confirmationMessage');
-        confirmYesBtn = document.getElementById('confirmYesBtn');
-        confirmNoBtn = document.getElementById('confirmNoBtn');
-
-        // Setup autocomplete for all relevant inputs
-        setupAutocomplete(document.getElementById('ingredientsInput'), document.getElementById('mainSuggestions'));
-        setupAutocomplete(document.getElementById('preferredIngredientInput'), document.getElementById('preferredSuggestions'), true);
-        setupAutocomplete(document.getElementById('excludedIngredientInput'), document.getElementById('excludedSuggestions'), true);
-        setupAutocomplete(document.getElementById('quickIngredientSearchInput'), document.getElementById('quickSearchSuggestions'));
-
-
-        // Attach event listeners
-        document.getElementById('analyzeButton').addEventListener('click', analyzeIngredients);
-        document.getElementById('addPreferredIngredient').addEventListener('click', () => addPreferredIngredientManually());
-        document.getElementById('addExcludedIngredient').addEventListener('click', () => addExcludedIngredientManually());
-        document.getElementById('showHelpBtn').addEventListener('click', () => {
-             showApplicationMessage("هذه الأداة تساعدك على تحليل مكونات منتجات العناية بالبشرة والشعر. قم بإدخال نوع بشرتك وشعرك واهتماماتهما، ثم الصق قائمة المكونات لتحليلها. يمكنك أيضاً مسح المكونات من صورة منتج، وحفظ/تحميل ملفاتك الشخصية، والاطلاع على إعلانات المسؤولين.", 'info');
-        });
-        document.getElementById('quickSearchBtn').addEventListener('click', () => performQuickIngredientSearch());
-        
-        // Attach event listener for height and current weight input
-        if (userHeightCmInput) {
-            userHeightCmInput.addEventListener('input', calculateIdealWeight);
-        }
-        if (currentWeightKgInput) {
-            currentWeightKgInput.addEventListener('input', calculateIdealWeight);
-        }
-
-        // Initialize date field with current date
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-        const day = String(today.getDate()).padStart(2, '0');
-        measurementDateInput.value = `${year}-${month}-${day}`;
-
-
-        if (window.isFirebaseConfigured) {
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                firebaseStatusDisplay.textContent = 'متصل';
-                firebaseStatusDisplay.classList.add('text-green-600');
-
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        currentUserId = user.uid;
-                        userIdDisplay.textContent = currentUserId;
-                        adminUserIdDisplay.textContent = currentUserId;
-                        isAuthReady = true;
-                        console.log("onAuthStateChanged: User is logged in. User ID:", currentUserId, "isAuthReady:", isAuthReady);
-
-
-                        // Check if current user is an admin
-                        const adminDocPath = `artifacts/${appId}/public/data/admin_roles/${currentUserId}`;
-                        console.log("Checking admin role at path:", adminDocPath);
-                        const adminDocRef = doc(db, adminDocPath);
-                        const adminDocSnap = await getDoc(adminDocRef);
-                        if (adminDocSnap.exists()) {
-                            isAdmin = true;
-                            adminSettings.classList.remove('hidden');
-                            showApplicationMessage("أنت الآن بصلاحيات المسؤول. يمكنك إدارة الإعلانات العامة.", 'info');
-                        } else {
-                            isAdmin = false;
-                            adminSettings.classList.add('hidden');
-                        }
-
-                        // Enable profile buttons once authenticated
-                        saveProfileBtn.disabled = false;
-                        loadNamedProfileBtn.disabled = false;
-                        deleteProfileBtn.disabled = false;
-                        existingProfilesSelect.disabled = false;
-
-                        // Load existing profiles on auth state change
-                        await loadUserProfiles();
-                        await setupPublicDataListeners(); // Setup listeners for dashboard data
-                    } else {
-                        // Not signed in, try anonymous sign-in or handle as anonymous
-                        console.log("onAuthStateChanged: No user found, attempting anonymous sign-in.");
-                        await signInAnonymously(auth);
-                        firebaseStatusDisplay.textContent = 'متصل (كمستخدم مجهول)';
-                        firebaseStatusDisplay.classList.remove('text-green-600');
-                        firebaseStatusDisplay.classList.add('text-yellow-600');
-                        currentUserId = auth.currentUser?.uid || crypto.randomUUID(); // Fallback if anonymous fails
-                        userIdDisplay.textContent = currentUserId;
-                        adminUserIdDisplay.textContent = currentUserId;
-                        isAuthReady = true; // Still ready for Firebase ops, just anonymous
-                        isAdmin = false; // Cannot be admin anonymously
-                        adminSettings.classList.add('hidden');
-                        showApplicationMessage("تم تسجيل الدخول كمستخدم مجهول. لا يمكن حفظ الملفات الشخصية إلا بعد تسجيل الدخول.", 'warning');
-
-                        // Disable profile buttons for anonymous users
-                        saveProfileBtn.disabled = true;
-                        loadNamedProfileBtn.disabled = true;
-                        deleteProfileBtn.disabled = true;
-                        existingProfilesSelect.disabled = true;
-
-                        await setupPublicDataListeners(); // Setup listeners for dashboard data even for anonymous
-                    }
-                });
-
-                // Initial sign-in with custom token if available
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        console.log("Attempting sign-in with custom token.");
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                        console.log("Signed in with custom token successfully.");
-                    } catch (signInError) { // Added catch block
-                        console.error("Error signing in with custom token:", signInError);
-                        showApplicationMessage("فشل تسجيل الدخول بالرمز المخصص. قد لا تعمل بعض الميزات.", 'error');
+                    if (profileName) {
+                        showMessage(`تم تحميل الملف الشخصي "${profileName}" بنجاح!`, 'success');
                     }
                 } else {
-                    console.log("No custom token provided, attempting anonymous sign-in.");
-                    await signInAnonymously(auth);
-                    console.log("Signed in anonymously.");
+                    if (profileName) {
+                        showMessage(`الملف الشخصي "${profileName}" غير موجود.`, 'warning');
+                    } else {
+                        console.log("No 'myProfile' found, creating a default one.");
+                        // Only create a default profile if db is available
+                        if (db) {
+                             await setDoc(docToLoadRef, { // Use docToLoadRef which is already 'myProfile'
+                                profileName: 'ملفي الشخصي الافتراضي',
+                                skinType: 'normal',
+                                skinConcerns: [],
+                                userAge: null,
+                                isPregnant: false,
+                                medicalConditions: '',
+                                userHeightCm: null,
+                                currentWeightKg: null,
+                                measurementDate: '',
+                                hairType: 'straight',
+                                hairConcerns: [],
+                                preferredIngredients: [],
+                                excludedIngredients: [],
+                                skinCareNotes: 'أضف منتجات العناية بالبشرة أو الملاحظات هنا...',
+                                hairCareNotes: 'أضف منتجات العناية بالشعر أو الملاحظات هنا...',
+                                lastSaved: new Date().toISOString()
+                            });
+                            await loadUserProfile(); // Load the newly created default profile
+                        }
+                    }
                 }
-
-                // Attach Firebase-related event listeners
-                saveProfileBtn.addEventListener('click', saveUserProfile);
-                loadNamedProfileBtn.addEventListener('click', () => loadUserProfile(document.getElementById('profileNameInput').value));
-                deleteProfileBtn.addEventListener('click', () => deleteUserProfile(document.getElementById('profileNameInput').value));
-                existingProfilesSelect.addEventListener('change', (event) => {
-                    document.getElementById('profileNameInput').value = event.target.value;
-                });
-                updateGlobalSettingsBtn.addEventListener('click', updateGlobalSettings);
-
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                firebaseStatusDisplay.textContent = 'فشل الاتصال';
-                firebaseStatusDisplay.classList.add('text-red-600');
-                showApplicationMessage("فشل الاتصال بخدمات Firebase. قد لا تعمل بعض الميزات.", 'error');
+            } catch (e) {
+                console.error("Error loading profile:", e);
+                showMessage(`خطأ في تحميل الملف الشخصي: ${e.message}`, 'error');
             }
-        } else {
-            firebaseStatusDisplay.textContent = 'غير متاح';
-            firebaseStatusDisplay.classList.add('text-red-600');
-            showApplicationMessage("خدمات Firebase غير مهيأة. لن تتوفر ميزات لوحة التحكم وحفظ/تحميل الملفات الشخصية.", 'warning');
-        }
-    };
-
-
-    async function saveUserProfile() {
-        console.log("saveUserProfile called. isAuthReady:", isAuthReady, "currentUserId:", currentUserId);
-        if (!isAuthReady || !currentUserId) {
-            showApplicationMessage("الرجاء تسجيل الدخول أولاً لحفظ ملفك الشخصي.", 'error');
-            return;
         }
 
-        const profileName = document.getElementById('profileNameInput').value.trim();
-        if (!profileName) {
-            showApplicationMessage("الرجاء إدخال اسم لملفك الشخصي.", 'warning');
-            return;
-        }
+        async function loadExistingProfiles() {
+            if (!db || !userId || userId === 'anonymous') return;
+            const selectElement = document.getElementById('existingProfilesSelect');
+            selectElement.innerHTML = '<option value="">لا توجد ملفات شخصية محفوظة</option>'; // Clear existing options
 
-        // Gather current skin profile data
-        const skinType = document.getElementById('skinType').value;
-        const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
-        const userAge = document.getElementById('userAge').value;
-        const isPregnant = document.getElementById('isPregnant').checked;
-        const medicalConditions = document.getElementById('medicalConditionsInput').value;
-        const userHeightCm = document.getElementById('userHeightCm').value; // Get height
-        const currentWeightKg = document.getElementById('currentWeightKg').value; // NEW: Get current weight
-        const measurementDate = document.getElementById('measurementDate').value; // NEW: Get measurement date
-
-
-        // Gather current hair profile data (NEW)
-        const hairType = document.getElementById('hairType').value; 
-        const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
-
-        // Gather preferred and excluded ingredients
-        const preferredIngredients = Array.from(document.querySelectorAll('#preferredIngredientsList .tag:not(.tag-excluded)')).map(tag => tag.dataset.value);
-        const excludedIngredients = Array.from(document.querySelectorAll('#excludedIngredientsList .tag.tag-excluded')).map(tag => tag.dataset.value);
-
-        const profileData = {
-            skinType: skinType,
-            skinConcerns: skinConcerns,
-            userAge: userAge,
-            isPregnant: isPregnant,
-            medicalConditions: medicalConditions,
-            userHeightCm: userHeightCm, // Save height
-            currentWeightKg: currentWeightKg, // NEW: Save current weight
-            measurementDate: measurementDate, // NEW: Save measurement date
-            hairType: hairType, 
-            hairConcerns: hairConcerns, 
-            preferredIngredients: preferredIngredients,
-            excludedIngredients: excludedIngredients,
-            timestamp: serverTimestamp()
-        };
-
-        try {
-            const profileDocPath = `artifacts/${appId}/users/${currentUserId}/skinProfiles/${profileName}`;
-            console.log("Attempting to save profile to path:", profileDocPath, "with data:", profileData);
-            const profileDocRef = doc(db, profileDocPath);
-            await setDoc(profileDocRef, profileData);
-            showApplicationMessage(`تم حفظ الملف الشخصي "${profileName}" بنجاح!`, 'info');
-            await loadUserProfiles(); // Refresh the list of profiles
-        } catch (error) {
-            console.error("Error saving profile:", error);
-            showApplicationMessage("فشل حفظ الملف الشخصي. يرجى المحاولة مرة أخرى.", 'error');
-        }
-    }
-
-    async function loadUserProfiles() {
-        console.log("loadUserProfiles called. isAuthReady:", isAuthReady, "currentUserId:", currentUserId);
-        if (!isAuthReady || !currentUserId) {
-            console.log("Firebase not ready or no user, cannot load profiles.");
-            existingProfilesSelect.innerHTML = '<option value="">لا توجد ملفات شخصية محفوظة</option>';
-            existingProfilesSelect.disabled = true;
-            return;
-        }
-
-        try {
-            const profilesCollectionPath = `artifacts/${appId}/users/${currentUserId}/skinProfiles`;
-            console.log("Attempting to load profiles from collection:", profilesCollectionPath);
-            const profilesCollectionRef = collection(db, profilesCollectionPath);
-            const querySnapshot = await getDocs(profilesCollectionRef);
-            existingProfilesSelect.innerHTML = ''; // Clear existing options
-            if (querySnapshot.empty) {
-                existingProfilesSelect.innerHTML = '<option value="">لا توجد ملفات شخصية محفوظة</option>';
-                existingProfilesSelect.disabled = true;
-                console.log("No profiles found for current user.");
-            } else {
-                existingProfilesSelect.disabled = false;
-                querySnapshot.forEach(doc => {
+            try {
+                const q = query(collection(db, `artifacts/${appId}/users/${userId}/profiles`));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    // No need to show message here, as the default option is "No saved profiles"
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
                     const option = document.createElement('option');
-                    option.value = doc.id;
+                    option.value = doc.id; // doc.id is the profile name
                     option.textContent = doc.id;
-                    existingProfilesSelect.appendChild(option);
+                    selectElement.appendChild(option);
                 });
-                showApplicationMessage("تم تحديث قائمة الملفات الشخصية.", 'info');
-                console.log("Profiles loaded successfully.");
+            } catch (e) {
+                console.error("Error fetching existing profiles:", e);
+                showMessage(`خطأ في جلب الملفات الشخصية المحفوظة: ${e.message}`, 'error');
             }
-        } catch (error) {
-            console.error("Error loading profiles:", error);
-            showApplicationMessage("فشل تحميل قائمة الملفات الشخصية.", 'error');
-            existingProfilesSelect.innerHTML = '<option value="">فشل التحميل</option>';
-            existingProfilesSelect.disabled = true;
-        }
-    }
-
-    async function loadUserProfile(profileName) {
-        console.log("loadUserProfile called for profile:", profileName, "isAuthReady:", isAuthReady, "currentUserId:", currentUserId);
-        if (!isAuthReady || !currentUserId) {
-            showApplicationMessage("الرجاء تسجيل الدخول أولاً لتحميل ملفك الشخصي.", 'error');
-            return;
         }
 
-        if (!profileName) {
-            showApplicationMessage("الرجاء اختيار أو إدخال اسم ملف شخصي لتحميله.", 'warning');
-            return;
-        }
-
-        try {
-            const profileDocPath = `artifacts/${appId}/users/${currentUserId}/skinProfiles/${profileName}`;
-            console.log("Attempting to get profile from path:", profileDocPath);
-            const profileDocRef = doc(db, profileDocPath);
-            const docSnap = await getDoc(profileDocRef);
-
-            if (docSnap.exists()) {
-                const profileData = docSnap.data();
-                console.log("Profile data loaded:", profileData);
-                
-                // Load Skin Profile Data
-                document.getElementById('skinType').value = profileData.skinType || 'normal';
-                document.querySelectorAll('.skin-concern-checkbox').forEach(cb => cb.checked = false);
-                (profileData.skinConcerns || []).forEach(concern => {
-                    const checkbox = document.querySelector(`.skin-concern-checkbox[value="${concern}"]`);
-                    if (checkbox) checkbox.checked = true;
-                });
-                document.getElementById('userAge').value = profileData.userAge || '';
-                document.getElementById('isPregnant').checked = profileData.isPregnant || false;
-                document.getElementById('medicalConditionsInput').value = profileData.medicalConditions || '';
-                document.getElementById('userHeightCm').value = profileData.userHeightCm || ''; // Load height
-                document.getElementById('currentWeightKg').value = profileData.currentWeightKg || ''; // NEW: Load current weight
-                document.getElementById('measurementDate').value = profileData.measurementDate || ''; // NEW: Load measurement date
-                calculateIdealWeight(); // Recalculate ideal weight after loading height and weight
-
-                // Load Hair Profile Data (NEW)
-                document.getElementById('hairType').value = profileData.hairType || 'straight';
-                document.querySelectorAll('.hair-concern-checkbox').forEach(cb => cb.checked = false);
-                (profileData.hairConcerns || []).forEach(concern => {
-                    const checkbox = document.querySelector(`.hair-concern-checkbox[value="${concern}"]`);
-                    if (checkbox) checkbox.checked = true;
-                });
-
-
-                // Clear and add preferred/excluded ingredients tags
-                document.getElementById('preferredIngredientsList').innerHTML = '';
-                (profileData.preferredIngredients || []).forEach(ing => addPreferredIngredientManually(ing));
-                
-                document.getElementById('excludedIngredientsList').innerHTML = '';
-                (profileData.excludedIngredients || []).forEach(ing => addExcludedIngredientManually(ing));
-
-                showApplicationMessage(`تم تحميل الملف الشخصي "${profileName}" بنجاح!`, 'info');
-            } else {
-                showApplicationMessage(`الملف الشخصي "${profileName}" غير موجود.`, 'error');
-                console.log("Profile document does not exist at path:", profileDocPath);
+        async function deleteUserProfile(profileName) {
+            if (!db || !userId || userId === 'anonymous' || !profileName) {
+                showMessage("يرجى تسجيل الدخول واختيار ملف شخصي للحذف.", 'error');
+                return;
             }
-        } catch (error) {
-            console.error("Error loading profile:", error);
-            showApplicationMessage("فشل تحميل الملف الشخصي. يرجى المحاولة مرة أخرى.", 'error');
-        }
-    }
-
-    async function deleteUserProfile(profileName) {
-        console.log("deleteUserProfile called for profile:", profileName, "isAuthReady:", isAuthReady, "currentUserId:", currentUserId);
-        if (!isAuthReady || !currentUserId) {
-            showApplicationMessage("الرجاء تسجيل الدخول أولاً لحذف ملفك الشخصي.", 'error');
-            return;
-        }
-
-        if (!profileName) {
-            showApplicationMessage("الرجاء اختيار أو إدخال اسم ملف شخصي لحذفه.", 'warning');
-            return;
-        }
-
-        const confirmDelete = await showConfirmationModal(`هل أنت متأكد أنك تريد حذف الملف الشخصي "${profileName}"؟`);
-        if (!confirmDelete) {
-            console.log("Profile deletion cancelled by user.");
-            return;
-        }
-
-        try {
-            const profileDocPath = `artifacts/${appId}/users/${currentUserId}/skinProfiles/${profileName}`;
-            console.log("Attempting to delete profile from path:", profileDocPath);
-            const profileDocRef = doc(db, profileDocPath);
-            await deleteDoc(profileDocRef);
-            showApplicationMessage(`تم حذف الملف الشخصي "${profileName}" بنجاح!`, 'info');
-            document.getElementById('profileNameInput').value = ''; // Clear input field
-            await loadUserProfiles(); // Refresh the list
-        } catch (error) {
-            console.error("Error deleting profile:", error);
-            showApplicationMessage("فشل حذف الملف الشخصي. يرجى المحاولة مرة أخرى.", 'error');
-        }
-    }
-
-
-    async function setupPublicDataListeners() {
-        if (!db) {
-            console.warn("Firestore instance not available, cannot set up public data listeners.");
-            return; 
-        }
-
-        // Listen for global announcement
-        // Path: artifacts/{appId}/public/data/app_settings/global_config
-        const globalSettingsDocPath = `artifacts/${appId}/public/data/app_settings/global_config`;
-        console.log("Setting up listener for global settings at:", globalSettingsDocPath);
-        const globalSettingsDocRef = doc(db, globalSettingsDocPath);
-        onSnapshot(globalSettingsDocRef, (docSnap) => {
-            if (docSnap.exists() && docSnap.data().announcement) {
-                announcementText.textContent = docSnap.data().announcement;
-                globalAnnouncement.classList.remove('hidden');
-                console.log("Global announcement updated:", docSnap.data().announcement);
-            } else {
-                globalAnnouncement.classList.add('hidden');
-                console.log("No global announcement or document does not exist.");
+            if (profileName === 'myProfile') {
+                showMessage("لا يمكنك حذف الملف الشخصي الافتراضي 'myProfile'.", 'warning');
+                return;
             }
-        }, (error) => {
-            console.error("Error listening to global settings:", error);
-        });
 
-        // Listen for active users count
-        // Path: artifacts/{appId}/public/data/active_users
-        const usersCollectionPath = `artifacts/${appId}/public/data/active_users`;
-        console.log("Setting up listener for active users count at:", usersCollectionPath);
-        const usersCollectionRef = collection(db, usersCollectionPath);
-        onSnapshot(usersCollectionRef, (snapshot) => {
-            activeUsersCount.textContent = snapshot.size;
-            console.log("Active users count updated:", snapshot.size);
-        }, (error) => {
-            console.error("Error listening to active users:", error);
-        });
+            const confirmed = await showConfirmationModal(`هل أنت متأكد أنك تريد حذف الملف الشخصي "${profileName}"؟`);
+            if (!confirmed) {
+                showMessage("تم إلغاء عملية الحذف.", 'info');
+                return;
+            }
 
-        // Update user's last active timestamp (every 30 seconds)
-        setInterval(async () => {
-            if (currentUserId && db) { 
-                try {
-                    // Path: artifacts/{appId}/public/data/active_users/{userId}
-                    const userStatusPath = `artifacts/${appId}/public/data/active_users/${currentUserId}`;
-                    // console.log("Updating user active status for:", userStatusPath); // Commented to avoid excessive logs
-                    const userStatusRef = doc(db, userStatusPath);
-                    await setDoc(userStatusRef, { lastActive: serverTimestamp() }, { merge: true });
-                } catch (error) {
-                    // This error might be frequent if rules are strict, so use warn
-                    console.warn("Could not update user active status (check permissions/network):", error);
+            try {
+                const docRef = doc(collection(db, `artifacts/${appId}/users/${userId}/profiles`), profileName);
+                await deleteDoc(docRef);
+                showMessage(`تم حذف الملف الشخصي "${profileName}" بنجاح!`, 'success');
+                await loadExistingProfiles(); // Refresh the dropdown
+                document.getElementById('profileNameInput').value = ''; // Clear input after deletion
+                // Optionally load default profile or clear fields
+            } catch (e) {
+                console.error("Error deleting profile:", e);
+                showMessage(`خطأ في حذف الملف الشخصي: ${e.message}`, 'error');
+            }
+        }
+
+
+        // --- Global Settings (Admin) ---
+        async function loadGlobalSettings() {
+            if (!db || !globalSettingsRef) return; // Ensure db is available
+            try {
+                const docSnap = await getDoc(globalSettingsRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.announcement) {
+                        document.getElementById('announcementText').textContent = data.announcement;
+                        document.getElementById('globalAnnouncement').classList.remove('hidden');
+                    } else {
+                        document.getElementById('globalAnnouncement').classList.add('hidden');
+                    }
+                    document.getElementById('globalAnnouncementInput').value = data.announcement || '';
                 }
+            } catch (e) {
+                console.error("Error loading global settings:", e);
+                showMessage(`خطأ في تحميل الإعدادات العامة: ${e.message}`, 'error');
             }
-        }, 30000); // Update every 30 seconds
-    }
-
-
-    async function updateGlobalSettings() {
-        console.log("updateGlobalSettings called. isAdmin:", isAdmin, "db initialized:", !!db);
-        if (!isAdmin) {
-            showApplicationMessage("ليس لديك صلاحيات المسؤول لتغيير الإعدادات العامة.", 'error');
-            return;
-        }
-        if (!db) {
-            showApplicationMessage("خدمات Firebase غير متوفرة.", 'error');
-            return;
         }
 
-        const announcementText = globalAnnouncementInput.value.trim();
-        try {
-            // Path: artifacts/{appId}/public/data/app_settings/global_config
-            const globalSettingsDocPath = `artifacts/${appId}/public/data/app_settings/global_config`;
-            console.log("Attempting to update global announcement at path:", globalSettingsDocPath, "with text:", announcementText);
-            const globalSettingsDocRef = doc(db, globalSettingsDocPath);
-            await setDoc(globalSettingsDocRef, { announcement: announcementText }, { merge: true });
-            showApplicationMessage("تم تحديث الإعلان العام بنجاح!", 'info');
-        } catch (error) {
-            console.error("Error updating global settings:", error);
-            showApplicationMessage("فشل تحديث الإعلان العام. يرجى المحاولة مرة أخرى.", 'error');
-        }
-    }
+        async function updateGlobalSettings() {
+            if (!db || !userId || userId === 'anonymous' || !globalSettingsRef) {
+                showMessage("لا يمكنك تحديث الإعدادات العامة بدون مصادقة.", 'error');
+                return;
+            }
 
-</script>
+            const announcementText = document.getElementById('globalAnnouncementInput').value;
+            try {
+                await setDoc(globalSettingsRef, { announcement: announcementText }, { merge: true });
+                showMessage("تم تحديث الإعلان العام بنجاح!", 'success');
+                await loadGlobalSettings(); // Refresh display
+            } catch (e) {
+                console.error("Error updating global settings:", e);
+                showMessage(`خطأ في تحديث الإعدادات العامة: ${e.message}`, 'error');
+            }
+        }
+
+        // --- Core Logic: Ingredient Analysis (Placeholder) ---
+        async function analyzeIngredients() {
+            const ingredientsInput = document.getElementById('ingredientsInput').value;
+            if (!ingredientsInput.trim()) {
+                showMessage("الرجاء إدخال قائمة المكونات لتحليلها.", 'warning');
+                return;
+            }
+
+            const analyzeButton = document.getElementById('analyzeIngredientsBtn');
+            const analyzeButtonText = document.getElementById('analyzeButtonText');
+            const analyzeLoadingSpinner = document.getElementById('analyzeLoadingSpinner');
+
+            analyzeButton.disabled = true;
+            analyzeButtonText.textContent = 'جاري التحليل...';
+            analyzeLoadingSpinner.classList.remove('hidden');
+
+            // Collect user profile data for context
+            const skinType = document.getElementById('skinType').value;
+            const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
+            const userAge = document.getElementById('userAge').value;
+            const isPregnant = document.getElementById('isPregnant').checked;
+            const medicalConditions = document.getElementById('medicalConditionsInput').value;
+            const hairType = document.getElementById('hairType').value;
+            const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
+            const preferredIngredients = Array.from(document.querySelectorAll('#preferredIngredientsList .tag span:first-child')).map(span => span.textContent);
+            const excludedIngredients = Array.from(document.querySelectorAll('#excludedIngredientsList .tag span:first-child')).map(span => span.textContent);
+
+            const prompt = `
+                حلل قائمة المكونات التالية لمنتج عناية بالبشرة أو الشعر. قدم ملخصًا للمكونات، ثم قائمة تفصيلية بكل مكون وفوائده/عيوبه بناءً على ملف المستخدم المقدم، وتوصيات مخصصة.
+                المكونات: ${ingredientsInput}
+                
+                ملف المستخدم:
+                نوع البشرة: ${skinType}
+                اهتمامات البشرة: ${skinConcerns.join(', ') || 'لا يوجد'}
+                العمر: ${userAge || 'غير محدد'}
+                هل حامل: ${isPregnant ? 'نعم' : 'لا'}
+                حالات طبية: ${medicalConditions || 'لا يوجد'}
+                نوع الشعر: ${hairType}
+                اهتمامات الشعر: ${hairConcerns.join(', ') || 'لا يوجد'}
+                المكونات المفضلة: ${preferredIngredients.join(', ') || 'لا يوجد'}
+                المكونات المستبعدة: ${excludedIngredients.join(', ') || 'لا يوجد'}
+
+                التنسيق المطلوب للرد (يجب أن يكون JSON):
+                {
+                    "summary": "ملخص عام للمكونات.",
+                    "breakdown": [
+                        {"ingredient": "اسم المكون", "analysis": "فوائده/عيوبه بناءً على ملف المستخدم"},
+                        ...
+                    ],
+                    "preferredMatches": ["مكون مفضل 1", "مكون مفضل 2"],
+                    "excludedMatches": ["مكون مستبعد 1", "مكون مستبعد 2"],
+                    "recommendations": "توصيات شخصية بناءً على التحليل وملف المستخدم."
+                }
+            `;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { 
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "summary": { "type": "STRING" },
+                                "breakdown": {
+                                    "type": "ARRAY",
+                                    "items": {
+                                        "type": "OBJECT",
+                                        "properties": {
+                                            "ingredient": { "type": "STRING" },
+                                            "analysis": { "type": "STRING" }
+                                        }
+                                    }
+                                },
+                                "preferredMatches": {
+                                    "type": "ARRAY",
+                                    "items": { "type": "STRING" }
+                                },
+                                "excludedMatches": {
+                                    "type": "ARRAY",
+                                    "items": { "type": "STRING" }
+                                },
+                                "recommendations": { "type": "STRING" }
+                            },
+                            "propertyOrdering": ["summary", "breakdown", "preferredMatches", "excludedMatches", "recommendations"]
+                        }
+                    }
+                };
+                const apiKey = ""; // Canvas will provide this at runtime
+                // Changed model to gemini-2.0-flash
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                console.log("Gemini API Raw Response (Analyze):", result); // Log raw response
+
+                if (response.ok) { // Check for successful HTTP status (2xx)
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const rawTextResponse = result.candidates[0].content.parts[0].text;
+                        console.log("Gemini API Raw Text Response (Analyze):", rawTextResponse);
+                        try {
+                            const jsonResponse = JSON.parse(rawTextResponse);
+                            displayAnalysisResults(jsonResponse);
+                            showMessage("تم التحليل بنجاح!", 'success');
+                        } catch (parseError) {
+                            console.error("Error parsing JSON from Gemini API (Analyze):", parseError, "Raw text:", rawTextResponse);
+                            showMessage("فشل التحليل: استجابة غير صالحة من النموذج (مشكلة في تنسيق JSON). يرجى التحقق من وحدة التحكم.", 'error');
+                        }
+                    } else {
+                        showMessage("فشل التحليل: لم يتم استلام استجابة صالحة من النموذج. يرجى التحقق من وحدة التحكم.", 'error');
+                        console.error("Invalid response structure:", result);
+                    }
+                } else { // Handle non-2xx HTTP responses
+                    const errorDetail = result.error ? result.error.message : JSON.stringify(result);
+                    showMessage(`خطأ في التحليل (${response.status}): ${errorDetail}. يرجى التحقق من الأذونات وحدود الاستخدام في Google Cloud Console.`, 'error');
+                    console.error("API error response:", result);
+                }
+            } catch (e) {
+                console.error("Error during ingredient analysis (fetch or network):", e);
+                showMessage(`خطأ في التحليل: ${e.message}. يرجى التحقق من اتصال الإنترنت وتفعيل Gemini API.`, 'error');
+            } finally {
+                analyzeButton.disabled = false;
+                analyzeButtonText.textContent = 'تحليل المكونات';
+                analyzeLoadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function displayAnalysisResults(results) {
+            document.getElementById('analysisResults').classList.remove('hidden');
+            document.getElementById('summaryText').textContent = results.summary || 'لا يوجد ملخص.';
+
+            const breakdownList = document.getElementById('breakdownList');
+            breakdownList.innerHTML = '';
+            if (results.breakdown && results.breakdown.length > 0) {
+                results.breakdown.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong class="text-emerald-700">${item.ingredient}:</strong> ${item.analysis}`;
+                    breakdownList.appendChild(li);
+                });
+            } else {
+                breakdownList.innerHTML = '<li>لا يوجد تفصيل للمكونات.</li>';
+            }
+
+            const preferredMatchList = document.getElementById('preferredMatchList');
+            preferredMatchList.innerHTML = '';
+            if (results.preferredMatches && results.preferredMatches.length > 0) {
+                results.preferredMatches.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    preferredMatchList.appendChild(li);
+                });
+            } else {
+                preferredMatchList.innerHTML = '<li>لم يتم العثور على مكونات مفضلة مطابقة.</li>';
+            }
+
+            const excludedMatchList = document.getElementById('excludedMatchList');
+            excludedMatchList.innerHTML = '';
+            if (results.excludedMatches && results.excludedMatches.length > 0) {
+                results.excludedMatches.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    excludedMatchList.appendChild(li);
+                });
+            } else {
+                excludedMatchList.innerHTML = '<li>لم يتم العثور على مكونات مستبعدة مطابقة.</li>';
+            }
+
+            document.getElementById('recommendationsText').textContent = results.recommendations || 'لا توجد توصيات.';
+        }
+
+        // --- Image Scanning (OCR + LLM) ---
+        async function scanImageForIngredients() {
+            const imageInput = document.getElementById('imageUpload');
+            const imageFile = imageInput.files[0];
+            if (!imageFile) {
+                showMessage("الرجاء تحديد صورة للمسح الضوئي.", 'warning');
+                return;
+            }
+
+            const scanButton = document.getElementById('scanImageBtn');
+            const scanButtonText = document.getElementById('scanButtonText');
+            const scanLoadingSpinner = document.getElementById('scanLoadingSpinner');
+
+            scanButton.disabled = true;
+            scanButtonText.textContent = 'جاري المسح...';
+            scanLoadingSpinner.classList.remove('hidden');
+
+            try {
+                // Read image as Base64
+                const reader = new FileReader();
+                reader.readAsDataURL(imageFile);
+                reader.onloadend = async () => {
+                    const base64ImageData = reader.result.split(',')[1]; // Get base64 string
+
+                    const prompt = "استخرج جميع مكونات المنتج من هذه الصورة في قائمة منسقة. اكتبها كمكونات فردية.";
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                    const payload = {
+                        contents: [
+                            {
+                                role: "user",
+                                parts: [
+                                    { text: prompt },
+                                    {
+                                        inlineData: {
+                                            mimeType: imageFile.type,
+                                            data: base64ImageData
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                    };
+                    const apiKey = ""; // Canvas will provide this at runtime
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    console.log("Gemini API Raw Response (Image Scan):", result); // Log raw response
+
+                    if (response.ok) { // Check for successful HTTP status (2xx)
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const extractedText = result.candidates[0].content.parts[0].text;
+                            document.getElementById('ingredientsInput').value = extractedText.trim();
+                            showMessage("تم استخراج المكونات بنجاح من الصورة!", 'success');
+                        } else {
+                            showMessage("فشل استخراج المكونات من الصورة.", 'error');
+                            console.error("Invalid response from image scan:", result);
+                        }
+                    } else {
+                        const errorDetail = result.error ? result.error.message : JSON.stringify(result);
+                        showMessage(`خطأ في مسح الصورة (${response.status}): ${errorDetail}. يرجى التحقق من الأذونات وحدود الاستخدام في Google Cloud Console.`, 'error');
+                        console.error("API error response (Image Scan):", result);
+                    }
+                };
+                reader.onerror = (error) => {
+                    console.error("خطأ في قراءة ملف الصورة.", 'error');
+                    showMessage("خطأ في قراءة ملف الصورة.", 'error');
+                };
+
+            } catch (e) {
+                console.error("Error during image scanning (fetch or network):", e);
+                showMessage(`خطأ في مسح الصورة: ${e.message}. يرجى التحقق من اتصال الإنترنت وتفعيل Gemini API.`, 'error');
+            } finally {
+                scanButton.disabled = false;
+                scanButtonText.textContent = 'مسح وتحليل المكونات من الصورة';
+                scanLoadingSpinner.classList.add('hidden');
+            }
+        }
+
+        // --- Quick Ingredient Lookup ---
+        async function quickIngredientLookup() {
+            const ingredientName = document.getElementById('quickIngredientSearchInput').value.trim();
+            if (!ingredientName) {
+                showMessage("الرجاء إدخال اسم المكون للبحث السريع.", 'warning');
+                return;
+            }
+
+            const searchResultDiv = document.getElementById('quickSearchResult');
+            searchResultDiv.classList.remove('hidden', 'found', 'not-found');
+            searchResultDiv.innerHTML = '<p class="text-gray-700">جاري البحث عن معلومات عن المكون...</p>';
+
+            // Get current user profile for personalized lookup
+            const skinType = document.getElementById('skinType').value;
+            const skinConcerns = Array.from(document.querySelectorAll('.skin-concern-checkbox:checked')).map(cb => cb.value);
+            const hairType = document.getElementById('hairType').value;
+            const hairConcerns = Array.from(document.querySelectorAll('.hair-concern-checkbox:checked')).map(cb => cb.value);
+            const isPregnant = document.getElementById('isPregnant').checked;
+
+            const prompt = `
+                قدم معلومات مفصلة عن المكون التالي: "${ingredientName}".
+                وضح فوائده واستخداماته الشائعة في منتجات العناية بالبشرة والشعر.
+                إذا كان المكون قد يكون ضارًا أو غير مناسبًا، اذكر ذلك بوضوح.
+                إذا كانت هناك أي اعتبارات خاصة لهذا المكون بناءً على ملف المستخدم التالي، يرجى ذكرها:
+                ملف المستخدم:
+                نوع البشرة: ${skinType}
+                اهتمامات البشرة: ${skinConcerns.join(', ') || 'لا يوجد'}
+                نوع الشعر: ${hairType}
+                اهتمامات الشعر: ${hairConcerns.join(', ') || 'لا يوجد'}
+                هل حامل: ${isPregnant ? 'نعم' : 'لا'}
+                
+                التنسيق المطلوب للرد (يجب أن يكون JSON):
+                {
+                    "ingredientName": "اسم المكون",
+                    "found": true/false,
+                    "description": "وصف عام",
+                    "benefits": ["فائدة 1", "فائدة 2"],
+                    "considerations": ["اعتبار 1", "اعتبار 2"],
+                    "suitability": "ملخص صلاحية المكون بناءً على ملف المستخدم."
+                }
+            `;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { 
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "ingredientName": { "type": "STRING" },
+                                "found": { "type": "BOOLEAN" },
+                                "description": { "type": "STRING" },
+                                "benefits": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "considerations": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "suitability": { "type": "STRING" }
+                            },
+                            "propertyOrdering": ["ingredientName", "found", "description", "benefits", "considerations", "suitability"]
+                        }
+                    }
+                };
+                const apiKey = ""; // Canvas will provide this at runtime
+                // Changed model to gemini-2.0-flash
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                console.log("Gemini API Raw Response (Quick Lookup):", result); // Log raw response
+
+                if (response.ok) { // Check for successful HTTP status (2xx)
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const rawTextResponse = result.candidates[0].content.parts[0].text;
+                        console.log("Gemini API Raw Text Response (Quick Lookup):", rawTextResponse);
+                        try {
+                            const jsonResponse = JSON.parse(rawTextResponse);
+                            displayQuickSearchResult(jsonResponse);
+                        } catch (parseError) {
+                            console.error("Error parsing JSON from Gemini API (Quick Lookup):", parseError, "Raw text:", rawTextResponse);
+                            searchResultDiv.innerHTML = `<p class="text-red-700">فشل البحث: استجابة غير صالحة من النموذج (مشكلة في تنسيق JSON). يرجى التحقق من وحدة التحكم.</p>`;
+                            searchResultDiv.classList.add('not-found');
+                        }
+                    } else {
+                        searchResultDiv.innerHTML = `<p class="text-red-700">لم يتم العثور على معلومات مفصلة عن "${ingredientName}". يرجى التحقق من وحدة التحكم.</p>`;
+                        searchResultDiv.classList.add('not-found');
+                    }
+                } else { // Handle non-2xx HTTP responses
+                    const errorDetail = result.error ? result.error.message : JSON.stringify(result);
+                    searchResultDiv.innerHTML = `<p class="text-red-700">حدث خطأ أثناء البحث (${response.status}): ${errorDetail}. يرجى التحقق من الأذونات وحدود الاستخدام في Google Cloud Console. هنا المشكلة في الأذونات.</p>`;
+                    searchResultDiv.classList.add('not-found');
+                    console.error("API error response:", result);
+                }
+            } catch (e) {
+                console.error("Error during quick lookup (fetch or network):", e);
+                searchResultDiv.innerHTML = `<p class="text-red-700">حدث خطأ أثناء البحث: ${e.message}. يرجى التحقق من اتصال الإنترنت وتفعيل Gemini API.</p>`;
+                searchResultDiv.classList.add('not-found');
+            }
+        }
+
+        function displayQuickSearchResult(result) {
+            const searchResultDiv = document.getElementById('quickSearchResult');
+            searchResultDiv.classList.remove('hidden', 'found', 'not-found');
+            searchResultDiv.innerHTML = ''; // Clear previous results
+
+            if (result.found) {
+                searchResultDiv.classList.add('found');
+                let benefitsHtml = result.benefits.length > 0 ? `<ul>${result.benefits.map(b => `<li>${b}</li>`).join('')}</ul>` : 'لا توجد فوائد مذكورة.';
+                let considerationsHtml = result.considerations.length > 0 ? `<ul>${result.considerations.map(c => `<li>${c}</li>`).join('')}</ul>` : 'لا توجد اعتبارات خاصة.';
+
+                searchResultDiv.innerHTML = `
+                    <h3 class="text-lg font-semibold text-emerald-800">${result.ingredientName}</h3>
+                    <p class="mb-2">${result.description}</p>
+                    <p><strong>الفوائد:</strong></p>
+                    ${benefitsHtml}
+                    <p class="mt-2"><strong>اعتبارات خاصة:</strong></p>
+                    ${considerationsHtml}
+                    <p class="mt-2"><strong>الصلاحية لملفك الشخصي:</strong> ${result.suitability}</p>
+                `;
+            } else {
+                searchResultDiv.classList.add('not-found');
+                searchResultDiv.innerHTML = `<p class="text-red-700">لم يتم العثور على معلومات مفصلة عن "${result.ingredientName}".</p>`;
+            }
+        }
+
+
+        // --- Autocomplete for Ingredients (Preferred, Excluded, Main Input) ---
+        // Placeholder for a comprehensive ingredient database
+        const allIngredients = [
+            // Base Ingredients
+            "Water", "Glycerin", "Aqua", "ماء", "جليسرين",
+
+            // Hydrators & Humectants
+            "Hyaluronic Acid", "Sodium Hyaluronate", "Sodium PCA", "Urea", "Panthenol", "Butylene Glycol", "Propylene Glycol", "Caprylic/Capric Triglyceride",
+            "حمض الهيالورونيك", "هيالورونات الصوديوم", "صوديوم PCA", "يوريا", "بانثينول", "بوتيلين جلايكول", "بروبيلين جلايكول", "كابريليك/كابريك ثلاثي الجليسريد",
+
+            // Actives - Vitamins & Antioxidants
+            "Niacinamide", "Vitamin C", "Ascorbic Acid", "Sodium Ascorbyl Phosphate", "Magnesium Ascorbyl Phosphate", "Tetrahexyldecyl Ascorbate",
+            "Vitamin E", "Tocopherol", "Vitamin A", "Retinol", "Retinaldehyde", "Tretinoin", "Retinyl Palmitate",
+            "Coenzyme Q10", "Ubiquinone", "Ferulic Acid", "Alpha Lipoic Acid", "Glutathione",
+            "نياسيناميد", "فيتامين سي", "حمض الأسكوربيك", "أسكوربيل فوسفات الصوديوم", "أسكوربيل فوسفات المغنيسيوم", "تيتراهيكسيل ديسيل أسكوربات",
+            "فيتامين هـ", "توكوفيرول", "فيتامين أ", "ريتينول", "ريتينالديهايد", "تريتينوين", "ريتينيل بالميتات",
+            "أنزيم Q10", "يوبيكوينون", "حمض الفيروليك", "حمض ألفا ليبويك", "جلوتاثيون",
+
+            // Actives - Acids (AHAs, BHAs, PHAs, others)
+            "Glycolic Acid", "Lactic Acid", "Mandelic Acid", "Citric Acid", "Malic Acid", "Tartaric Acid", "AHA",
+            "Salicylic Acid", "BHA",
+            "Gluconolactone", "Lactobionic Acid", "PHA",
+            "Azelaic Acid", "Tranexamic Acid", "Kojic Acid",
+            "حمض الجليكوليك", "حمض اللاكتيك", "حمض الماندليك", "حمض الستريك", "حمض الماليك", "حمض الطرطريك", "أحماض ألفا هيدروكسي",
+            "حمض الساليسيليك", "أحماض بيتا هيدروكسي",
+            "جلوكونولاكتون", "حمض اللاكتوبيونيك", "أحماض بولي هيدروكسي",
+            "حمض الأزيليك", "حمض الترانيكساميك", "حمض الكوجيك",
+
+            // Soothing & Calming Ingredients
+            "Aloe Vera", "Allantoin", "Bisabolol", "Centella Asiatica Extract", "Madecassoside", "Asiaticoside",
+            "Green Tea Extract", "Chamomile Extract", "Calendula Extract", "Oat Extract", "Licorice Root Extract",
+            "ألوفيرا", "آلانتوين", "بيسابولول", "مستخلص سنتيلا أسياتيكا", "ماديكاسوسايد", "أسياتيكوسايد",
+            "مستخلص الشاي الأخضر", "مستخلص البابونج", "مستخلص الآذريون", "مستخلص الشوفان", "مستخلص جذر عرق السوس",
+
+            // Oils & Emollients
+            "Shea Butter", "Cocoa Butter", "Jojoba Oil", "Argan Oil", "Coconut Oil", "Olive Oil", "Sunflower Seed Oil",
+            "Squalane", "Mineral Oil", "Petrolatum", "Dimethicone", "Cyclopentasiloxane", "Silicones",
+            "زبدة الشيا", "زبدة الكاكاو", "زيت الجوجوبا", "زيت الأرغان", "زيت جوز الهند", "زيت الزيتون", "زيت بذور عباد الشمس",
+            "سكوالين", "زيت معدني", "فازلين", "دايميثيكون", "سيكلوبنتاسيلوكسان", "سيليكونات",
+
+            // Peptides & Proteins
+            "Peptides", "Collagen", "Elastin", "Keratin", "Hydrolyzed Wheat Protein", "Hydrolyzed Soy Protein",
+            "ببتيدات", "كولاجين", "إيلاستين", "كيراتين", "بروتين القمح المتحلل", "بروتين الصويا المتحلل",
+
+            // Hair Specific Ingredients
+            "Biotin", "Caffeine", "Zinc Pyrithione", "Selenium Sulfide", "Ketoconazole", "Salicylic Acid (Hair)",
+            "Rosemary Oil", "Peppermint Oil", "Castor Oil", "Coconut Oil (Hair)", "Argan Oil (Hair)",
+            "بيوتين", "كافيين", "بيريثيون الزنك", "سيلينيد السيلينيوم", "كيتوكونازول", "حمض الساليسيليك (للشعر)",
+            "زيت إكليل الجبل", "زيت النعناع", "زيت الخروع", "زيت جوز الهند (للشعر)", "زيت الأرغان (للشعر)",
+
+            // Sunscreens
+            "Titanium Dioxide", "Zinc Oxide", "Avobenzone", "Oxybenzone", "Octinoxate", "Octisalate", "Homosalate",
+            "ثاني أكسيد التيتانيوم", "أكسيد الزنك", "أفوبنزون", "أوكسي بنزون", "أوكتينوكسات", "أوكتيسالات", "هوموسالات",
+
+            // Excluded/Problematic (examples, based on common concerns)
+            "Parfum", "Fragrance", "Alcohol Denat.", "Isopropyl Alcohol", "Sulfates", "Sodium Lauryl Sulfate", "Sodium Laureth Sulfate",
+            "Parabens", "Methylparaben", "Propylparaben", "Formaldehyde Releasers", "DMDM Hydantoin", "Imidazolidinyl Urea",
+            "Synthetic Dyes", "Phthalates", "Essential Oils", "Synthetic Fragrance", "BHT", "BHA (Preservative)",
+            "عطر", "عطور", "كحول دينات", "كحول أيزوبروبيل", "كبريتات", "كبريتات لوريل الصوديوم", "كبريتات لوريث الصوديوم",
+            "بارابين", "ميثيل بارابين", "بروبيل بارابين", "مطلقات الفورمالديهايد", "دي إم دي إم هيدانتوين", "يوريا إيميدازوليدينيل",
+            "أصباغ صناعية", "فثالات", "زيوت أساسية", "عطر صناعي", "BHT", "BHA (مادة حافظة)",
+
+            // Other widely known ingredients
+            "Ceramides", "Snail Secretion Filtrate", "Saccharide Isomerate", "Probiotics", "Prebiotics",
+            "Adenosine", "Alpha Arbutin", "Glycyrrhiza Glabra Root Extract", "Tranexamic Acid", "Bakuchiol",
+            "ألفا أربوتين", "أدينوسين", "مرشح إفراز الحلزون", "سكاريد أيزوميرات", "بروبيوتيك", "بريبايوتيك",
+            "مستخلص جذر عرق السوس", "حمض الترانيكساميك", "باكوشيول"
+        ].sort(); // Sort alphabetically for consistent suggestions
+
+
+        let currentActiveSuggestion = -1; // For keyboard navigation
+
+        function setupAutocomplete(inputId, suggestionsId, addFunction) {
+            const inputElement = document.getElementById(inputId);
+            const suggestionsContainer = document.getElementById(suggestionsId);
+
+            inputElement.addEventListener('input', () => {
+                const query = inputElement.value.toLowerCase();
+                suggestionsContainer.innerHTML = '';
+                currentActiveSuggestion = -1;
+
+                if (query.length < 2) { // Start suggesting after 2 characters
+                    suggestionsContainer.classList.add('hidden');
+                    return;
+                }
+
+                const filteredSuggestions = allIngredients.filter(ingredient =>
+                    ingredient.toLowerCase().includes(query)
+                ).slice(0, 5); // Limit to 5 suggestions
+
+                if (filteredSuggestions.length > 0) {
+                    suggestionsContainer.classList.remove('hidden');
+                    filteredSuggestions.forEach((suggestion, index) => {
+                        const item = document.createElement('div');
+                        item.classList.add('autocomplete-suggestion-item');
+                        item.textContent = suggestion;
+                        item.addEventListener('click', () => {
+                            inputElement.value = suggestion;
+                            addFunction(); // Trigger add function
+                            suggestionsContainer.classList.add('hidden');
+                        });
+                        suggestionsContainer.appendChild(item);
+                    });
+                } else {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            inputElement.addEventListener('keydown', (e) => {
+                const items = Array.from(suggestionsContainer.children);
+                if (items.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    currentActiveSuggestion = (currentActiveSuggestion + 1) % items.length;
+                    highlightSuggestion(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    currentActiveSuggestion = (currentActiveSuggestion - 1 + items.length) % items.length;
+                    highlightSuggestion(items);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentActiveSuggestion > -1) {
+                        items[currentActiveSuggestion].click();
+                    } else {
+                        addFunction(); // If no suggestion selected, add current input
+                    }
+                    suggestionsContainer.classList.add('hidden');
+                } else if (e.key === 'Escape') {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!inputElement.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+
+            function highlightSuggestion(items) {
+                items.forEach((item, index) => {
+                    if (index === currentActiveSuggestion) {
+                        item.classList.add('active');
+                        inputElement.value = item.textContent; // Update input with highlighted suggestion
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // --- Tag Management ---
+        function addTag(listId, ingredientName, type = 'preferred') {
+            const listElement = document.getElementById(listId);
+            const tag = document.createElement('span');
+            tag.classList.add('tag', 'transition-all', 'duration-200');
+            if (type === 'excluded') {
+                tag.classList.add('tag-excluded');
+            }
+            tag.innerHTML = `<span>${ingredientName}</span><span class="tag-remove">&times;</span>`;
+            
+            tag.querySelector('.tag-remove').addEventListener('click', () => {
+                tag.remove();
+            });
+            listElement.appendChild(tag);
+        }
+
+        // --- BMI / Weight Calculations ---
+        function calculateIdealWeight() {
+            const heightCm = parseFloat(document.getElementById('userHeightCm').value);
+            const idealWeightDisplay = document.getElementById('idealWeightDisplay');
+
+            if (heightCm > 0) {
+                // Using Devine formula for ideal weight (approximation for adults)
+                // For men: 50 kg + 2.3 kg for each inch over 5 feet
+                // For women: 45.5 kg + 2.3 kg for each inch over 5 feet
+                // Assuming a generic average for simplicity, or could prompt for gender
+                // Let's use a simpler BMI-based approximation for a healthy range
+                // Healthy BMI is 18.5 to 24.9
+                // Weight (kg) = BMI * (Height in meters)^2
+                const heightM = heightCm / 100;
+                const minIdealWeight = 18.5 * (heightM * heightM);
+                const maxIdealWeight = 24.9 * (heightM * heightM);
+                idealWeightDisplay.textContent = `${minIdealWeight.toFixed(1)} - ${maxIdealWeight.toFixed(1)} كجم`;
+            } else {
+                idealWeightDisplay.textContent = 'أدخل طولك للحساب';
+            }
+            calculateWeightToIdeal(); // Recalculate when height changes
+        }
+
+        function calculateWeightToIdeal() {
+            const heightCm = parseFloat(document.getElementById('userHeightCm').value);
+            const currentWeightKg = parseFloat(document.getElementById('currentWeightKg').value);
+            const weightToIdealDisplay = document.getElementById('weightToIdealDisplay');
+
+            if (heightCm > 0 && currentWeightKg > 0) {
+                const heightM = heightCm / 100;
+                const bmi = currentWeightKg / (heightM * heightM);
+                const idealBMI = 22; // Mid-point of healthy BMI range
+                const targetIdealWeight = idealBMI * (heightM * heightM);
+                const difference = currentWeightKg - targetIdealWeight;
+
+                if (Math.abs(difference) < 0.5) { // Within a small tolerance
+                    weightToIdealDisplay.textContent = 'أنت قريب جداً من الوزن المثالي!';
+                    weightToIdealDisplay.classList.remove('text-red-700', 'text-green-700');
+                    weightToIdealDisplay.classList.add('text-blue-700');
+                } else if (difference > 0) {
+                    weightToIdealDisplay.textContent = `${difference.toFixed(1)} كجم فوق الوزن المثالي`;
+                    weightToIdealDisplay.classList.remove('text-green-700', 'text-blue-700');
+                    weightToIdealDisplay.classList.add('text-red-700');
+                } else {
+                    weightToIdealDisplay.textContent = `${Math.abs(difference).toFixed(1)} كجم متبقية للوزن المثالي`;
+                    weightToIdealDisplay.classList.remove('text-red-700', 'text-blue-700');
+                    weightToIdealDisplay.classList.add('text-green-700');
+                }
+            } else {
+                weightToIdealDisplay.textContent = 'أدخل طولك ووزنك للحساب';
+                weightToIdealDisplay.classList.remove('text-red-700', 'text-green-700', 'text-blue-700');
+            }
+        }
+
+        /**
+         * Function to load AdSense ads.
+         * This should be called after the DOM is fully loaded and elements have their sizes.
+         */
+        function loadAdSenseAds() {
+            if (typeof window.adsbygoogle !== 'undefined') {
+                setTimeout(() => { // Add a small delay to ensure layout is settled
+                    document.querySelectorAll('ins.adsbygoogle').forEach(ins => {
+                        // Check if the ad has already been loaded for this slot
+                        if (ins.getAttribute('data-ad-loaded') === 'true') {
+                            console.log('AdSense already loaded for slot:', ins.getAttribute('data-ad-slot'));
+                            return; // Skip if already loaded
+                        }
+                        
+                        // Check if the element has a non-zero width
+                        if (ins.offsetWidth > 0) {
+                            try {
+                                (window.adsbygoogle = window.adsbygoogle || []).push({});
+                                ins.setAttribute('data-ad-loaded', 'true'); // Mark as loaded
+                                console.log('AdSense pushed for slot:', ins.getAttribute('data-ad-slot'));
+                            } catch (e) {
+                                console.error('Error pushing AdSense ad:', e);
+                            }
+                        } else {
+                            console.warn('AdSense slot has zero width, skipping:', ins.getAttribute('data-ad-slot'), 'offsetWidth:', ins.offsetWidth);
+                            // Optionally, you could retry pushing these later with another setTimeout or an Intersection Observer
+                        }
+                    });
+                }, 1000); // Increased delay to 1000ms for better layout stability
+            } else {
+                console.warn('adsbygoogle script not loaded yet or blocked.');
+            }
+        }
+
+        // --- Event Listeners ---
+        window.onload = async () => {
+            // Initialize Firebase first
+            initFirebase();
+            
+            // Then, authenticate the user. This relies on 'auth' being initialized by initFirebase.
+            if (isFirebaseInitialized) {
+                await authenticateUser();
+            } else {
+                console.error("Firebase was not initialized. Authentication skipped.");
+            }
+
+            // Set up event listeners for profile management
+            document.getElementById('saveProfileBtn').addEventListener('click', () => {
+                const profileName = document.getElementById('profileNameInput').value;
+                if (profileName) {
+                    saveUserProfile(profileName);
+                } else {
+                    showMessage("الرجاء إدخال اسم لملفك الشخصي للحفظ.", 'warning');
+                }
+            });
+
+            document.getElementById('loadNamedProfileBtn').addEventListener('click', () => {
+                const selectedProfile = document.getElementById('existingProfilesSelect').value;
+                if (selectedProfile) {
+                    loadUserProfile(selectedProfile);
+                } else {
+                    showMessage("الرجاء اختيار ملف شخصي للتحميل.", 'warning');
+                }
+            });
+
+            document.getElementById('deleteProfileBtn').addEventListener('click', () => {
+                const selectedProfile = document.getElementById('existingProfilesSelect').value;
+                if (selectedProfile) {
+                    deleteUserProfile(selectedProfile);
+                } else {
+                    showMessage("الرجاء اختيار ملف شخصي للحذف.", 'warning');
+                }
+            });
+
+            document.getElementById('existingProfilesSelect').addEventListener('change', (e) => {
+                const selectedProfile = e.target.value;
+                document.getElementById('profileNameInput').value = selectedProfile; // Update input with selected profile name
+            });
+
+
+            // Set up event listeners for admin settings
+            document.getElementById('updateGlobalSettingsBtn').addEventListener('click', updateGlobalSettings);
+
+            // Set up event listeners for core features
+            document.getElementById('analyzeIngredientsBtn').addEventListener('click', analyzeIngredients);
+            document.getElementById('scanImageBtn').addEventListener('click', scanImageForIngredients);
+            document.getElementById('quickSearchBtn').addEventListener('click', quickIngredientLookup);
+
+            // Image upload preview
+            document.getElementById('imageUpload').addEventListener('change', (event) => {
+                const [file] = event.target.files;
+                if (file) {
+                    const preview = document.getElementById('imagePreview');
+                    const container = document.getElementById('imagePreviewContainer');
+                    preview.src = URL.createObjectURL(file);
+                    container.classList.remove('hidden');
+                } else {
+                    document.getElementById('imagePreviewContainer').classList.add('hidden');
+                }
+            });
+
+            // Autocomplete setup
+            setupAutocomplete('preferredIngredientInput', 'preferredSuggestions', () => {
+                const input = document.getElementById('preferredIngredientInput');
+                if (input.value.trim()) {
+                    addTag('preferredIngredientsList', input.value.trim());
+                    input.value = '';
+                }
+            });
+            setupAutocomplete('excludedIngredientInput', 'excludedSuggestions', () => {
+                const input = document.getElementById('excludedIngredientInput');
+                if (input.value.trim()) {
+                    addTag('excludedIngredientsList', input.value.trim(), 'excluded');
+                    input.value = '';
+                }
+            });
+            setupAutocomplete('quickIngredientSearchInput', 'quickSearchSuggestions', quickIngredientLookup);
+            setupAutocomplete('ingredientsInput', 'mainIngredientSuggestions', () => { /* no direct add needed for main input */ });
+
+
+            // BMI/Weight calculations on input change
+            document.getElementById('userHeightCm').addEventListener('input', calculateIdealWeight);
+            document.getElementById('currentWeightKg').addEventListener('input', calculateWeightToIdeal);
+
+            // Help button functionality
+            document.getElementById('showHelpBtn').addEventListener('click', () => {
+                showMessage(`
+                    مرحباً بك في أداة مقارنة المكونات الذكي!
+                    1. لوحة التحكم: تعرض عدد المستخدمين النشطين وتسمح للمسؤولين بإضافة إعلانات عامة.
+                    2. إدارة الملفات الشخصية: احفظ، حمل، واحذف ملفاتك الشخصية.
+                    3. مسح المكونات من صورة: حمل صورة لملصق المكونات وسنقوم باستخراجها لك.
+                    4. البحث السريع عن مكون: ابحث عن معلومات فورية عن مكون واحد.
+                    5. ملفك الشخصي للبشرة والشعر: أدخل معلوماتك لتخصيص التحليل.
+                    6. المكونات المفضلة/المستبعدة: أضف المكونات التي تفضلها أو تتحسس منها.
+                    7. تحليل المكونات: الصق قائمة المكونات لتحليلها بناءً على ملفك الشخصي.
+                `, 'info');
+            });
+
+            // Load AdSense ads after all other DOM content and layout have settled
+            loadAdSenseAds();
+        };
+    </script>
+</body>
+</html>
