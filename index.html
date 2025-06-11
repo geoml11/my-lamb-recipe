@@ -202,6 +202,65 @@
             gap: 1rem;
             margin-top: 1.5rem;
         }
+
+        /* Collapsible Section Styles */
+        .collapsible-header {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #e0f2f7; /* Light blue-gray for headers */
+            color: #0c4a6e; /* Darker blue-gray text */
+            border-radius: 0.75rem; /* rounded-xl */
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            border: 1px solid #a7d9ee; /* Light border */
+        }
+        .collapsible-header:hover {
+            background-color: #d1ecf4; /* Lighter hover */
+        }
+        .collapsible-header.active {
+            background-color: #a7d9ee; /* Active header color */
+            border-color: #4fb3e3; /* Darker active border */
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+            padding: 0 1rem; /* Adjust padding for collapsed state */
+            box-sizing: border-box;
+        }
+        .collapsible-content.open {
+            max-height: 1000px; /* Arbitrary large value, adjust as needed */
+            opacity: 1;
+            padding: 1rem; /* Restore padding when open */
+            margin-bottom: 1rem; /* Add margin after content */
+            border: 1px solid #d1ecf4; /* Light border around open content */
+            border-top: none; /* No top border, as header has one */
+            border-radius: 0 0 0.75rem 0.75rem; /* Rounded only at bottom */
+            background-color: white; /* Content background */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Shadow below content */
+        }
+
+        .collapsible-header svg.icon-arrow {
+            transition: transform 0.3s ease;
+        }
+        .collapsible-header.active svg.icon-arrow {
+            transform: rotate(90deg); /* Rotate arrow when open (for RTL) */
+        }
+        .collapsible-header .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* Space between icon and text */
+        }
+        .collapsible-header .section-title svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
     </style>
     <!-- PWA: Link to manifest.json (removed for local file system CORS issue) -->
     <!-- <link rel="manifest" href="/manifest.json"> -->
@@ -224,6 +283,11 @@
         <span class="font-semibold">مساعدة</span>
     </button>
 
+    <!-- Sign In/Sign Out Button - New -->
+    <button id="signInSignOutBtn" class="absolute top-4 right-4 bg-gray-600 text-white py-2 px-3 rounded-full shadow-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-300 z-50 flex items-center gap-1 text-sm">
+        <span class="font-semibold">جاري التحقق...</span>
+    </button>
+
     <!-- Main Application Content (Always visible now) -->
     <div id="mainAppContent" class="w-full max-w-2xl mx-auto p-4 md:p-6 bg-white rounded-2xl shadow-xl border border-green-200 relative">
         <!-- Hero Section -->
@@ -236,367 +300,535 @@
             </p>
         </div>
 
-        <!-- Dashboard Section -->
-        <div class="mb-6 p-4 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200">
-            <h2 class="text-xl font-bold text-indigo-700 mb-3 text-center">لوحة التحكم</h2>
-            <p class="text-sm text-gray-700 mb-2 text-center">
-                <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-lg">0</span>
-            </p>
-            <div id="globalAnnouncement" class="p-2 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-3 hidden text-sm">
-                <p class="font-semibold">إعلان عام:</p>
-                <p id="announcementText" class="italic"></p>
-            </div>
-            
-            <!-- Admin settings are now always visible in this admin version -->
-            <div id="adminSettings" class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300">
-                <h3 class="text-lg font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول (تحديد إعلان عام)</h3>
-                <p class="text-xs text-gray-700 mb-3 text-center">
-                    معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
-                </p>
-                <div class="mb-3">
-                    <label for="globalAnnouncementInput" class="block text-gray-700 text-xs font-semibold mb-1">رسالة الإعلان العامة:</label>
-                    <input type="text" id="globalAnnouncementInput" class="w-full p-2 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا">
+        <!-- Collapsible Section: Dashboard -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="dashboardContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10v11h18V10M3 10L12 3l9 7M3 10h18"></path>
+                    </svg>
+                    لوحة التحكم
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="dashboardContent" class="collapsible-content open">
+                <div class="p-4 bg-indigo-50 rounded-xl shadow-sm border border-indigo-200">
+                    <h2 class="text-xl font-bold text-indigo-700 mb-3 text-center">لوحة التحكم</h2>
+                    <p class="text-sm text-gray-700 mb-2 text-center">
+                        <span class="font-semibold">عدد المستخدمين النشطين:</span> <span id="activeUsersCount" class="font-mono text-indigo-800 text-lg">0</span>
+                    </p>
+                    <div id="globalAnnouncement" class="p-2 bg-blue-100 border border-blue-400 text-blue-800 rounded-lg text-center mt-3 hidden text-sm">
+                        <p class="font-semibold">إعلان عام:</p>
+                        <p id="announcementText" class="italic"></p>
+                    </div>
+                    
+                    <!-- Admin settings are now always visible in this admin version -->
+                    <div id="adminSettings" class="mt-4 p-3 bg-indigo-100 rounded-lg border border-indigo-300 hidden"> <!-- Initially hidden, but made visible by JS -->
+                        <h3 class="text-lg font-bold text-indigo-700 mb-2 text-center">إعدادات المسؤول (تحديد إعلان عام)</h3>
+                        <p class="text-xs text-gray-700 mb-3 text-center">
+                            معرف المستخدم الخاص بك: <span id="adminUserIdDisplay" class="font-mono text-indigo-800 break-all"></span>
+                        </p>
+                        <div class="mb-3">
+                            <label for="globalAnnouncementInput" class="block text-gray-700 text-xs font-semibold mb-1">رسالة الإعلان العامة:</label>
+                            <input type="text" id="globalAnnouncementInput" class="w-full p-2 text-sm border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ease-in-out" placeholder="اكتب إعلانًا يظهر للجميع هنا">
+                        </div>
+                        <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
+                            حفظ الإعدادات العامة
+                        </button>
+                    </div>
                 </div>
-                <button id="updateGlobalSettingsBtn" class="w-full bg-indigo-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm">
-                    حفظ الإعدادات العامة
-                </button>
             </div>
         </div>
-        <!-- End Dashboard Section -->
+        <!-- End Collapsible Section: Dashboard -->
 
-        <!-- Google AdSense - Example Ad Unit 1 (Below Dashboard) -->
-        <!-- REPLACE 'YOUR_ADSENSE_AD_UNIT_SLOT_1' with your actual AdSense Ad Unit ID -->
+        <!-- Google AdSense - Example Ad Unit 1 (Below Dashboard but outside accordion) -->
         <div class="my-6 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-sm text-gray-600 mb-2">إعلان (من Google AdSense)</p>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-6230858794160580"
-                 data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_1"
+                 data-ad-slot="2613256240" <!--  تم تحديث هذا الرقم بمعرف الوحدة الإعلانية الذي قدمته  -->
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
-        <!-- Section: Save/Load Profile -->
-        <div class="mb-6 p-4 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
-            <h2 class="text-xl font-bold text-purple-700 mb-3 text-center">إدارة ملفاتك الشخصية</h2>
-            <p class="text-xs text-gray-700 mb-2 text-center">
-                <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جاري الاتصال...</span>
-                <br>
-                <span class="font-semibold">حالة Firebase:</span> <span id="firebaseStatusDisplay" class="font-mono text-purple-800 break-all">جاري التحقق...</span>
-            </p>
-
-            <div class="mb-3">
-                <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-1">اسم ملف التعريف (للحفظ/التحميل):</label>
-                <input type="text" id="profileNameInput" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي وشعري اليومي">
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-3 justify-center mb-3">
-                <button id="saveProfileBtn" class="bg-purple-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
-                    حفظ الملف الحالي
-                </button>
-                <button id="loadNamedProfileBtn" class="bg-purple-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
-                    تحميل الملف المحدد
-                </button>
-                <button id="deleteProfileBtn" class="bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
-                    حذف الملف المحدد
-                </button>
-            </div>
-
-            <div>
-                <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-1">الملفات المحفوظة:</label>
-                <select id="existingProfilesSelect" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" disabled>
-                    <option value="">لا توجد ملفات شخصية محفوظة</option>
-                </select>
-            </div>
-        </div>
-        <!-- End Section: Save/Load Profile -->
-
-        <!-- Section: Scan Ingredients from Image -->
-        <div class="mb-6 p-4 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200">
-            <h2 class="text-xl font-bold text-yellow-700 mb-3 text-center">مسح المكونات من صورة عبوة المنتج</h2>
-            <p class="text-sm text-gray-700 mb-3 text-center">
-                يمكنك تحميل صورة لعبوة المنتج (تأكد أن قائمة المكونات واضحة) وسنقوم بتحليلها لك تلقائياً.
-            </p>
-            <div class="mb-3">
-                <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-1">
-                    تحميل صورة عبوة المنتج:
-                </label>
-                <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 text-sm border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out">
-            </div>
-            <div id="imagePreviewContainer" class="mb-3 text-center hidden">
-                <img id="imagePreview" src="#" alt="معاينة الصورة" class="max-w-full h-auto rounded-lg shadow-md mx-auto">
-            </div>
-            <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm">
-                <span id="scanButtonText">مسح وتحليل المكونات من الصورة</span>
-                <span id="scanLoadingSpinner" class="loader hidden"></span>
+        <!-- Collapsible Section: Save/Load Profile -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="saveLoadProfileContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                    إدارة ملفاتك الشخصية
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
             </button>
-        </div>
-        <!-- End Section: Scan Ingredients from Image -->
+            <div id="saveLoadProfileContent" class="collapsible-content">
+                <div class="p-4 bg-purple-50 rounded-xl shadow-sm border border-purple-200">
+                    <h2 class="text-xl font-bold text-purple-700 mb-3 text-center">إدارة ملفاتك الشخصية</h2>
+                    <p class="text-xs text-gray-700 mb-2 text-center">
+                        <span class="font-semibold">معرف المستخدم الخاص بك:</span> <span id="userIdDisplay" class="font-mono text-purple-800 break-all">جاري الاتصال...</span>
+                        <br>
+                        <span class="font-semibold">حالة Firebase:</span> <span id="firebaseStatusDisplay" class="font-mono text-purple-800 break-all">جاري التحقق...</span>
+                    </p>
 
-        <!-- New Section: Quick Ingredient Lookup -->
-        <div class="mb-6 p-4 bg-green-50 rounded-xl shadow-sm border border-green-200">
-            <h2 class="text-xl font-bold text-green-700 mb-3 text-center">البحث السريع عن مكون واحد</h2>
-            <p class="text-sm text-gray-700 mb-3 text-center">
-                اكتب اسماً لأي مكون لتحصل على معلومات فورية عنه بناءً على ملفك الشخصي.
-            </p>
-            <div class="flex relative mb-3">
-                <input type="text" id="quickIngredientSearchInput" class="flex-1 p-2 text-sm border border-green-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
-                <button id="quickSearchBtn" class="bg-green-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300 ease-in-out text-sm">
-                    بحث
-                </button>
-                <div id="quickSearchSuggestions" class="autocomplete-suggestions hidden"></div>
-            </div>
-            <div id="quickSearchResult" class="hidden">
-                <!-- Results will be displayed here -->
+                    <div class="mb-3">
+                        <label for="profileNameInput" class="block text-gray-700 text-sm font-semibold mb-1">اسم ملف التعريف (للحفظ/التحميل):</label>
+                        <input type="text" id="profileNameInput" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" placeholder="مثال: ملف بشرتي وشعري اليومي">
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center mb-3">
+                        <button id="saveProfileBtn" class="bg-purple-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
+                            حفظ الملف الحالي
+                        </button>
+                        <button id="loadNamedProfileBtn" class="bg-purple-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
+                            تحميل الملف المحدد
+                        </button>
+                        <button id="deleteProfileBtn" class="bg-red-600 text-white py-2 px-3 rounded-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-300 shadow-md text-sm" disabled>
+                            حذف الملف المحدد
+                        </button>
+                    </div>
+
+                    <div>
+                        <label for="existingProfilesSelect" class="block text-gray-700 text-sm font-semibold mb-1">الملفات المحفوظة:</label>
+                        <select id="existingProfilesSelect" class="w-full p-2 text-sm border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200 ease-in-out" disabled>
+                            <option value="">لا توجد ملفات شخصية محفوظة</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- End New Section: Quick Ingredient Lookup -->
+        <!-- End Collapsible Section: Save/Load Profile -->
+
+        <!-- Collapsible Section: Scan Ingredients from Image -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="scanImageContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    مسح المكونات من صورة
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="scanImageContent" class="collapsible-content">
+                <div class="p-4 bg-yellow-50 rounded-xl shadow-sm border border-yellow-200">
+                    <h2 class="text-xl font-bold text-yellow-700 mb-3 text-center">مسح المكونات من صورة عبوة المنتج</h2>
+                    <p class="text-sm text-gray-700 mb-3 text-center">
+                        يمكنك تحميل صورة لعبوة المنتج (تأكد أن قائمة المكونات واضحة) وسنقوم بتحليلها لك تلقائياً.
+                    </p>
+                    <div class="mb-3">
+                        <label for="imageUpload" class="block text-gray-700 text-sm font-semibold mb-1">
+                            تحميل صورة عبوة المنتج:
+                        </label>
+                        <input type="file" id="imageUpload" accept="image/*" class="w-full p-2 text-sm border border-yellow-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition duration-200 ease-in-out">
+                    </div>
+                    <div id="imagePreviewContainer" class="mb-3 text-center hidden">
+                        <img id="imagePreview" src="#" alt="معاينة الصورة" class="max-w-full h-auto rounded-lg shadow-md mx-auto">
+                    </div>
+                    <button id="scanImageBtn" class="w-full bg-yellow-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm">
+                        <span id="scanButtonText">مسح وتحليل المكونات من الصورة</span>
+                        <span id="scanLoadingSpinner" class="loader hidden"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Scan Ingredients from Image -->
+
+        <!-- Collapsible Section: Quick Ingredient Lookup -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="quickLookupContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    البحث السريع عن مكون واحد
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="quickLookupContent" class="collapsible-content">
+                <div class="p-4 bg-green-50 rounded-xl shadow-sm border border-green-200">
+                    <h2 class="text-xl font-bold text-green-700 mb-3 text-center">البحث السريع عن مكون واحد</h2>
+                    <p class="text-sm text-gray-700 mb-3 text-center">
+                        اكتب اسماً لأي مكون لتحصل على معلومات فورية عنه بناءً على ملفك الشخصي.
+                    </p>
+                    <div class="flex relative mb-3">
+                        <input type="text" id="quickIngredientSearchInput" class="flex-1 p-2 text-sm border border-green-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
+                        <button id="quickSearchBtn" class="bg-green-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300 ease-in-out text-sm">
+                            بحث
+                        </button>
+                        <div id="quickSearchSuggestions" class="autocomplete-suggestions hidden"></div>
+                    </div>
+                    <div id="quickSearchResult" class="hidden">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Quick Ingredient Lookup -->
 
         <!-- Google AdSense - Example Ad Unit 2 (Before Skin Profile) -->
-        <!-- REPLACE 'YOUR_ADSENSE_AD_UNIT_SLOT_2' with your actual AdSense Ad Unit ID -->
         <div class="my-6 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-sm text-gray-600 mb-2">إعلان (من Google AdSense)</p>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-6230858794160580"
-                 data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_2"
+                 data-ad-slot="2209382827" <!--  تم تحديث هذا الرقم بمعرف الوحدة الإعلانية الثانية الذي قدمته  -->
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
-        <!-- Section: Skin Profile -->
-        <div class="mb-6 p-4 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200">
-            <h2 class="text-xl font-bold text-fuchsia-700 mb-3 text-center">ملفك الشخصي للبشرة</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-1">نوع بشرتك:</label>
-                    <select id="skinType" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
-                        <option value="normal">عادية</option>
-                        <option value="oily">دهنية</option>
-                        <option value="dry">جافة</option>
-                        <option value="combination">مختلطة</option>
-                        <option value="sensitive">حساسة</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات بشرتك:</label>
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
-                            <span>حب الشباب</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
-                            <span>الشيخوخة/التجاعيد</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
-                            <span>التصبغات</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
-                            <span>الاحمرار</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
-                            <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
-                            <span>الجفاف</span>
-                        </label>
-                    </div>
-                </div>
-                <!-- Existing fields for age, pregnancy, and medical conditions -->
-                <div>
-                    <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-1">عمرك:</label>
-                    <input type="number" id="userAge" min="1" max="120" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك">
-                </div>
-                <div class="md:col-span-2"> <!-- Span full width for this checkbox -->
-                    <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors text-xs">
-                        <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
-                        <span>هل أنت حامل؟</span>
-                    </label>
-                </div>
-                <div class="md:col-span-2"> <!-- Span full width for this textarea -->
-                    <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-1">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label>
-                    <textarea id="medicalConditionsInput" rows="2" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea>
-                </div>
-                <!-- New fields for Height and Ideal Weight -->
-                <div>
-                    <label for="userHeightCm" class="block text-gray-700 text-sm font-semibold mb-1">طولك (سم):</label>
-                    <input type="number" id="userHeightCm" min="50" max="250" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل طولك بالسنتيمتر">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-1">الوزن المثالي (تقديري):</label>
-                    <p id="idealWeightDisplay" class="w-full p-2 text-sm bg-fuchsia-100 border border-fuchsia-300 rounded-lg text-fuchsia-800 font-medium">
-                        أدخل طولك للحساب
-                    </p>
-                </div>
-                <!-- New fields for Current Weight and Date -->
-                <div>
-                    <label for="currentWeightKg" class="block text-gray-700 text-sm font-semibold mb-1">وزنك الحالي (كجم):</label>
-                    <input type="number" id="currentWeightKg" min="1" max="500" step="0.1" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل وزنك الحالي">
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-1">المتبقي للوصول للوزن المثالي:</label>
-                    <p id="weightToIdealDisplay" class="w-full p-2 text-sm bg-fuchsia-100 border border-fuchsia-300 rounded-lg text-fuchsia-800 font-medium">
-                        أدخل طولك ووزنك للحساب
-                    </p>
-                </div>
-                <div class="md:col-span-2"> <!-- Span full width for the date input -->
-                    <label for="measurementDate" class="block text-gray-700 text-sm font-semibold mb-1">تاريخ القياس:</label>
-                    <input type="date" id="measurementDate" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
-                </div>
-                <!-- New textarea for Skin Care Notes -->
-                <div class="md:col-span-2">
-                    <label for="skinCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالبشرة:</label>
-                    <textarea id="skinCareNotes" rows="5" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالبشرة أو الملاحظات هنا..."></textarea>
-                </div>
-            </div>
-        </div>
-        <!-- End Section: Skin Profile -->
-
-        <!-- Section: Hair Profile (New) -->
-        <div class="mb-6 p-4 bg-rose-50 rounded-xl shadow-sm border border-rose-200">
-            <h2 class="text-xl font-bold text-rose-700 mb-3 text-center">ملفك الشخصي للشعر</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                    <label for="hairType" class="block text-gray-700 text-sm font-semibold mb-1">نوع شعرك:</label>
-                    <select id="hairType" class="w-full p-2 text-sm border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 transition duration-200 ease-in-out">
-                        <option value="straight">أملس</option>
-                        <option value="wavy">متموج</option>
-                        <option value="curly">كيرلي</option>
-                        <option value="coily">أفرو / مجعد جداً</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات شعرك:</label>
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="dryness" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>جفاف</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="oiliness" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>دهنية</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="frizz" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>تجعد (Frizz)</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="damage" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>تلف</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="hair_loss" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>تساقط</span>
-                        </label>
-                        <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
-                            <input type="checkbox" value="scalp_sensitivity" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
-                            <span>حساسية فروة الرأس</span>
-                        </label>
-                    </div>
-                </div>
-                <!-- New textarea for Hair Care Notes -->
-                <div class="md:col-span-2">
-                    <label for="hairCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالشعر:</label>
-                    <textarea id="hairCareNotes" rows="5" class="w-full p-2 text-sm border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالشعر أو الملاحظات هنا..."></textarea>
-                </div>
-            </div>
-        </div>
-        <!-- End Section: Hair Profile -->
-
-        <!-- Section: Preferred & Excluded Ingredients -->
-        <div class="mb-6 p-4 bg-sky-50 rounded-xl shadow-sm border border-sky-200">
-            <h2 class="text-xl font-bold text-sky-700 mb-3 text-center">تفضيلاتك الشخصية للمكونات</h2>
-
-            <div class="mb-4">
-                <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
-                    أضف مكوناتك المفضلة (مكون واحد لكل إضافة):
-                </label>
-                <div class="flex relative"> <!-- Added 'relative' here for autocomplete positioning -->
-                    <input type="text" id="preferredIngredientInput" class="flex-1 p-2 text-sm border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
-                    <button id="addPreferredIngredient" class="bg-sky-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out text-sm">
-                        أضف
-                    </button>
-                    <!-- حاوية الاقتراحات للإكمال التلقائي للمكونات المفضلة -->
-                    <div id="preferredSuggestions" class="autocomplete-suggestions hidden"></div>
-                </div>
-                <div id="preferredIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
-                    </div>
-            </div>
-
-            <div>
-                <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
-                    أضف مكوناتك المستبعدة/المتحسس منها:
-                </label>
-                <div class="flex relative"> <!-- Added 'relative' here for autocomplete positioning -->
-                    <input type="text" id="excludedIngredientInput" class="flex-1 p-2 text-sm border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور">
-                    <button id="addExcludedIngredient" class="bg-red-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out text-sm">
-                        أضف
-                    </button>
-                    <!-- حاوية الاقتراحات للإكمال التلقائي للمكونات المستبعدة -->
-                    <div id="excludedSuggestions" class="autocomplete-suggestions hidden"></div>
-                </div>
-                <div id="excludedIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
-                    </div>
-            </div>
-        </div>
-        <!-- End Section: Preferred & Excluding Ingredients -->
-
-        <div class="mb-6">
-            <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-1">
-                الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
-            </label>
-            <div class="relative"> <!-- Added 'relative' here for autocomplete positioning -->
-                <textarea id="ingredientsInput" rows="8" class="w-full p-2 text-sm border border-emerald-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:&#10;Water, Glycerin, Niacinamide, Butylene Glycol, Caprylic/Capric Triglyceride, Squalane, Cetearyl Alcohol, ..."></textarea>
-                <div id="mainIngredientSuggestions" class="autocomplete-suggestions hidden"></div>
-            </div>
-            <button id="analyzeIngredientsBtn" class="mt-4 w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
-                <span id="analyzeButtonText">تحليل المكونات</span>
-                <span id="analyzeLoadingSpinner" class="loader hidden"></span>
+        <!-- Collapsible Section: Suggest New Ingredients (New Section) -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="suggestIngredientContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    اقتراح مكونات جديدة
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
             </button>
-        </div>
-
-        <!-- Analysis Results Section -->
-        <div id="analysisResults" class="hidden mt-8 p-6 bg-emerald-50 rounded-2xl shadow-inner border border-emerald-300">
-            <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
-            <div class="space-y-4 text-sm text-gray-800">
-                <div id="ingredientSummary" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
-                    <h3 class="font-semibold text-emerald-600 mb-2">ملخص المكونات:</h3>
-                    <p id="summaryText">سيظهر الملخص هنا.</p>
-                </div>
-                <div id="ingredientBreakdown" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
-                    <h3 class="font-semibold text-emerald-600 mb-2">تفصيل المكونات:</h3>
-                    <ul id="breakdownList" class="list-disc pr-5"></ul>
-                </div>
-                <div id="preferredMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
-                    <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المفضلة:</h3>
-                    <ul id="preferredMatchList" class="list-disc pr-5"></ul>
-                </div>
-                <div id="excludedMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
-                    <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المستبعدة:</h3>
-                    <ul id="excludedMatchList" class="list-disc pr-5"></ul>
-                </div>
-                <div id="recommendations" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
-                    <h3 class="font-semibold text-emerald-600 mb-2">توصيات مخصصة:</h3>
-                    <p id="recommendationsText">ستظهر التوصيات هنا.</p>
+            <div id="suggestIngredientContent" class="collapsible-content">
+                <div class="p-4 bg-lime-50 rounded-xl shadow-sm border border-lime-200">
+                    <h2 class="text-xl font-bold text-lime-700 mb-3 text-center">اقتراح مكون لم يدرج بعد</h2>
+                    <p class="text-sm text-gray-700 mb-3 text-center">
+                        إذا لم تجد مكوناً في قوائم الإكمال التلقائي، يمكنك اقتراحه هنا. سيتم مراجعته وإضافته لاحقاً.
+                    </p>
+                    <div class="mb-3">
+                        <label for="newIngredientSuggestionInput" class="block text-gray-700 text-sm font-semibold mb-1">
+                            اسم المكون المقترح:
+                        </label>
+                        <input type="text" id="newIngredientSuggestionInput" class="w-full p-2 text-sm border border-lime-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-500 transition duration-200 ease-in-out" placeholder="مثال: Ceramide NP">
+                    </div>
+                    <button id="submitNewIngredientSuggestionBtn" class="w-full bg-lime-600 text-white py-2.5 px-3 rounded-lg font-semibold hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-lime-500 focus:ring-offset-2 transition duration-300 shadow-md hover:shadow-lg flex items-center justify-center text-sm">
+                        <span id="suggestButtonText">إرسال الاقتراح</span>
+                        <span id="suggestLoadingSpinner" class="loader hidden"></span>
+                    </button>
                 </div>
             </div>
         </div>
-        <!-- End Analysis Results Section -->
+        <!-- End Collapsible Section: Suggest New Ingredients -->
+
+        <!-- Collapsible Section: Skin Profile -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="skinProfileContent">
+                <span class="section-title">
+                    <!-- Updated Skin Profile Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4.125 4.125 0 100 7.792 4.125 4.125 0 000-7.792zM1.5 21a.75.75 0 01.75-.75h18a.75.75 0 01.75.75v.75a.75.75 0 01-.75.75H2.25a.75.75 0 01-.75-.75v-.75z"></path>
+                    </svg>
+                    ملفك الشخصي للبشرة
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="skinProfileContent" class="collapsible-content">
+                <div class="p-4 bg-fuchsia-50 rounded-xl shadow-sm border border-fuchsia-200">
+                    <h2 class="text-xl font-bold text-fuchsia-700 mb-3 text-center">ملفك الشخصي للبشرة</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label for="skinType" class="block text-gray-700 text-sm font-semibold mb-1">نوع بشرتك:</label>
+                            <select id="skinType" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
+                                <option value="normal">عادية</option>
+                                <option value="oily">دهنية</option>
+                                <option value="dry">جافة</option>
+                                <option value="combination">مختلطة</option>
+                                <option value="sensitive">حساسة</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات بشرتك:</label>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                                    <input type="checkbox" value="acne" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
+                                    <span>حب الشباب</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                                    <input type="checkbox" value="aging" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded skin-concern-checkbox ml-1">
+                                    <span>الشيخوخة/التجاعيد</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                                    <input type="checkbox" value="pigmentation" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
+                                    <span>التصبغات</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                                    <input type="checkbox" value="redness" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
+                                    <span>الاحمرار</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors">
+                                    <input type="checkbox" value="dehydration" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
+                                    <span>الجفاف</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- Existing fields for age, pregnancy, and medical conditions -->
+                        <div>
+                            <label for="userAge" class="block text-gray-700 text-sm font-semibold mb-1">عمرك:</label>
+                            <input type="number" id="userAge" min="1" max="120" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل عمرك">
+                        </div>
+                        <div class="md:col-span-2"> <!-- Span full width for this checkbox -->
+                            <label class="inline-flex items-center p-1.5 rounded-full bg-fuchsia-100 text-fuchsia-800 cursor-pointer hover:bg-fuchsia-200 transition-colors text-xs">
+                                <input type="checkbox" id="isPregnant" class="form-checkbox text-fuchsia-600 h-3.5 w-3.5 rounded ml-1">
+                                <span>هل أنت حامل؟</span>
+                            </label>
+                        </div>
+                        <div class="md:col-span-2"> <!-- Span full width for this textarea -->
+                            <label for="medicalConditionsInput" class="block text-gray-700 text-sm font-semibold mb-1">أمراض أو حالات صحية معينة (اختياري، مثل السكري، أمراض الكلى):</label>
+                            <textarea id="medicalConditionsInput" rows="2" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="مثال: سكري، أمراض الكلى، حساسية الجلوتين"></textarea>
+                        </div>
+                        <!-- New fields for Height and Ideal Weight -->
+                        <div>
+                            <label for="userHeightCm" class="block text-gray-700 text-sm font-semibold mb-1">طولك (سم):</label>
+                            <input type="number" id="userHeightCm" min="50" max="250" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل طولك بالسنتيمتر">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-1">الوزن المثالي (تقديري):</label>
+                            <p id="idealWeightDisplay" class="w-full p-2 text-sm bg-fuchsia-100 border border-fuchsia-300 rounded-lg text-fuchsia-800 font-medium">
+                                أدخل طولك للحساب
+                            </p>
+                        </div>
+                        <!-- New fields for Current Weight and Date -->
+                        <div>
+                            <label for="currentWeightKg" class="block text-gray-700 text-sm font-semibold mb-1">وزنك الحالي (كجم):</label>
+                            <input type="number" id="currentWeightKg" min="1" max="500" step="0.1" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out" placeholder="أدخل وزنك الحالي">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-1">المتبقي للوصول للوزن المثالي:</label>
+                            <p id="weightToIdealDisplay" class="w-full p-2 text-sm bg-fuchsia-100 border border-fuchsia-300 rounded-lg text-fuchsia-800 font-medium">
+                                أدخل طولك ووزنك للحساب
+                            </p>
+                        </div>
+                        <div class="md:col-span-2"> <!-- Span full width for the date input -->
+                            <label for="measurementDate" class="block text-gray-700 text-sm font-semibold mb-1">تاريخ القياس:</label>
+                            <input type="date" id="measurementDate" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out">
+                        </div>
+                        <!-- New textarea for Skin Care Notes -->
+                        <div class="md:col-span-2">
+                            <label for="skinCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالبشرة:</label>
+                            <textarea id="skinCareNotes" rows="5" class="w-full p-2 text-sm border border-fuchsia-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-fuchsia-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالبشرة أو الملاحظات هنا..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Skin Profile -->
+
+        <!-- Collapsible Section: Hair Profile -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="hairProfileContent">
+                <span class="section-title">
+                    <!-- Updated Hair Profile Icon -->
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2.25c-3.155 0-5.834 1.493-7.536 3.817a.75.75 0 001.107.919c.928-1.404 2.44-2.502 4.279-2.502 1.839 0 3.351 1.098 4.279 2.502a.75.75 0 001.107-.919C17.834 3.743 15.155 2.25 12 2.25zm.75 14.25a.75.75 0 00-.75.75v2.25a.75.75 0 001.5 0v-2.25a.75.75 0 00-.75-.75zM8.25 17.25a.75.75 0 00-.75.75v2.25a.75.75 0 001.5 0v-2.25a.75.75 0 00-.75-.75zM15.75 17.25a.75.75 0 00-.75.75v2.25a.75.75 0 001.5 0v-2.25a.75.75 0 00-.75-.75z"></path>
+                    </svg>
+                    ملفك الشخصي للشعر
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="hairProfileContent" class="collapsible-content">
+                <div class="p-4 bg-rose-50 rounded-xl shadow-sm border border-rose-200">
+                    <h2 class="text-xl font-bold text-rose-700 mb-3 text-center">ملفك الشخصي للشعر</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                            <label for="hairType" class="block text-gray-700 text-sm font-semibold mb-1">نوع شعرك:</label>
+                            <select id="hairType" class="w-full p-2 text-sm border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 transition duration-200 ease-in-out">
+                                <option value="straight">أملس</option>
+                                <option value="wavy">متموج</option>
+                                <option value="curly">كيرلي</option>
+                                <option value="coily">أفرو / مجعد جداً</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-semibold mb-1">اهتمامات شعرك:</label>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="dryness" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>جفاف</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="oiliness" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>دهنية</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="frizz" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>تجعد (Frizz)</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="damage" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>تلف</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="hair_loss" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>تساقط</span>
+                                </label>
+                                <label class="inline-flex items-center p-1.5 rounded-full bg-rose-100 text-rose-800 cursor-pointer hover:bg-rose-200 transition-colors">
+                                    <input type="checkbox" value="scalp_sensitivity" class="form-checkbox text-rose-600 h-3.5 w-3.5 rounded hair-concern-checkbox ml-1">
+                                    <span>حساسية فروة الرأس</span>
+                                </label>
+                            </div>
+                        </div>
+                        <!-- New textarea for Hair Care Notes -->
+                        <div class="md:col-span-2">
+                            <label for="hairCareNotes" class="block text-gray-700 text-sm font-semibold mb-1">ملاحظات العناية بالشعر:</label>
+                            <textarea id="hairCareNotes" rows="5" class="w-full p-2 text-sm border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 transition duration-200 ease-in-out resize-y" placeholder="أضف منتجات العناية بالشعر أو الملاحظات هنا..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Hair Profile -->
+
+        <!-- Collapsible Section: Preferred & Excluded Ingredients -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="ingredientsPreferencesContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18a.75.75 0 110-1.5.75.75 0 010 1.5zM5.25 12h5.25M5.25 7.5h5.25M5.25 16.5h5.25"></path>
+                    </svg>
+                    تفضيلاتك الشخصية للمكونات
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="ingredientsPreferencesContent" class="collapsible-content">
+                <div class="p-4 bg-sky-50 rounded-xl shadow-sm border border-sky-200">
+                    <h2 class="text-xl font-bold text-sky-700 mb-3 text-center">تفضيلاتك الشخصية للمكونات</h2>
+
+                    <div class="mb-4">
+                        <label for="preferredIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
+                            أضف مكوناتك المفضلة (مكون واحد لكل إضافة):
+                        </label>
+                        <div class="flex relative"> <!-- Added 'relative' here for autocomplete positioning -->
+                            <input type="text" id="preferredIngredientInput" class="flex-1 p-2 text-sm border border-sky-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-200 ease-in-out" placeholder="مثال: Niacinamide / نياسيناميد">
+                            <button id="addPreferredIngredient" class="bg-sky-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 ease-in-out text-sm">
+                                أضف
+                            </button>
+                            <!-- حاوية الاقتراحات للإكمال التلقائي للمكونات المفضلة -->
+                            <div id="preferredSuggestions" class="autocomplete-suggestions hidden"></div>
+                        </div>
+                        <div id="preferredIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
+                            </div>
+                    </div>
+
+                    <div>
+                        <label for="excludedIngredientInput" class="block text-gray-700 text-sm font-semibold mb-1">
+                            أضف مكوناتك المستبعدة/المتحسس منها:
+                        </label>
+                        <div class="flex relative"> <!-- Added 'relative' here for autocomplete positioning -->
+                            <input type="text" id="excludedIngredientInput" class="flex-1 p-2 text-sm border border-red-300 rounded-l-lg rounded-r-none focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ease-in-out" placeholder="مثال: Parfum / عطور">
+                            <button id="addExcludedIngredient" class="bg-red-600 text-white py-2 px-3 rounded-r-lg rounded-l-none font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-300 ease-in-out text-sm">
+                                أضف
+                            </button>
+                            <!-- حاوية الاقتراحات للإكمال التلقائي للمكونات المستبعدة -->
+                            <div id="excludedSuggestions" class="autocomplete-suggestions hidden"></div>
+                        </div>
+                        <div id="excludedIngredientsList" class="mt-2 flex flex-wrap gap-2 justify-end">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Preferred & Excluding Ingredients -->
+
+        <!-- Collapsible Section: Ingredient Analysis Input -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="ingredientAnalysisInputContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    تحليل المكونات
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="ingredientAnalysisInputContent" class="collapsible-content">
+                <div class="p-4"> <!-- Removed bg color from here to apply only to .collapsible-content.open -->
+                    <label for="ingredientsInput" class="block text-gray-700 text-sm font-semibold mb-1">
+                        الصق قائمة المكونات هنا (كل مكون في سطر جديد، أو افصل بفاصلة):
+                    </label>
+                    <div class="relative"> <!-- Added 'relative' here for autocomplete positioning -->
+                        <textarea id="ingredientsInput" rows="8" class="w-full p-2 text-sm border border-emerald-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition duration-200 ease-in-out resize-y" placeholder="مثال:&#10;Water, Glycerin, Niacinamide, Butylene Glycol, Caprylic/Capric Triglyceride, Squalane, Cetearyl Alcohol, ..."></textarea>
+                        <div id="mainIngredientSuggestions" class="autocomplete-suggestions hidden"></div>
+                    </div>
+                    <button id="analyzeIngredientsBtn" class="mt-4 w-full bg-emerald-600 text-white py-3 px-4 rounded-lg font-bold hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition duration-300 shadow-lg hover:shadow-xl flex items-center justify-center">
+                        <span id="analyzeButtonText">تحليل المكونات</span>
+                        <span id="analyzeLoadingSpinner" class="loader hidden"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Ingredient Analysis Input -->
+
+        <!-- Collapsible Section: Analysis Results -->
+        <div class="mb-2">
+            <button class="collapsible-header" data-target="analysisResultsContent">
+                <span class="section-title">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v2m-2-5v5m12-9v9m-2-5v5M9 5V3m-2 5V3m12 8V9m-2 5V9M9 13a3 3 0 100-6 3 3 0 000 6zm0 0v1m0 0v4m0 0h4m-4 0H5a2 2 0 00-2 2v2a2 2 0 002 2h14a2 2 0 002-2v-2a2 2 0 00-2-2h-3"></path>
+                    </svg>
+                    نتائج التحليل
+                </span>
+                <svg class="w-5 h-5 icon-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <div id="analysisResultsContent" class="collapsible-content">
+                <div id="analysisResults" class="p-6 bg-emerald-50 rounded-2xl shadow-inner border border-emerald-300">
+                    <h2 class="text-2xl font-bold text-emerald-700 mb-4 text-center">نتائج التحليل</h2>
+                    <div class="space-y-4 text-sm text-gray-800">
+                        <div id="ingredientSummary" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                            <h3 class="font-semibold text-emerald-600 mb-2">ملخص المكونات:</h3>
+                            <p id="summaryText">سيظهر الملخص هنا.</p>
+                        </div>
+                        <div id="ingredientBreakdown" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                            <h3 class="font-semibold text-emerald-600 mb-2">تفصيل المكونات:</h3>
+                            <ul id="breakdownList" class="list-disc pr-5"></ul>
+                        </div>
+                        <div id="preferredMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                            <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المفضلة:</h3>
+                            <ul id="preferredMatchList" class="list-disc pr-5"></ul>
+                        </div>
+                        <div id="excludedMatch" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                            <h3 class="font-semibold text-emerald-600 mb-2">تطابق المكونات المستبعدة:</h3>
+                            <ul id="excludedMatchList" class="list-disc pr-5"></ul>
+                        </div>
+                        <div id="recommendations" class="bg-white p-4 rounded-lg shadow-sm border border-emerald-200">
+                            <h3 class="font-semibold text-emerald-600 mb-2">توصيات مخصصة:</h3>
+                            <p id="recommendationsText">ستظهر التوصيات هنا.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Collapsible Section: Analysis Results -->
 
         <!-- Google AdSense - Example Ad Unit 3 (Bottom) -->
-        <!-- REPLACE 'YOUR_ADSENSE_AD_UNIT_SLOT_3' with your actual AdSense Ad Unit ID -->
         <div class="my-6 p-4 bg-gray-50 rounded-xl shadow-sm border border-gray-200 text-center">
             <p class="text-sm text-gray-600 mb-2">إعلان (من Google AdSense)</p>
             <ins class="adsbygoogle"
                  style="display:block"
                  data-ad-client="ca-pub-6230858794160580"
-                 data-ad-slot="YOUR_ADSENSE_AD_UNIT_SLOT_3"
+                 data-ad-slot="6401308075" <!--  تم تحديث هذا الرقم بمعرف الوحدة الإعلانية الثالث الذي قدمته  -->
                  data-ad-format="auto"
                  data-full-width-responsive="true"></ins>
-            <!-- AdSense push script removed from here and moved to JavaScript -->
         </div>
 
     </div>
@@ -626,8 +858,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, collection, query, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc, collection, query, getDocs, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
 
         // Global variables provided by the Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -645,10 +877,10 @@
                 // **************************************************************************************************
                 // *** تم تحديث هذه القيم بناءً على معلومات مشروعك الفعلية من Firebase Console.                 ***
                 // **************************************************************************************************
-                apiKey: "AIzaSyBiTnYz0fuR3J3Dgcc6BEpyOfF4FjF1C5I",
+                apiKey: "AIzaSyBvZ1yofJAiUNgbBeRSlqhhhfvI7rFlYbQ", // تم تحديث مفتاح API هنا
                 authDomain: "skin-99c39.firebaseapp.com",
                 databaseURL: "https://skin-99c39-default-rtdb.firebaseio.com",
-                projectId: "skin-99c39",
+                projectId: "skin-99c39", // تم تصحيح projectId ليطابق authDomain و appId
                 storageBucket: "skin-99c39.firebasestorage.app",
                 messagingSenderId: "111983738514",
                 appId: "1:111983738514:web:27712c903e739cebb3304b",
@@ -668,7 +900,9 @@
         let userProfileRef;
         let globalSettingsRef;
         let activeUsersCollectionRef;
+        let ingredientSuggestionsCollectionRef; // New Firestore collection reference
         let isFirebaseInitialized = false; // Flag to track Firebase initialization status
+        let isAdmin = false; // New flag to track admin status
 
         /**
          * Displays a custom message box with a given message and optional type.
@@ -759,55 +993,87 @@
                     isFirebaseInitialized = true; // Set flag to true on successful initialization
 
                     // Firestore references
-                    // Path: artifacts/{appId}/public/data/globalSettings/currentSettings (even number of segments)
+                    // Path for global settings: artifacts/{appId}/public/data/globalSettings/currentSettings
+                    // Path for active users: artifacts/{appId}/public/data/activeUsers/{userId}
+                    // Path for ingredient suggestions: artifacts/{appId}/public/data/ingredientSuggestions/{docId}
                     globalSettingsRef = doc(collection(db, `artifacts/${appId}/public/data/globalSettings`), 'currentSettings');
                     activeUsersCollectionRef = collection(db, `artifacts/${appId}/public/data/activeUsers`);
+                    ingredientSuggestionsCollectionRef = collection(db, `artifacts/${appId}/public/data/ingredientSuggestions`);
 
-                    document.getElementById('firebaseStatusDisplay').textContent = 'متصل';
+
                     console.log("Firebase initialized successfully.");
 
                     // *** Moved onAuthStateChanged listener here, after auth is initialized ***
                     onAuthStateChanged(auth, async (user) => {
+                        const signInSignOutBtn = document.getElementById('signInSignOutBtn');
+                        const adminSettingsDiv = document.getElementById('adminSettings');
+                        const updateGlobalSettingsButton = document.getElementById('updateGlobalSettingsBtn');
+
                         if (user) {
                             userId = user.uid;
                             document.getElementById('userIdDisplay').textContent = userId;
                             document.getElementById('adminUserIdDisplay').textContent = userId;
-                            console.log("معرف المستخدم الحالي (user.uid):", userId); // Log the user ID
+                            console.log("Current User ID (user.uid):", userId); // Log the user ID
                             
+                            // Determine admin status:
+                            // For a developer/creator within the Canvas environment, we can force isAdmin to true
+                            // to ensure access to admin features for testing and management.
+                            // In a production environment, this logic should be based on user roles from a database.
+                            isAdmin = true; // FORCE ADMIN STATUS FOR CANVAS CREATOR
+
                             // Only proceed with Firestore operations if 'db' is successfully initialized
                             if (db) {
                                 // userProfileRef must be set AFTER userId is confirmed
+                                // Path for user profiles: artifacts/{appId}/users/{userId}/profiles/{profileName}
                                 userProfileRef = doc(db, `artifacts/${appId}/users/${userId}/profiles/myProfile`);
 
-                                // Enable profile buttons after authentication
+                                // Enable profile buttons after authentication for any user
                                 document.getElementById('saveProfileBtn').disabled = false;
                                 document.getElementById('loadNamedProfileBtn').disabled = false;
                                 document.getElementById('deleteProfileBtn').disabled = false;
                                 document.getElementById('existingProfilesSelect').disabled = false;
-                                document.getElementById('updateGlobalSettingsBtn').disabled = false;
+                                document.getElementById('submitNewIngredientSuggestionBtn').disabled = false; // Enable suggest button
+
+                                if (isAdmin) {
+                                    adminSettingsDiv.classList.remove('hidden'); // Show admin settings
+                                    updateGlobalSettingsButton.disabled = false; // Enable admin button
+                                    document.getElementById('firebaseStatusDisplay').textContent = 'متصل (مدير)';
+                                    signInSignOutBtn.textContent = 'تسجيل الخروج (مدير)';
+                                } else {
+                                    adminSettingsDiv.classList.add('hidden'); // Hide admin settings
+                                    updateGlobalSettingsButton.disabled = true; // Disable admin button
+                                    document.getElementById('firebaseStatusDisplay').textContent = 'متصل (مستخدم عادي)';
+                                    signInSignOutBtn.textContent = 'تسجيل الدخول';
+                                }
 
                                 await recordActiveUser();
                                 await loadUserProfile();
                                 await loadExistingProfiles(); // Load existing profiles for the dropdown
-                                await loadGlobalSettings();
+                                await loadGlobalSettings(); // Load global settings for all users
                                 listenToActiveUsers();
                             } else {
                                 // This case means auth succeeded but db failed to initialize (e.g., config missing)
                                 showMessage("Firebase Firestore غير مهيأ. بعض الميزات قد لا تعمل.", 'warning');
                             }
                         } else {
+                            // User is signed out (anonymous or logged out)
                             userId = 'anonymous'; // Reset userId if signed out
                             document.getElementById('userIdDisplay').textContent = 'غير مصادق';
                             document.getElementById('adminUserIdDisplay').textContent = 'غير مصادق';
-                            console.log("حالة المصادقة: غير مصادق (anonymous).");
+                            console.log("Authentication state: Unauthenticated (anonymous).");
                             showMessage("غير مصادق. بعض الميزات التي تتطلب تسجيل الدخول لن تعمل.", 'warning');
 
-                            // Disable profile buttons
+                            // Disable all profile/admin/suggestion buttons
                             document.getElementById('saveProfileBtn').disabled = true;
                             document.getElementById('loadNamedProfileBtn').disabled = true;
                             document.getElementById('deleteProfileBtn').disabled = true;
                             document.getElementById('existingProfilesSelect').disabled = true;
                             document.getElementById('updateGlobalSettingsBtn').disabled = true;
+                            document.getElementById('submitNewIngredientSuggestionBtn').disabled = true; // Disable suggest button
+                            adminSettingsDiv.classList.add('hidden'); // Hide admin settings
+                            document.getElementById('firebaseStatusDisplay').textContent = 'غير متصل';
+                            signInSignOutBtn.textContent = 'تسجيل الدخول'; // Change button text
+                            isAdmin = false; // Reset admin status
                         }
                     });
 
@@ -815,11 +1081,13 @@
                     console.error("Error initializing Firebase:", e);
                     showMessage(`خطأ في تهيئة Firebase: ${e.message}. يرجى التحقق من إعدادات Firebase الخاصة بك.`, 'error');
                     document.getElementById('firebaseStatusDisplay').textContent = 'خطأ في الاتصال';
+                    document.getElementById('signInSignOutBtn').textContent = 'خطأ';
                 }
             } else {
                 console.warn("Firebase configuration is missing or empty or still using placeholder. Firestore functionality will be limited.");
                 showMessage("لم يتم تهيئة Firebase. قد لا تعمل بعض الميزات أو حفظ البيانات. لتشغيل كامل، يرجى إضافة تهيئة Firebase الخاصة بك في الكود.", 'warning');
                 document.getElementById('firebaseStatusDisplay').textContent = 'غير متاح (لا يوجد تهيئة)';
+                document.getElementById('signInSignOutBtn').textContent = 'تكوين Firebase!';
             }
         }
 
@@ -828,16 +1096,19 @@
             // Ensure Firebase is initialized before attempting authentication
             if (!isFirebaseInitialized || !auth) {
                 console.warn("Firebase Auth is not initialized. Cannot authenticate.");
+                showMessage("خدمة المصادقة غير مهيأة.", 'error');
                 return;
             }
 
             try {
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
-                    console.log("تم تسجيل الدخول باستخدام الرمز المميز المخصص.");
+                    console.log("Logged in using custom token.");
+                    showMessage("تم تسجيل الدخول كمسؤول.", 'success');
                 } else {
                     await signInAnonymously(auth);
-                    console.log("تم تسجيل الدخول كمجهول.");
+                    console.log("Logged in anonymously.");
+                    showMessage("تم تسجيل الدخول كمستخدم عادي (مجهول).", 'info');
                 }
             } catch (error) {
                 console.error("Authentication error:", error);
@@ -845,13 +1116,22 @@
             }
         }
 
-        // Removed global onAuthStateChanged listener as it's now inside initFirebase
-        // if (auth) { 
-        //     onAuthStateChanged(auth, async (user) => { /* ... */ });
-        // } else {
-        //     console.error("Firebase auth object is not available for onAuthStateChanged listener.");
-        // }
-
+        // Function to handle sign-in/sign-out button click
+        async function handleSignInSignOut() {
+            if (auth.currentUser) {
+                // If logged in, sign out
+                try {
+                    await signOut(auth); // Use signOut from firebase/auth
+                    showMessage("تم تسجيل الخروج بنجاح.", 'info');
+                } catch (error) {
+                    console.error("Error signing out:", error);
+                    showMessage(`خطأ في تسجيل الخروج: ${error.message}`, 'error');
+                }
+            } else {
+                // If logged out, sign in (anonymously or with custom token if available)
+                await authenticateUser();
+            }
+        }
 
         // Record active users in Firestore (Public Data)
         async function recordActiveUser() {
@@ -860,11 +1140,21 @@
             try {
                 await setDoc(userDocRef, {
                     lastActive: new Date().toISOString(),
-                    // Optionally, add more user info if available and public
+                    role: isAdmin ? 'admin' : 'user', // Store role
                 }, { merge: true });
-                console.log(`User ${userId} active status updated.`);
+                console.log(`User ${userId} active status updated, role: ${isAdmin ? 'admin' : 'user'}.`);
             } catch (e) {
                 console.error("Error recording active user:", e);
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (للبيانات العامة):                                              ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة والكتابة لمجموعة 'public/data' (مثل 'activeUsers' و 'globalSettings')،      ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/public/data/{document=**} { allow read, write: if request.auth != null; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -880,6 +1170,16 @@
                 console.log("Active users:", activeUsers.length);
             }, (error) => {
                 console.error("Error listening to active users:", error);
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (للبيانات العامة):                                              ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة لمجموعة 'public/data' (مثل 'activeUsers' و 'globalSettings')،                 ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/public/data/{document=**} { allow read, write: if request.auth != null; } ***
+                // *** ***
+                // **************************************************************************************************
             });
         }
 
@@ -928,6 +1228,16 @@
             } catch (e) {
                 console.error("Error saving profile:", e);
                 showMessage(`خطأ في حفظ الملف الشخصي: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (لبيانات المستخدم الخاصة):                                      ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة والكتابة لبيانات المستخدم الخاصة به (الملفات الشخصية)،                     ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/users/{userId}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == userId; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -1022,6 +1332,16 @@
             } catch (e) {
                 console.error("Error loading profile:", e);
                 showMessage(`خطأ في تحميل الملف الشخصي: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (لبيانات المستخدم الخاصة):                                      ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة لبيانات المستخدم الخاصة به (الملفات الشخصية)،                               ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/users/{userId}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == userId; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -1046,6 +1366,16 @@
             } catch (e) {
                 console.error("Error fetching existing profiles:", e);
                 showMessage(`خطأ في جلب الملفات الشخصية المحفوظة: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (لبيانات المستخدم الخاصة):                                      ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة لبيانات المستخدم الخاصة به (الملفات الشخصية)،                               ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/users/{userId}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == userId; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -1075,6 +1405,16 @@
             } catch (e) {
                 console.error("Error deleting profile:", e);
                 showMessage(`خطأ في حذف الملف الشخصي: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (لبيانات المستخدم الخاصة):                                      ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين الحذف لبيانات المستخدم الخاصة به (الملفات الشخصية)،                               ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/users/{userId}/{document=**} { allow read, write: if request.auth != null && request.auth.uid == userId; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -1097,12 +1437,22 @@
             } catch (e) {
                 console.error("Error loading global settings:", e);
                 showMessage(`خطأ في تحميل الإعدادات العامة: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (للبيانات العامة):                                              ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين القراءة لمجموعة 'public/data' (مثل 'activeUsers' و 'globalSettings')،                 ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/public/data/{document=**} { allow read, write: if request.auth != null; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
         async function updateGlobalSettings() {
-            if (!db || !userId || userId === 'anonymous' || !globalSettingsRef) {
-                showMessage("لا يمكنك تحديث الإعدادات العامة بدون مصادقة.", 'error');
+            if (!db || !userId || userId === 'anonymous' || !globalSettingsRef || !isAdmin) { // Added isAdmin check
+                showMessage("لا يمكنك تحديث الإعدادات العامة بدون مصادقة كمسؤول.", 'error');
                 return;
             }
 
@@ -1114,6 +1464,16 @@
             } catch (e) {
                 console.error("Error updating global settings:", e);
                 showMessage(`خطأ في تحديث الإعدادات العامة: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (للبيانات العامة):                                              ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين الكتابة لمجموعة 'public/data' (مثل 'activeUsers' و 'globalSettings')،                ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/public/data/{document=**} { allow read, write: if request.auth != null; } ***
+                // *** ***
+                // **************************************************************************************************
             }
         }
 
@@ -1207,7 +1567,8 @@
                         }
                     }
                 };
-                const apiKey = ""; // Canvas will provide this at runtime
+                // Use firebaseConfig.apiKey for Gemini API calls
+                const apiKey = firebaseConfig.apiKey; 
                 // Changed model to gemini-2.0-flash
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
                 
@@ -1340,7 +1701,8 @@
                             }
                         ],
                     };
-                    const apiKey = ""; // Canvas will provide this at runtime
+                    // Use firebaseConfig.apiKey for Gemini API calls
+                    const apiKey = firebaseConfig.apiKey; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
                     
                     const response = await fetch(apiUrl, {
@@ -1447,7 +1809,8 @@
                         }
                     }
                 };
-                const apiKey = ""; // Canvas will provide this at runtime
+                // Use firebaseConfig.apiKey for Gemini API calls
+                const apiKey = firebaseConfig.apiKey; 
                 // Changed model to gemini-2.0-flash
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
                 
@@ -1513,6 +1876,58 @@
             } else {
                 searchResultDiv.classList.add('not-found');
                 searchResultDiv.innerHTML = `<p class="text-red-700">لم يتم العثور على معلومات مفصلة عن "${result.ingredientName}".</p>`;
+            }
+        }
+
+        // --- New: Suggest New Ingredient Function ---
+        async function submitNewIngredientSuggestion() {
+            const newIngredientInput = document.getElementById('newIngredientSuggestionInput');
+            const ingredientName = newIngredientInput.value.trim();
+
+            if (!ingredientName) {
+                showMessage("الرجاء إدخال اسم المكون المقترح.", 'warning');
+                return;
+            }
+            if (!db || !userId || userId === 'anonymous') {
+                showMessage("يرجى تسجيل الدخول لاقتراح مكونات جديدة.", 'error');
+                return;
+            }
+
+            const suggestButton = document.getElementById('submitNewIngredientSuggestionBtn');
+            const suggestButtonText = document.getElementById('suggestButtonText');
+            const suggestLoadingSpinner = document.getElementById('suggestLoadingSpinner');
+
+            suggestButton.disabled = true;
+            suggestButtonText.textContent = 'جاري الإرسال...';
+            suggestLoadingSpinner.classList.remove('hidden');
+
+            try {
+                // Use addDoc for a new document with auto-generated ID
+                await addDoc(ingredientSuggestionsCollectionRef, {
+                    ingredient: ingredientName,
+                    suggestedBy: userId,
+                    timestamp: serverTimestamp(), // Use serverTimestamp for consistent timestamps
+                    status: 'pending' // Initial status
+                });
+                showMessage(`تم إرسال اقتراحك للمكون "${ingredientName}" بنجاح! شكراً لك.`, 'success');
+                newIngredientInput.value = ''; // Clear input
+            } catch (e) {
+                console.error("Error submitting ingredient suggestion:", e);
+                showMessage(`خطأ في إرسال الاقتراح: ${e.message}`, 'error');
+                // **************************************************************************************************
+                // *** حل مشكلة أذونات Firestore (للبيانات العامة):                                              ***
+                // *** إذا كنت تواجه خطأ "Missing or insufficient permissions" هنا، فهذا يعني أن قواعد أمان    ***
+                // *** Firestore الخاصة بك تحتاج إلى تحديث.                                                        ***
+                // *** لتمكين الكتابة لمجموعة 'public/data' (مثل 'ingredientSuggestions')،                       ***
+                // *** تأكد من تعيين القواعد التالية في Firebase Console -> Firestore Database -> Rules:          ***
+                // *** ***
+                // *** match /artifacts/{appId}/public/data/{document=**} { allow read, write: if request.auth != null; } ***
+                // *** ***
+                // **************************************************************************************************
+            } finally {
+                suggestButton.disabled = false;
+                suggestButtonText.textContent = 'إرسال الاقتراح';
+                suggestLoadingSpinner.classList.add('hidden');
             }
         }
 
@@ -1595,7 +2010,7 @@
 
             inputElement.addEventListener('input', () => {
                 const query = inputElement.value.toLowerCase();
-                suggestionsContainer.innerHTML = '';
+                suggestionsContainer.innerHTML = ''; // Clear previous suggestions
                 currentActiveSuggestion = -1;
 
                 if (query.length < 2) { // Start suggesting after 2 characters
@@ -1621,28 +2036,37 @@
                         suggestionsContainer.appendChild(item);
                     });
                 } else {
-                    suggestionsContainer.classList.add('hidden');
+                    // New: Display "No results" message if no suggestions found
+                    const noResultsItem = document.createElement('div');
+                    noResultsItem.classList.add('autocomplete-suggestion-item', 'text-gray-500', 'italic');
+                    noResultsItem.textContent = 'لا توجد نتائج مطابقة.';
+                    suggestionsContainer.appendChild(noResultsItem);
+                    suggestionsContainer.classList.remove('hidden'); // Keep visible to show "No results"
                 }
             });
 
             inputElement.addEventListener('keydown', (e) => {
                 const items = Array.from(suggestionsContainer.children);
-                if (items.length === 0) return;
+                // Filter out the "No results" message if it exists
+                const actualSuggestions = items.filter(item => !item.classList.contains('italic'));
+
+                if (actualSuggestions.length === 0 && e.key !== 'Enter') return; // Only allow Enter if no suggestions
 
                 if (e.key === 'ArrowDown') {
                     e.preventDefault();
-                    currentActiveSuggestion = (currentActiveSuggestion + 1) % items.length;
-                    highlightSuggestion(items);
+                    currentActiveSuggestion = (currentActiveSuggestion + 1) % actualSuggestions.length;
+                    highlightSuggestion(actualSuggestions, inputElement);
                 } else if (e.key === 'ArrowUp') {
                     e.preventDefault();
-                    currentActiveSuggestion = (currentActiveSuggestion - 1 + items.length) % items.length;
-                    highlightSuggestion(items);
+                    currentActiveSuggestion = (currentActiveSuggestion - 1 + actualSuggestions.length) % actualSuggestions.length;
+                    highlightSuggestion(actualSuggestions, inputElement);
                 } else if (e.key === 'Enter') {
                     e.preventDefault();
-                    if (currentActiveSuggestion > -1) {
-                        items[currentActiveSuggestion].click();
+                    if (currentActiveSuggestion > -1 && actualSuggestions[currentActiveSuggestion]) {
+                        actualSuggestions[currentActiveSuggestion].click();
                     } else {
-                        addFunction(); // If no suggestion selected, add current input
+                        // If no suggestion selected or no actual suggestions, trigger add with current input
+                        addFunction();
                     }
                     suggestionsContainer.classList.add('hidden');
                 } else if (e.key === 'Escape') {
@@ -1657,11 +2081,11 @@
                 }
             });
 
-            function highlightSuggestion(items) {
+            function highlightSuggestion(items, input) {
                 items.forEach((item, index) => {
                     if (index === currentActiveSuggestion) {
                         item.classList.add('active');
-                        inputElement.value = item.textContent; // Update input with highlighted suggestion
+                        input.value = item.textContent; // Update input with highlighted suggestion
                     } else {
                         item.classList.remove('active');
                     }
@@ -1773,17 +2197,59 @@
             }
         }
 
+        // --- Collapsible Sections Logic ---
+        function setupCollapsibleSections() {
+            const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
+            collapsibleHeaders.forEach(header => {
+                const targetId = header.dataset.target;
+                const content = document.getElementById(targetId);
+                const arrowIcon = header.querySelector('.icon-arrow');
+
+                // Initially close all sections except the first one (Dashboard)
+                if (targetId !== 'dashboardContent') { // Assuming Dashboard is the first and should be open by default
+                    content.classList.remove('open');
+                    header.classList.remove('active');
+                } else {
+                    content.classList.add('open');
+                    header.classList.add('active');
+                }
+                
+                header.addEventListener('click', () => {
+                    const isOpen = content.classList.contains('open');
+
+                    // Close all other open sections
+                    collapsibleHeaders.forEach(otherHeader => {
+                        const otherContent = document.getElementById(otherHeader.dataset.target);
+                        if (otherContent !== content && otherContent.classList.contains('open')) {
+                            otherContent.classList.remove('open');
+                            otherHeader.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current section
+                    if (isOpen) {
+                        content.classList.remove('open');
+                        header.classList.remove('active');
+                    } else {
+                        content.classList.add('open');
+                        header.classList.add('active');
+                    }
+                });
+            });
+        }
+
+
         // --- Event Listeners ---
         window.onload = async () => {
             // Initialize Firebase first
             initFirebase();
             
             // Then, authenticate the user. This relies on 'auth' being initialized by initFirebase.
-            if (isFirebaseInitialized) {
-                await authenticateUser();
-            } else {
-                console.error("Firebase was not initialized. Authentication skipped.");
-            }
+            await authenticateUser(); // This will sign in anonymously or with custom token
+
+            // Setup collapsible sections AFTER Firebase init to ensure elements are ready
+            setupCollapsibleSections();
+
 
             // Set up event listeners for profile management
             document.getElementById('saveProfileBtn').addEventListener('click', () => {
@@ -1826,6 +2292,7 @@
             document.getElementById('analyzeIngredientsBtn').addEventListener('click', analyzeIngredients);
             document.getElementById('scanImageBtn').addEventListener('click', scanImageForIngredients);
             document.getElementById('quickSearchBtn').addEventListener('click', quickIngredientLookup);
+            document.getElementById('submitNewIngredientSuggestionBtn').addEventListener('click', submitNewIngredientSuggestion); // New listener for suggestion button
 
             // Image upload preview
             document.getElementById('imageUpload').addEventListener('change', (event) => {
@@ -1871,11 +2338,16 @@
                     2. إدارة الملفات الشخصية: احفظ، حمل، واحذف ملفاتك الشخصية.
                     3. مسح المكونات من صورة: حمل صورة لملصق المكونات وسنقوم باستخراجها لك.
                     4. البحث السريع عن مكون: ابحث عن معلومات فورية عن مكون واحد.
-                    5. ملفك الشخصي للبشرة والشعر: أدخل معلوماتك لتخصيص التحليل.
-                    6. المكونات المفضلة/المستبعدة: أضف المكونات التي تفضلها أو تتحسس منها.
-                    7. تحليل المكونات: الصق قائمة المكونات لتحليلها بناءً على ملفك الشخصي.
+                    5. اقتراح مكونات جديدة: إذا لم تجد مكوناً، اقترحه لنا.
+                    6. ملفك الشخصي للبشرة والشعر: أدخل معلوماتك لتخصيص التحليل.
+                    7. المكونات المفضلة/المستبعدة: أضف المكونات التي تفضلها أو تتحسس منها.
+                    8. تحليل المكونات: الصق قائمة المكونات لتحليلها بناءً على ملفك الشخصي.
                 `, 'info');
             });
+
+            // Add event listener for the new sign in/out button
+            document.getElementById('signInSignOutBtn').addEventListener('click', handleSignInSignOut);
+
 
             // Load AdSense ads after all other DOM content and layout have settled
             loadAdSenseAds();
